@@ -11,24 +11,24 @@ Build the complete, responsive Static HTML5/CSS3/JS implementation of `Home v3B`
 ## Task List
 
 ### Phase 1: Foundation & Asset Pipeline
-- [ ] Task 1: Export all Figma raster images, framed artwork, watermark graphics, and SVG logos/icons for `Home v3B` into `assets/images/` and `assets/icons/`.
-- [ ] Task 2: Write automated verification test suite (`tests/verify-home.mjs`) and base HTML5/CSS3 skeleton (`index.html`, `css/style.css`) with Header (`Stick header` Default + Scrolled + Mobile Drawer) and Hero section.
+- [x] Task 1: Export all Figma raster images, framed artwork, watermark graphics, and SVG logos/icons for `Home v3B` into `assets/images/` and `assets/icons/`.
+- [x] Task 2: Write automated verification test suite (`tests/verify-home.mjs`) and base HTML5/CSS3 skeleton (`index.html`, `css/style.css`) with Header (`Stick header` Default + Scrolled + Mobile Drawer) and Hero section.
 
 ### Checkpoint: Foundation
-- [ ] Asset files verified on disk, Header & Hero render cleanly.
+- [x] Asset files verified on disk, Header & Hero render cleanly.
 
 ### Phase 2: Core Content Sections
-- [ ] Task 3: Implement Story (`Hidden in Plain Sight`), Asymmetric Collage (`The Space Between, Stillness and Beauty`), `Level One: The Alley` (50/50 split + carousel), and `Level Two: The Bar` (50/50 split + carousel).
-- [ ] Task 4: Implement `Google Reviews & Map` (50/50 split with English cocktail bar reviews slider + interactive/styled map), `Atmospheric Banner Strip`, `Latest News` (3-card slider), and `Footer` (`A Glimpse Inside` + `Section 20`).
+- [x] Task 3: Implement Story (`Hidden in Plain Sight`), Asymmetric Collage (`The Space Between, Stillness and Beauty`), `Level One: The Alley` (50/50 split + carousel), and `Level Two: The Bar` (50/50 split + carousel).
+- [x] Task 4: Implement `Google Reviews & Map` (50/50 split with English cocktail bar reviews slider + interactive/styled map), `Atmospheric Banner Strip`, `Latest News` (3-card slider), and `Footer` (`A Glimpse Inside` + `Section 20`).
 
 ### Checkpoint: Core Features
-- [ ] All 10 sections and interactive JS sliders/carousels (`js/main.js`) pass `tests/verify-home.mjs`.
+- [x] All 10 sections and interactive JS sliders/carousels (`js/main.js`) pass `tests/verify-home.mjs`.
 
 ### Phase 3: Browser Verification & Visual QA
-- [ ] Task 5: Serve locally, inspect Desktop (`1920x1080`) and Mobile (`390x844`) in Chrome DevTools MCP, verify zero console/network errors, run QA/Review subagents.
+- [x] Task 5: Serve locally, inspect Desktop (`1920x1080`) and Mobile (`390x844`) in Chrome DevTools MCP, verify zero console/network errors, run QA/Review subagents.
 
 ### Checkpoint: Complete
-- [ ] All acceptance criteria met and verified against Figma renders.
+- [x] All acceptance criteria met and verified against Figma renders.
 
 ## Risks and Mitigations
 | Risk | Impact | Mitigation |

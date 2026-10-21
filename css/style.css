@@ -556,13 +556,19 @@ address {
 
 .philosophy__watermark {
   position: absolute;
-  right: -120px;
-  top: -40px;
-  width: 390px;
-  height: 390px;
-  opacity: 0.85;
+  right: -75px;
+  top: -35px;
+  width: 380px;
+  height: 380px;
+  opacity: 0.12;
   pointer-events: none;
   z-index: 1;
+}
+
+.philosophy__watermark img {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
 }
 
 .philosophy__kimono {
@@ -576,7 +582,9 @@ address {
 
 .philosophy__kimono img {
   width: 100%;
+  aspect-ratio: 586 / 426;
   height: auto;
+  object-fit: cover;
 }
 
 /* ==========================================================================
@@ -678,14 +686,24 @@ address {
   position: absolute;
   left: 0;
   right: 0;
-  bottom: 22px;
+  bottom: 16px;
   display: flex;
   justify-content: center;
-  gap: 12px;
+  gap: 4px;
   z-index: 4;
 }
 
 .carousel__dot {
+  width: 24px;
+  height: 24px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  background-color: transparent;
+}
+
+.carousel__dot::before {
+  content: '';
   width: 9px;
   height: 9px;
   border-radius: 50%;
@@ -694,7 +712,7 @@ address {
   transition: background-color 0.2s ease, transform 0.2s ease;
 }
 
-.carousel__dot.is-active {
+.carousel__dot.is-active::before {
   background-color: var(--color-white);
   transform: scale(1.1);
 }
