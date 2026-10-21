@@ -26,7 +26,7 @@ The markup is structured with clean, repeatable DOM containers (`data-cms-collec
 - **Dev Server:** `python3 -m http.server 8080 --directory /Users/Victor/.gemini/antigravity/scratch/house-of-irori`
 - **JS Syntax Check:** `node --check /Users/Victor/.gemini/antigravity/scratch/house-of-irori/js/main.js`
 - **Automated Verification Suite:** `node /Users/Victor/.gemini/antigravity/scratch/house-of-irori/tests/verify-home.mjs`
-- **Secret Scan:** `git -C /Users/Victor/.gemini/antigravity/scratch/house-of-irori grep -i "figd_" && exit 1 || exit 0`
+- **Secret Scan:** `git -C /Users/Victor/.gemini/antigravity/scratch/house-of-irori grep -E "figd_[A-Za-z0-9_-]{20,}" && exit 1 || exit 0`
 
 ## Project Structure
 ```text

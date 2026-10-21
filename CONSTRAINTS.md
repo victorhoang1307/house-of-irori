@@ -16,7 +16,7 @@ Last reviewed: 2026-10-21 by Victor Hoang
 |-----------|------|-----------|---------|
 | JS Syntax | Zero syntax errors in JS files | `node --check js/main.js` | every edit |
 | DOM & Structure | All 10 Home v3B sections, interactive sliders, and responsive breakpoints pass automated assertions | `node tests/verify-home.mjs` | task end |
-| Secrets | No Figma tokens or credentials in tracked files | `git grep -i "figd_" && exit 1 || exit 0` | every edit |
+| Secrets | No Figma tokens or credentials in tracked files | `git grep -E "figd_[A-Za-z0-9_-]{20,}" && exit 1 || exit 0` | every edit |
 | Runtime Console | Zero `console.error` or uncaught page exceptions | Chrome DevTools MCP (`list_console_messages`) | preview verify |
 | Performance | LCP ≤ 2500ms, CLS ≤ 0.1 on local preview | Chrome DevTools MCP (`lighthouse_audit`) | preview verify |
 | Accessibility | Zero critical/serious accessibility errors on interactive controls | Chrome DevTools MCP (`lighthouse_audit`) | preview verify |

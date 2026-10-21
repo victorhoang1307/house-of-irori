@@ -46,7 +46,7 @@
 ## Checkpoint: After Tasks 1-4
 - [ ] All tests in `node tests/verify-home.mjs` pass
 - [ ] Zero JS syntax errors (`node --check js/main.js`)
-- [ ] Secret scan passes (`git grep -i "figd_"`)
+- [ ] Secret scan passes (`git grep -E "figd_[A-Za-z0-9_-]{20,}"`)
 
 ## Task 5: Browser Runtime & Visual QA (Desktop 1920px & Mobile 390px)
 **Description:** Start local HTTP server, verify Desktop (`1920px`) and Mobile (`390px`) rendering and interactive behaviors via Chrome DevTools MCP, check console/network logs, and run review subagents.
