@@ -79,10 +79,27 @@ assert.ok(
   'index.html still contains Hebrew placeholder characters in Google Reviews'
 );
 
-// Ensure Strapi CMS data attributes exist
-assert.ok(html.includes('data-cms-collection="reviews"'), 'Missing data-cms-collection="reviews"');
-assert.ok(html.includes('data-cms-collection="articles"'), 'Missing data-cms-collection="articles"');
-assert.ok(html.includes('data-cms-item="article"'), 'Missing data-cms-item="article"');
+// Ensure Strapi CMS data attributes & interactive hooks exist
+const requiredHooks = [
+  'data-cms-collection="reviews"',
+  'data-cms-item="review"',
+  'data-cms-collection="articles"',
+  'data-cms-item="article"',
+  'class="hero-showcase"',
+  'id="atmosphere-strip"',
+  'id="mobile-menu-trigger"',
+  'id="mobile-drawer"',
+  'data-carousel="alley"',
+  'data-carousel="bar"',
+  'id="reviews-prev"',
+  'id="reviews-next"',
+  'id="news-prev"',
+  'id="news-next"',
+];
+
+for (const hook of requiredHooks) {
+  assert.ok(html.includes(hook), `index.html missing required selector/attribute: ${hook}`);
+}
 
 // Ensure modern-web-guidance LCP image fetchpriority="high" is applied
 assert.ok(html.includes('fetchpriority="high"'), 'Missing fetchpriority="high" on LCP image');
@@ -95,12 +112,15 @@ const cssStat = fs.statSync(cssPath);
 assert.ok(cssStat.size <= 50 * 1024, `css/style.css exceeds 50KB budget (${cssStat.size}B)`);
 const css = fs.readFileSync(cssPath, 'utf8');
 
-const requiredColors = ['#F4F1EA', '#5A2929', '#4A3B32', '#C6A15B', '#0A0A0A'];
+const requiredColors = ['#F4F1EA', '#5A2929', '#4A3B32', '#C6A15B', '#C9A24A', '#0A0A0A', '#141414'];
 for (const hex of requiredColors) {
   assert.ok(
     css.toUpperCase().includes(hex),
     `css/style.css missing Figma design token color: ${hex}`
   );
+}
+for (const font of ['Playfair Display', 'Lora', 'Inter']) {
+  assert.ok(css.includes(font), `css/style.css missing font family token: ${font}`);
 }
 assert.ok(css.includes('@media'), 'css/style.css missing responsive @media queries');
 console.log(`✓ css/style.css passes token and budget checks (${(cssStat.size / 1024).toFixed(1)} KB).`);

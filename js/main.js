@@ -53,7 +53,7 @@ document.addEventListener('DOMContentLoaded', () => {
       dots.forEach((dot, idx) => {
         const active = idx === targetIndex;
         dot.classList.toggle('is-active', active);
-        dot.setAttribute('aria-selected', String(active));
+        dot.setAttribute('aria-pressed', String(active));
       });
     };
 
