@@ -123,6 +123,11 @@ for (const font of ['Playfair Display', 'Lora', 'Inter']) {
   assert.ok(css.includes(font), `css/style.css missing font family token: ${font}`);
 }
 assert.ok(css.includes('@media'), 'css/style.css missing responsive @media queries');
+assert.ok(
+  /\.hero__mobile-reservations\s*\{[^}]*position:\s*fixed/s.test(css) &&
+    /\.hero__mobile-reservations\s*\{[^}]*(bottom:\s*0|inset-block-end:\s*0)/s.test(css),
+  'css/style.css must position .hero__mobile-reservations as fixed at bottom: 0 on mobile'
+);
 console.log(`✓ css/style.css passes token and budget checks (${(cssStat.size / 1024).toFixed(1)} KB).`);
 
 // 4. Verify JS interactive module & size budget

@@ -74,7 +74,7 @@ The markup is structured with clean, repeatable DOM containers (`data-cms-collec
 - **Never:** Commit Figma Personal Access Tokens to git, leave Hebrew placeholder text in Google Reviews, or use fixed `position: absolute` coordinates that break responsive flow.
 
 ## Success Criteria
-1. All 10 sections of `Home v3B` (`Stick Header` + `Mobile Header`, `Hero` + `Framed Bartender`, `Hidden in Plain Sight` Story, `The Space Between` Collage, `Level One: The Alley` 50/50 split + slider, `Level Two: The Bar` 50/50 split + slider, `Google Reviews + Map` 50/50 split, `Atmospheric Banner Strip`, `Latest News` 3-card slider, `A Glimpse Inside` + `Footer`) are implemented and match Figma visually at `1920px` and `390px`.
+1. All 10 sections of `Home v3B` (`Stick Header` + `Mobile Header` with fixed bottom `Reservations` bar on mobile, `Hero` + `Framed Bartender`, `Hidden in Plain Sight` Story, `The Space Between` Collage, `Level One: The Alley` 50/50 split + slider, `Level Two: The Bar` 50/50 split + slider, `Google Reviews + Map` 50/50 split, `Atmospheric Banner Strip`, `Latest News` 3-card slider, `A Glimpse Inside` + `Footer`) are implemented and match Figma visually at `1920px` and `390px`.
 2. All original images and SVG logos/icons are exported directly from Figma API into `assets/` and load with HTTP `200`.
 3. Interactive controls (Sticky header on scroll, Mobile menu drawer, Discover the story smooth scroll, Alley/Bar dot carousels, Google Reviews `<`/`>` slider, Latest News `<`/`>` slider) work smoothly with zero console errors.
 4. Hebrew placeholder text in Google Reviews is replaced with natural English reviews tailored to House of IRORI.

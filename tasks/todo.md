@@ -53,6 +53,7 @@
 **Acceptance criteria:**
 - [x] Zero console errors or failed network requests in Chrome DevTools MCP.
 - [x] Full-page Desktop and Mobile screenshots match Figma `Home v3B`.
+- [x] Mobile `Reservations` CTA bar (`617:803`) is fixed to the bottom of the mobile viewport (`position: fixed; bottom: 0; left: 0; right: 0; z-index: 100`).
 **Verification:**
 - [x] Chrome DevTools MCP inspection + `node tests/verify-home.mjs`
 **Dependencies:** Task 4

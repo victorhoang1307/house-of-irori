@@ -1340,24 +1340,29 @@ address {
 
   .hero__mobile-reservations {
     display: flex;
+    position: fixed;
+    inset-inline: 0;
+    bottom: 0;
+    z-index: 100;
     width: 100%;
-    margin-top: 32px;
-    position: relative;
-    z-index: 3;
+    padding-bottom: env(safe-area-inset-bottom, 0px);
+    background-color: var(--color-espresso);
+    box-shadow: 0 -4px 16px rgba(0, 0, 0, 0.35);
   }
 
   .hero__mobile-reservations-btn {
     width: 100%;
     height: 40px;
-    background-color: rgba(74, 59, 50, 0.85);
-    border-top: 1px solid rgba(198, 161, 91, 0.45);
-    border-bottom: 1px solid rgba(198, 161, 91, 0.45);
+    background-color: var(--color-espresso);
+    border-top: 1px solid var(--color-border-light);
+    border-bottom: 1px solid var(--color-border-light);
     display: flex;
     align-items: center;
     justify-content: center;
-    font-family: var(--font-serif);
-    font-size: 11px;
-    letter-spacing: 0.24em;
+    font-family: var(--font-display);
+    font-size: 12px;
+    letter-spacing: 3px;
+    line-height: 18px;
     text-transform: uppercase;
     color: var(--color-gold);
   }
@@ -1428,6 +1433,10 @@ address {
 
   .footer-glimpse {
     height: 440px;
+  }
+
+  .footer-main {
+    padding-bottom: calc(64px + env(safe-area-inset-bottom, 0px));
   }
 
   .footer-main__grid {
