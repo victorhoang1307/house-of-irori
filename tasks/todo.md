@@ -59,3 +59,53 @@
 **Dependencies:** Task 4
 **Files likely touched:** `css/style.css`, `index.html`, `js/main.js`
 **Estimated scope:** Small
+
+## Task 6: Export Subpage Figma Assets & Update `index.html` Navigation
+**Description:** Export all new raster/composite images for `Menu` (`617:1167`), `Events` (`622:991`), `Blogs` (`622:1667`), and `Blog Articles` (`622:1944`) from Figma API into `assets/images/` and wire `index.html` nav/CTA links to `menu.html`, `events.html`, `blogs.html`, and `blog-detail.html`.
+**Acceptance criteria:**
+- [x] Subpage Hero images, Occasional event image, Menu showcase image, Events Upcoming featured image, and Blog article images exist in `assets/images/` with non-zero bytes.
+- [x] `index.html` links point to `menu.html`, `events.html`, `blogs.html`, and `blog-detail.html`.
+**Verification:**
+- [x] `ls -lh assets/images`
+**Dependencies:** Task 5
+**Files likely touched:** `assets/images/*`, `index.html`
+**Estimated scope:** Small
+
+## Task 7: Implement `menu.html` and `events.html` (TDD Red -> Green Slice 1)
+**Description:** Update `tests/verify-home.mjs` with multi-page assertions, implement `menu.html` (Hero, `OCCASIONAL` 2-col with "House of IRORI" copy, interactive `MENU` tab viewer) and `events.html` (Hero, `UP COMING` wood banner + featured carousel, `OCCASIONAL` 2x2 grid), plus shared CSS/JS.
+**Acceptance criteria:**
+- [x] `menu.html` and `events.html` match Figma `617:1167` and `622:991` at `1920px` and `390px`.
+- [x] Zero occurrences of `"House of Merlin"` across all HTML files.
+- [x] Menu tab toggle (`aria-pressed`) and Events `UP COMING` carousel work cleanly.
+**Verification:**
+- [x] `node tests/verify-home.mjs`
+**Dependencies:** Task 6
+**Files likely touched:** `tests/verify-home.mjs`, `menu.html`, `events.html`, `css/style.css`, `js/main.js`
+**Estimated scope:** Medium
+
+## Task 8: Implement `blogs.html` and `blog-detail.html` (TDD Green Slice 2)
+**Description:** Implement `blogs.html` (Hero, `#category` interactive filter buttons with `aria-pressed`, 6-card grid linking to `blog-detail.html`) and `blog-detail.html` (solid header, `960px` article container with `ELLE Decoration PopUp Office` sample copy, `#category` tags, and bottom `Latest News` 3-card slider).
+**Acceptance criteria:**
+- [x] `blogs.html` and `blog-detail.html` match Figma `622:1667` and `622:1944` at `1920px` and `390px`.
+- [x] Category filtering on `blogs.html` and `Latest News` slider on `blog-detail.html` work cleanly.
+- [x] All checks in `node tests/verify-home.mjs` pass.
+**Verification:**
+- [x] `node --check js/main.js && node tests/verify-home.mjs`
+**Dependencies:** Task 7
+**Files likely touched:** `blogs.html`, `blog-detail.html`, `css/style.css`, `js/main.js`
+**Estimated scope:** Medium
+
+## Checkpoint: After Tasks 6-8
+- [x] All 5 pages pass `node tests/verify-home.mjs`
+- [x] CSS <= 50KB and JS <= 15KB budgets respected
+
+## Task 9: Browser Verification (Chrome DevTools MCP) & QA Subagents
+**Description:** Verify `menu.html`, `events.html`, `blogs.html`, and `blog-detail.html` in Chrome DevTools MCP at Desktop (`1920x1080`) and Mobile (`390x844`), verify interactive controls and `0` console/network errors, and run QA subagents.
+**Acceptance criteria:**
+- [x] Zero console errors or failed network requests across all 5 pages.
+- [x] Mobile fixed bottom `RESERVATIONS` bar verified on all subpages.
+**Verification:**
+- [x] Chrome DevTools MCP + QA subagents
+**Dependencies:** Task 8
+**Files likely touched:** `css/style.css`, `menu.html`, `events.html`, `blogs.html`, `blog-detail.html`
+**Estimated scope:** Small

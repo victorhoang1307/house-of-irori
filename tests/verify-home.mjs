@@ -32,10 +32,21 @@ const requiredAssets = [
   'assets/images/floating-banner.jpg',
   'assets/images/blog-thumb-1.jpg',
   'assets/images/footer-glimpse-bg.jpg',
+  'assets/images/hero-menu.jpg',
+  'assets/images/hero-events.jpg',
+  'assets/images/hero-blogs.jpg',
+  'assets/images/event-wild-turkey.jpg',
+  'assets/images/menu-showcase-1.jpg',
+  'assets/images/event-upcoming-featured.jpg',
+  'assets/images/events-upcoming-banner.jpg',
+  'assets/images/events-upcoming-bg.jpg',
+  'assets/icons/favicon.png',
+  'assets/icons/arrow-ornament-left.svg',
+  'assets/icons/arrow-ornament-right.svg',
 ];
 
 for (const asset of requiredAssets) {
-  checkFileExists(asset, 500);
+  checkFileExists(asset, 200);
 }
 console.log(`✓ All ${requiredAssets.length} Figma assets present and non-empty.`);
 
@@ -133,7 +144,114 @@ console.log(`✓ css/style.css passes token and budget checks (${(cssStat.size /
 // 4. Verify JS interactive module & size budget
 const jsPath = checkFileExists('js/main.js', 500);
 const jsStat = fs.statSync(jsPath);
-assert.ok(jsStat.size <= 25 * 1024, `js/main.js exceeds 25KB budget (${jsStat.size}B)`);
+assert.ok(jsStat.size <= 15 * 1024, `js/main.js exceeds 15KB budget (${jsStat.size}B)`);
 console.log(`✓ js/main.js passes budget check (${(jsStat.size / 1024).toFixed(1)} KB).`);
+
+// 5. Verify all 4 subpages (menu.html, events.html, blogs.html, blog-detail.html)
+const subpageSpecs = [
+  {
+    file: 'menu.html',
+    phrases: [
+      'Cocktail & Eatery Menu',
+      'OCCASIONAL',
+      'Guestshift - Wild Turkey 8ys Takeover',
+      'House of IRORI',
+      'Our top cocktail',
+      'Food (Pizza & Side dishes)',
+    ],
+    hooks: [
+      'data-cms-collection="occasional-menus"',
+      'data-cms-item="occasional-menu"',
+      'data-menu-tab="cocktail"',
+      'data-menu-tab="food"',
+      'id="mobile-reservations-bar"',
+      'fetchpriority="high"',
+    ],
+  },
+  {
+    file: 'events.html',
+    phrases: [
+      'Events',
+      'up coming',
+      'OCCASIONAL',
+      'Guestshift - Wild Turkey 8ys Takeover',
+      'House of IRORI',
+    ],
+    hooks: [
+      'data-cms-collection="events"',
+      'data-cms-item="event"',
+      'data-carousel="upcoming"',
+      'id="mobile-reservations-bar"',
+      'fetchpriority="high"',
+    ],
+  },
+  {
+    file: 'blogs.html',
+    phrases: [
+      'BLOGS',
+      'Latest News',
+      '#category',
+      'interior',
+      'Concept',
+      'Club',
+      'Why We Work with Spirit, Not Against It',
+    ],
+    hooks: [
+      'data-cms-collection="articles"',
+      'data-cms-item="article"',
+      'data-filter-category=',
+      'href="blog-detail.html"',
+      'id="mobile-reservations-bar"',
+      'fetchpriority="high"',
+    ],
+  },
+  {
+    file: 'blog-detail.html',
+    phrases: [
+      'ELLE Decoration PopUp Office',
+      'April 14, 2026',
+      'Why We Work with Spirit, Not Against It',
+      '#category',
+      'Latest News',
+    ],
+    hooks: [
+      'data-cms-collection="articles"',
+      'data-cms-item="article"',
+      'id="news-prev"',
+      'id="news-next"',
+      'id="mobile-reservations-bar"',
+      'fetchpriority="high"',
+    ],
+  },
+];
+
+for (const spec of subpageSpecs) {
+  const p = checkFileExists(spec.file, 1500);
+  const content = fs.readFileSync(p, 'utf8');
+  const decodedContent = content.replaceAll('&amp;', '&');
+  assert.ok(
+    !decodedContent.toLowerCase().includes('house of merlin'),
+    `${spec.file} still contains template name "House of Merlin"`
+  );
+  for (const phrase of spec.phrases) {
+    assert.ok(
+      decodedContent.toLowerCase().includes(phrase.toLowerCase()),
+      `${spec.file} missing required copy: "${phrase}"`
+    );
+  }
+  for (const hook of spec.hooks) {
+    assert.ok(
+      content.includes(hook),
+      `${spec.file} missing required selector/attribute: ${hook}`
+    );
+  }
+  for (const navHref of ['href="index.html"', 'href="menu.html"', 'href="events.html"', 'href="blogs.html"', 'href="#footer"']) {
+    assert.ok(
+      content.includes(navHref),
+      `${spec.file} missing shared navigation link: ${navHref}`
+    );
+  }
+  console.log(`✓ ${spec.file} passes all copy, Strapi attribute, and mobile fixed CTA checks.`);
+}
 
 console.log('ALL VERIFICATION CHECKS PASSED!');

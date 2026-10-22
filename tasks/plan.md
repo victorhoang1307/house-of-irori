@@ -27,8 +27,18 @@ Build the complete, responsive Static HTML5/CSS3/JS implementation of `Home v3B`
 ### Phase 3: Browser Verification & Visual QA
 - [x] Task 5: Serve locally, inspect Desktop (`1920x1080`) and Mobile (`390x844`) in Chrome DevTools MCP, verify zero console/network errors, run QA/Review subagents.
 
-### Checkpoint: Complete
+### Checkpoint: Complete (Phase 1)
 - [x] All acceptance criteria met and verified against Figma renders.
+
+### Phase 4: Subpages Asset Export & Navigation Wiring
+- [x] Task 6: Export all remaining Figma assets for `Menu` (`617:1167`), `Events` (`622:991`), `Blogs` (`622:1667`), and `Blog Articles` (`622:1944`) into `assets/images/`, and update `index.html` navigation links (`menu.html`, `events.html`, `blogs.html`, `blog-detail.html`).
+
+### Phase 5: Implement `menu.html`, `events.html`, `blogs.html`, and `blog-detail.html`
+- [x] Task 7: Extend `tests/verify-home.mjs` for all 5 pages (TDD Red), then build `menu.html` and `events.html` + shared subpage styles/scripts in `css/style.css` and `js/main.js`.
+- [x] Task 8: Build `blogs.html` (with `#category` filter pills) and `blog-detail.html` (editorial article + bottom `Latest News` slider) and pass all tests in `tests/verify-home.mjs` (TDD Green).
+
+### Phase 6: Browser Runtime Verification & Multi-Agent QA
+- [x] Task 9: Verify all 4 new pages at Desktop (`1920x1080`) and Mobile (`390x844`) via Chrome DevTools MCP (`0` console/network errors) and run QA review subagents.
 
 ## Risks and Mitigations
 | Risk | Impact | Mitigation |
