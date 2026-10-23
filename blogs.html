@@ -1,0 +1,379 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Blogs &amp; Latest News | House of IRORI</title>
+  <meta name="description" content="Stories on Japanese craftsmanship, interior architecture, cocktail concepts, and slow curation from House of IRORI in Saigon.">
+  <link rel="icon" type="image/png" href="assets/icons/favicon.png">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Lora:wght@400;500&family=Playfair+Display:wght@400;500&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+
+  <!-- ================= STICKY HEADER (Desktop + Mobile) ================= -->
+  <header class="site-header" id="site-header">
+    <div class="header-topbar">
+      <div class="container header-topbar__inner">
+        <div class="header-topbar__contact">
+          <a href="mailto:houseofirori@gmail.com">HOUSEOFIRORI@GMAIL.COM</a>
+          <span class="header-topbar__sep" aria-hidden="true">|</span>
+          <a href="tel:+84971419066">TEL: +84 97 141 90 66</a>
+        </div>
+        <div class="header-topbar__actions">
+          <a href="#footer" class="btn-reservations">RESERVATIONS</a>
+        </div>
+      </div>
+    </div>
+
+    <div class="header-banner">
+      <div class="container header-banner__inner">
+        <a href="index.html" class="header-logo" aria-label="House of IRORI Home">
+          <img src="assets/images/logo-white.png" alt="House of IRORI" width="88" height="96">
+        </a>
+      </div>
+    </div>
+
+    <nav class="header-nav" aria-label="Primary Navigation">
+      <ul class="header-nav__list">
+        <li class="header-nav__item"><a href="index.html" class="header-nav__link">WELCOME</a></li>
+        <li class="header-nav__item"><a href="menu.html" class="header-nav__link">MENU</a></li>
+        <li class="header-nav__item"><a href="events.html" class="header-nav__link">EVENTS</a></li>
+        <li class="header-nav__item"><a href="blogs.html" class="header-nav__link is-active" aria-current="page">BLOGS</a></li>
+        <li class="header-nav__item"><a href="#footer" class="header-nav__link">CONTACT</a></li>
+      </ul>
+    </nav>
+
+    <div class="mobile-bar">
+      <button type="button" class="mobile-menu-trigger" id="mobile-menu-trigger" aria-expanded="false" aria-controls="mobile-drawer">
+        <span class="mobile-menu-trigger__label">Menu</span>
+        <span class="mobile-menu-trigger__bars" aria-hidden="true">
+          <span></span>
+          <span></span>
+          <span></span>
+        </span>
+      </button>
+    </div>
+
+    <div class="mobile-drawer" id="mobile-drawer" hidden>
+      <nav class="mobile-drawer__nav" aria-label="Mobile Navigation">
+        <ul class="mobile-drawer__list">
+          <li><a href="index.html" class="mobile-drawer__link">WELCOME</a></li>
+          <li><a href="menu.html" class="mobile-drawer__link">MENU</a></li>
+          <li><a href="events.html" class="mobile-drawer__link">EVENTS</a></li>
+          <li><a href="blogs.html" class="mobile-drawer__link" aria-current="page">BLOGS</a></li>
+          <li><a href="#footer" class="mobile-drawer__link">CONTACT</a></li>
+        </ul>
+        <div class="mobile-drawer__contact">
+          <p><a href="mailto:houseofirori@gmail.com">houseofirori@gmail.com</a></p>
+          <p><a href="tel:+84971419066">+84 97 141 90 66</a></p>
+        </div>
+      </nav>
+    </div>
+  </header>
+
+  <!-- Mobile Fixed Bottom Reservations Strip (Matches Figma 617:803) -->
+  <div class="hero__mobile-reservations" id="mobile-reservations-bar">
+    <a href="#footer" class="hero__mobile-reservations-btn">RESERVATIONS</a>
+  </div>
+
+  <main id="main-content">
+
+    <!-- ================= 1. BLOGS HERO SECTION (Figma 622:1669) ================= -->
+    <section class="page-hero" id="blogs-hero">
+      <div class="page-hero__bg">
+        <img
+          src="assets/images/hero-blogs.jpg"
+          alt="Warm timber interior and cocktail craftsmanship at House of IRORI"
+          class="page-hero__bg-img"
+          fetchpriority="high"
+          width="1920"
+          height="602"
+        >
+        <div class="page-hero__overlay" aria-hidden="true"></div>
+      </div>
+      <div class="container page-hero__content">
+        <h1 class="page-hero__title">BLOGS</h1>
+      </div>
+    </section>
+
+    <!-- ================= 2. BLOG LISTING & CATEGORY FILTER (Figma 622:1671) ================= -->
+    <section class="blogs-listing-section" id="blogs-listing">
+      <div class="container">
+        <h2 class="section-gold-heading">Latest News</h2>
+
+        <div class="category-filter" aria-label="Filter articles by category">
+          <span class="category-filter__label">#category</span>
+          <div class="category-filter__pills" role="group" aria-label="Article categories">
+            <button type="button" class="category-pill" data-filter-category="interior" aria-pressed="false">interior</button>
+            <button type="button" class="category-pill" data-filter-category="concept" aria-pressed="false">Concept</button>
+            <button type="button" class="category-pill" data-filter-category="club" aria-pressed="false">Club</button>
+          </div>
+        </div>
+
+        <!-- 3x2 Articles Grid (Strapi-ready collection) -->
+        <div class="blogs-grid" data-cms-collection="articles" id="blogs-grid">
+          <!-- Article 1 -->
+          <article class="news-card" data-cms-item="article" data-category="interior">
+            <a href="blog-detail.html" class="news-card__media">
+              <img
+                src="assets/images/blog-thumb-1.jpg"
+                alt="Why We Work with Spirit, Not Against It"
+                loading="lazy"
+                width="368"
+                height="300"
+              >
+            </a>
+            <div class="news-card__body">
+              <time class="news-card__date" datetime="2026-04-14">APRIL 14, 2026</time>
+              <h3 class="news-card__title">
+                <a href="blog-detail.html">Why We Work with Spirit, Not Against It</a>
+              </h3>
+              <p class="news-card__excerpt">
+                A conversation about respect, slow curation, and why every ingredient has a story to tell…
+              </p>
+              <a href="blog-detail.html" class="news-card__readmore">
+                <span>READ MORE</span>
+                <span class="news-card__arrow" aria-hidden="true">↗</span>
+              </a>
+            </div>
+          </article>
+
+          <!-- Article 2 -->
+          <article class="news-card" data-cms-item="article" data-category="concept">
+            <a href="blog-detail.html" class="news-card__media">
+              <img
+                src="assets/images/blog-thumb-1.jpg"
+                alt="Why We Work with Spirit, Not Against It"
+                loading="lazy"
+                width="368"
+                height="300"
+              >
+            </a>
+            <div class="news-card__body">
+              <time class="news-card__date" datetime="2026-04-14">APRIL 14, 2026</time>
+              <h3 class="news-card__title">
+                <a href="blog-detail.html">Why We Work with Spirit, Not Against It</a>
+              </h3>
+              <p class="news-card__excerpt">
+                A conversation about respect, slow curation, and why every ingredient has a story to tell…
+              </p>
+              <a href="blog-detail.html" class="news-card__readmore">
+                <span>READ MORE</span>
+                <span class="news-card__arrow" aria-hidden="true">↗</span>
+              </a>
+            </div>
+          </article>
+
+          <!-- Article 3 -->
+          <article class="news-card" data-cms-item="article" data-category="club">
+            <a href="blog-detail.html" class="news-card__media">
+              <img
+                src="assets/images/blog-thumb-1.jpg"
+                alt="Why We Work with Spirit, Not Against It"
+                loading="lazy"
+                width="368"
+                height="300"
+              >
+            </a>
+            <div class="news-card__body">
+              <time class="news-card__date" datetime="2026-04-14">APRIL 14, 2026</time>
+              <h3 class="news-card__title">
+                <a href="blog-detail.html">Why We Work with Spirit, Not Against It</a>
+              </h3>
+              <p class="news-card__excerpt">
+                A conversation about respect, slow curation, and why every ingredient has a story to tell…
+              </p>
+              <a href="blog-detail.html" class="news-card__readmore">
+                <span>READ MORE</span>
+                <span class="news-card__arrow" aria-hidden="true">↗</span>
+              </a>
+            </div>
+          </article>
+
+          <!-- Article 4 -->
+          <article class="news-card" data-cms-item="article" data-category="interior">
+            <a href="blog-detail.html" class="news-card__media">
+              <img
+                src="assets/images/blog-thumb-1.jpg"
+                alt="Why We Work with Spirit, Not Against It"
+                loading="lazy"
+                width="368"
+                height="300"
+              >
+            </a>
+            <div class="news-card__body">
+              <time class="news-card__date" datetime="2026-04-14">APRIL 14, 2026</time>
+              <h3 class="news-card__title">
+                <a href="blog-detail.html">Why We Work with Spirit, Not Against It</a>
+              </h3>
+              <p class="news-card__excerpt">
+                A conversation about respect, slow curation, and why every ingredient has a story to tell…
+              </p>
+              <a href="blog-detail.html" class="news-card__readmore">
+                <span>READ MORE</span>
+                <span class="news-card__arrow" aria-hidden="true">↗</span>
+              </a>
+            </div>
+          </article>
+
+          <!-- Article 5 -->
+          <article class="news-card" data-cms-item="article" data-category="concept">
+            <a href="blog-detail.html" class="news-card__media">
+              <img
+                src="assets/images/blog-thumb-1.jpg"
+                alt="Why We Work with Spirit, Not Against It"
+                loading="lazy"
+                width="368"
+                height="300"
+              >
+            </a>
+            <div class="news-card__body">
+              <time class="news-card__date" datetime="2026-04-14">APRIL 14, 2026</time>
+              <h3 class="news-card__title">
+                <a href="blog-detail.html">Why We Work with Spirit, Not Against It</a>
+              </h3>
+              <p class="news-card__excerpt">
+                A conversation about respect, slow curation, and why every ingredient has a story to tell…
+              </p>
+              <a href="blog-detail.html" class="news-card__readmore">
+                <span>READ MORE</span>
+                <span class="news-card__arrow" aria-hidden="true">↗</span>
+              </a>
+            </div>
+          </article>
+
+          <!-- Article 6 -->
+          <article class="news-card" data-cms-item="article" data-category="club">
+            <a href="blog-detail.html" class="news-card__media">
+              <img
+                src="assets/images/blog-thumb-1.jpg"
+                alt="Why We Work with Spirit, Not Against It"
+                loading="lazy"
+                width="368"
+                height="300"
+              >
+            </a>
+            <div class="news-card__body">
+              <time class="news-card__date" datetime="2026-04-14">APRIL 14, 2026</time>
+              <h3 class="news-card__title">
+                <a href="blog-detail.html">Why We Work with Spirit, Not Against It</a>
+              </h3>
+              <p class="news-card__excerpt">
+                A conversation about respect, slow curation, and why every ingredient has a story to tell…
+              </p>
+              <a href="blog-detail.html" class="news-card__readmore">
+                <span>READ MORE</span>
+                <span class="news-card__arrow" aria-hidden="true">↗</span>
+              </a>
+            </div>
+          </article>
+        </div>
+      </div>
+    </section>
+
+  </main>
+
+  <!-- ================= FOOTER (Shared Component 622:1706) ================= -->
+  <footer class="site-footer" id="footer">
+    <div class="footer-glimpse">
+      <div class="footer-glimpse__bg" aria-hidden="true">
+        <img
+          src="assets/images/footer-glimpse-bg.jpg"
+          alt=""
+          loading="lazy"
+          width="1920"
+          height="663"
+        >
+      </div>
+      <div class="container footer-glimpse__content">
+        <h2 class="footer-glimpse__title">A GLIMPSE INSIDE</h2>
+        <p class="footer-glimpse__subtitle">
+          Warm light on dark wood. Handcrafted details.<br>
+          The kind of room that feels good to be in.
+        </p>
+      </div>
+    </div>
+
+    <div class="footer-main">
+      <div class="container footer-main__inner">
+        <div class="footer-main__logo-wrap">
+          <a href="index.html" class="footer-main__logo" aria-label="House of IRORI">
+            <img
+              src="assets/images/logo-gold.png"
+              alt="House of IRORI Gold Emblem"
+              loading="lazy"
+              decoding="async"
+              width="190"
+              height="138"
+            >
+          </a>
+        </div>
+
+        <div class="footer-main__grid">
+          <div class="footer-col footer-col--brand">
+            <p class="footer-col__tagline">
+              A cinematic cocktail experience where brass, steam, and spirits converge.
+            </p>
+          </div>
+
+          <div class="footer-col">
+            <h3 class="footer-col__heading">VISIT</h3>
+            <address class="footer-col__text">
+              Level 3, 17/3 Nguyen Thi Minh Khai,<br>
+              Sai Gon Ward, HCMC, Vietnam
+            </address>
+          </div>
+
+          <div class="footer-col">
+            <h3 class="footer-col__heading">CONTACT</h3>
+            <p class="footer-col__text">
+              <a href="tel:+84971419066">+84 97 141 90 66</a><br>
+              <a href="mailto:houseofirori@gmail.com">houseofirori@gmail.com</a>
+            </p>
+          </div>
+
+          <div class="footer-col">
+            <h3 class="footer-col__heading">FOLLOW</h3>
+            <div class="footer-socials">
+              <a href="https://facebook.com" target="_blank" rel="noopener noreferrer" class="footer-socials__link" aria-label="Facebook">
+                <svg width="9" height="15" viewBox="0 0 9 15" fill="none" aria-hidden="true">
+                  <path d="M5.8 14.5V8.1H8L8.3 5.5H5.8V3.9C5.8 3.2 6 2.7 7.1 2.7H8.4V0.4C8.1 0.4 7.3 0.3 6.4 0.3C4.4 0.3 3.1 1.5 3.1 3.7V5.5H0.9V8.1H3.1V14.5H5.8Z" fill="currentColor"/>
+                </svg>
+              </a>
+              <a href="https://instagram.com" target="_blank" rel="noopener noreferrer" class="footer-socials__link" aria-label="Instagram">
+                <svg width="14" height="14" viewBox="0 0 14 14" fill="none" aria-hidden="true">
+                  <rect x="1.2" y="1.2" width="11.6" height="11.6" rx="3.2" stroke="currentColor" stroke-width="1.2"/>
+                  <circle cx="7" cy="7" r="2.7" stroke="currentColor" stroke-width="1.2"/>
+                  <circle cx="10.3" cy="3.7" r="0.8" fill="currentColor"/>
+                </svg>
+              </a>
+              <a href="https://tiktok.com" target="_blank" rel="noopener noreferrer" class="footer-socials__link" aria-label="TikTok">
+                <svg width="12" height="14" viewBox="0 0 12 14" fill="none" aria-hidden="true">
+                  <path d="M8.6 1H6.6V9.2C6.6 10.2 5.8 11 4.8 11C3.8 11 3 10.2 3 9.2C3 8.2 3.8 7.4 4.8 7.4C5 7.4 5.2 7.4 5.4 7.5V5.4C5.2 5.4 5 5.4 4.8 5.4C2.7 5.4 1 7.1 1 9.2C1 11.3 2.7 13 4.8 13C6.9 13 8.6 11.3 8.6 9.2V5.1C9.4 5.7 10.4 6 11.4 6V4C9.8 4 8.6 2.7 8.6 1Z" fill="currentColor"/>
+                </svg>
+              </a>
+              <a href="https://threads.net" target="_blank" rel="noopener noreferrer" class="footer-socials__link" aria-label="Threads">
+                <svg width="14" height="14" viewBox="0 0 14 14" fill="none" aria-hidden="true">
+                  <path d="M9.4 6.5C9.2 5.2 8.3 4.5 7 4.5C5.5 4.5 4.5 5.6 4.5 7C4.5 8.5 5.5 9.5 7 9.5C8.1 9.5 8.9 8.9 9.2 8.1M9.4 6.5C9.7 6.8 9.8 7.3 9.7 8C9.5 9.2 8.5 10.2 7 10.2M9.4 6.5C9.3 8.2 8.5 9.2 7.2 9.2C6.3 9.2 5.7 8.6 5.7 7.8C5.7 7 6.4 6.5 7.4 6.5C8.1 6.5 8.8 6.6 9.4 6.5ZM12.5 7C12.5 10.1 10.1 12.5 7 12.5C3.9 12.5 1.5 10.1 1.5 7C1.5 3.9 3.9 1.5 7 1.5C9.7 1.5 11.8 3.2 12.3 5.7" stroke="currentColor" stroke-width="1.15" stroke-linecap="round"/>
+                </svg>
+              </a>
+            </div>
+          </div>
+        </div>
+
+        <div class="footer-bottom">
+          <p class="footer-bottom__disclaimer">
+            Drink Responsibility. We Do Not Offer Online Sale. We Offer Products Less Than 5.5% Alcohol.
+          </p>
+          <p class="footer-bottom__copyright">© 2026 House of IRORI</p>
+        </div>
+      </div>
+    </div>
+  </footer>
+
+  <script src="js/main.js" defer></script>
+</body>
+</html>
