@@ -46,6 +46,10 @@ Build the complete, responsive Static HTML5/CSS3/JS implementation of `Home v3B`
 - [x] Task 12: Interactive Content & Taxonomy — distinct `Food (Pizza & Side dishes)` tab spread in `menu.html`, `Load More` pagination on `menu.html` / `events.html` / `blogs.html`, and larger clickable blog `#category` tags (`?category=<slug>`) across all blog views.
 - [x] Task 13: Browser Runtime Verification, Multi-Agent QA, & GitHub Pages Demo Redeployment.
 
+### Phase 8: 4-Point Polish (Compact Sticky Header, Unclipped Watermark, Horizontal Sliders, Visible Parallax)
+- [x] Task 14: Implement compact Logo + Menu scrolled header (`~110px`), scale-invariant unclipped `.philosophy__watermark`, GPU-composited horizontal `.carousel__track` & `.latest-news__viewport` sliders, and high-visibility scroll parallax (`~0.27x` depth).
+- [x] Task 15: Verify across `1440x900`, `1920x1080`, and `390x844` in Chrome DevTools MCP, run delta QA subagent checks, and redeploy `gh-pages`.
+
 ## Risks and Mitigations
 | Risk | Impact | Mitigation |
 |------|--------|------------|

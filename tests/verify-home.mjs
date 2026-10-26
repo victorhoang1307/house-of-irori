@@ -149,8 +149,9 @@ assert.ok(
   `watermark-line.png must be cropped to 800x800 emblem-only without text (got ${wmWidth}x${wmHeight})`
 );
 assert.ok(
-  /\.philosophy__lower\s*\{[^}]*overflow:\s*hidden/s.test(css),
-  '.philosophy__lower must clip watermark overflow cleanly'
+  /\.philosophy__lower\s*\{[^}]*overflow:\s*visible/s.test(css) &&
+    !/\.philosophy__lower\s*\{[^}]*min-height:\s*320px/s.test(css),
+  '.philosophy__lower must keep overflow: visible and proportional height so .philosophy__watermark is never clipped or obscured'
 );
 
 const heroShowcaseFrameMatch = css.match(/\.hero-showcase__frame\s*\{([^}]*)\}/s);
@@ -168,8 +169,9 @@ assert.ok(
 assert.ok(
   /\.site-header\.is-scrolled[^{]*\{[^}]*background-color:\s*(#4A3B32|var\(--color-espresso\))/is.test(css) &&
     css.includes('rgba(244, 241, 234, 0.5)') &&
-    !/\.site-header\.is-scrolled\s+\.header-topbar\s*\{\s*display:\s*none/s.test(css),
-  '.site-header.is-scrolled must use #4A3B32 bg, rgba(244, 241, 234, 0.5) border, and keep .header-topbar visible on desktop'
+    /\.site-header\.is-scrolled\s+\.header-topbar\s*\{[^}]*max-height:\s*0/s.test(css) &&
+    /\.site-header\.is-scrolled\s+\.header-banner\s*\{[^}]*height:\s*72px/s.test(css),
+  '.site-header.is-scrolled must use #4A3B32 bg, collapse .header-topbar, and shrink .header-banner to 72px (Logo + Menu only)'
 );
 assert.ok(
   /\.upcoming-banner__bg\s+img\s*\{[^}]*object-fit:\s*cover[^}]*object-position:\s*top\s+center/s.test(css),
@@ -181,12 +183,16 @@ assert.ok(
   '.upcoming-showcase__bg must use opaque tiled hero-wood-pattern.png per Figma 622:1324'
 );
 
-// Phase 2B Slice 2: Parallax & Motion Assertions
+// Phase 2B Slice 2 & Phase 8: High-Visibility Parallax & Horizontal Track Slider Assertions
 assert.ok(
   css.includes('@supports ((animation-timeline: view()) and (animation-range: entry))') &&
     css.includes('view-timeline:') &&
-    css.includes('prefers-reduced-motion: reduce'),
-  'css/style.css must implement native scroll-driven parallax with feature detection and prefers-reduced-motion'
+    css.includes('prefers-reduced-motion: reduce') &&
+    /--parallax-shift:\s*2[0-5]%/.test(css) &&
+    css.includes('.carousel__track') &&
+    css.includes('.latest-news__viewport') &&
+    css.includes('.split-level__media-col .carousel__slide img'),
+  'css/style.css must implement high-visibility scroll-driven parallax (--parallax-shift >= 20%) and horizontal .carousel__track / .latest-news__viewport tracks'
 );
 
 // Phase 2B Slice 3: Larger .category-pill & .btn-load-more + .menu-book-spread styles
@@ -222,8 +228,17 @@ assert.ok(
 assert.ok(
   jsSource.includes('data-load-more') &&
     jsSource.includes('data-extra-item') &&
-    jsSource.includes('URLSearchParams'),
-  'js/main.js must handle Load More buttons and ?category= URL query filtering'
+    jsSource.includes('URLSearchParams') &&
+    jsSource.includes('.carousel__track') &&
+    jsSource.includes('translate3d(-') &&
+    jsSource.includes('--news-idx'),
+  'js/main.js must handle Load More buttons, ?category= URL filtering, and horizontal translate3d track sliders'
+);
+assert.ok(
+  html.includes('class="carousel__track"') &&
+    html.includes('class="latest-news__viewport"') &&
+    !/class="carousel__slide"[^>]*\s+hidden(?:\s|>|=)/.test(html),
+  'index.html must wrap carousel slides in .carousel__track (without hidden) and #news-track in .latest-news__viewport'
 );
 console.log(`✓ js/main.js passes budget check (${(jsStat.size / 1024).toFixed(1)} KB).`);
 
@@ -264,6 +279,7 @@ const subpageSpecs = [
       'data-cms-collection="events"',
       'data-cms-item="event"',
       'data-carousel="upcoming"',
+      'class="carousel__track"',
       'data-load-more="occasional-events"',
       'data-extra-item',
       'id="mobile-reservations-bar"',
@@ -304,6 +320,7 @@ const subpageSpecs = [
     ],
     hooks: [
       'data-cms-collection="articles"',
+      'class="latest-news__viewport"',
       'data-cms-item="article"',
       'href="blogs.html?category=interior"',
       'href="blogs.html?category=concept"',

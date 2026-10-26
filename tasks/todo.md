@@ -160,3 +160,27 @@
 **Dependencies:** Task 12
 **Files likely touched:** `graphify-out/graph.json`, `tasks/plan.md`, `tasks/todo.md`
 **Estimated scope:** Small
+
+## Task 14: 4-Point Polish (Compact Scrolled Header, Unclipped Watermark, Horizontal Sliders, Visible Parallax)
+**Description:** Collapse `.header-topbar` and shrink `.header-banner` / `.header-logo` on `.site-header.is-scrolled` (Logo + Menu only, `~110px` desktop), fix proportional layout & `overflow: visible` on `.philosophy__lower` / `.philosophy__watermark`, convert `[data-carousel]` and `#latest-news` to horizontal `translate3d` track sliders, and boost `.atmosphere-strip` / `.footer-glimpse` parallax travel (`--parallax-shift: 25%` / `20%`).
+**Acceptance criteria:**
+- [x] Scrolled header compacts to `~110px` desktop (`72px` banner + `38px` nav, `.header-topbar` collapsed) and `~86px` mobile.
+- [x] `.philosophy__watermark` displays its full `[ X ]` center mark and unclipped bottom brushstroke arc at both `1440px` and `1920px`.
+- [x] `[data-carousel]` (`alley`, `bar`, `upcoming`) and `#latest-news` (`index.html`, `blog-detail.html`) slide horizontally via `translate3d` tracks with autoplay + pause-on-hover.
+- [x] `.atmosphere-strip` and `.footer-glimpse` exhibit clearly visible parallax travel (`>= 250px` across viewport scroll) with zero edge gap.
+**Verification:**
+- [x] `node --check js/main.js && node tests/verify-home.mjs`
+**Dependencies:** Task 13
+**Files likely touched:** `tests/verify-home.mjs`, `index.html`, `events.html`, `blog-detail.html`, `css/style.css`, `js/main.js`
+**Estimated scope:** Medium
+
+## Task 15: Browser Runtime Verification (`1440px`, `1920px`, `390px`), QA Delta Review, & `gh-pages` Redeployment
+**Description:** Verify all 4 refinements in Chrome DevTools MCP (`1440x900`, `1920x1080`, `390x844`), run delta review with QA subagents, update `graphify`, and redeploy `gh-pages` to `https://victorhoang1307.github.io/house-of-irori/`.
+**Acceptance criteria:**
+- [x] Zero console errors/warnings or failed requests in Chrome DevTools MCP.
+- [x] Live GitHub Pages demo returns `HTTP 200` with updated assets.
+**Verification:**
+- [x] Chrome DevTools MCP + QA subagents + live HTTP 200 check
+**Dependencies:** Task 14
+**Files likely touched:** `graphify-out/graph.json`, `tasks/plan.md`, `tasks/todo.md`
+**Estimated scope:** Small

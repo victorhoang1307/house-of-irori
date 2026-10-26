@@ -139,14 +139,30 @@ address {
   color: #F4F1EA;
 }
 
-/* Top Utility Bar (41px) */
+/* Top Utility Bar (41px — collapses smoothly on scroll so only Logo + Menu remain) */
 .header-topbar {
   height: 41px;
+  max-height: 41px;
+  overflow: hidden;
   border-bottom: 1px solid var(--color-border-light);
   font-family: var(--font-serif);
   font-size: 9px;
   letter-spacing: 0.14em;
   text-transform: uppercase;
+  transition:
+    max-height 0.3s cubic-bezier(0.22, 1, 0.36, 1),
+    opacity 0.2s ease,
+    border-color 0.2s ease,
+    visibility 0.3s;
+}
+
+.site-header.is-scrolled .header-topbar {
+  max-height: 0;
+  opacity: 0;
+  border-bottom-width: 0;
+  border-bottom-color: transparent;
+  pointer-events: none;
+  visibility: hidden;
 }
 
 .header-topbar__inner {
@@ -187,14 +203,18 @@ address {
   opacity: 1;
 }
 
-/* Logo Banner (121px) */
+/* Logo Banner (121px default -> 72px scrolled) */
 .header-banner {
   height: 121px;
   border-bottom: 1px solid var(--color-border-light);
   display: flex;
   align-items: center;
   justify-content: center;
-  transition: height 0.25s ease;
+  transition: height 0.3s cubic-bezier(0.22, 1, 0.36, 1), border-color 0.25s ease;
+}
+
+.site-header.is-scrolled .header-banner {
+  height: 72px;
 }
 
 .header-banner__inner {
@@ -207,7 +227,14 @@ address {
   width: 88px;
   height: 96px;
   object-fit: contain;
-  transition: width 0.25s ease, height 0.25s ease;
+  transition:
+    width 0.3s cubic-bezier(0.22, 1, 0.36, 1),
+    height 0.3s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.site-header.is-scrolled .header-logo img {
+  width: 50px;
+  height: 55px;
 }
 
 /* Navigation Bar (38px) */
@@ -477,8 +504,10 @@ address {
    ========================================================================== */
 .philosophy {
   position: relative;
+  z-index: 3;
   background-color: var(--bg-cream);
-  overflow: hidden;
+  overflow-x: clip;
+  overflow-y: visible;
 }
 
 .philosophy__grid {
@@ -558,25 +587,25 @@ address {
   color: var(--bg-cream);
 }
 
-/* Lower Area with White Left Block, Watermark, and Kimono Frame */
+/* Lower Area with White Left Block, Watermark, and Kimono Frame (Scale-invariant Figma 494:1046) */
 .philosophy__lower {
   position: relative;
   width: 62.24%;
-  min-height: 320px;
   background-color: var(--bg-white);
   display: flex;
   align-items: flex-end;
-  overflow: hidden;
+  overflow: visible;
   z-index: 2;
 }
 
 .philosophy__watermark {
   position: absolute;
-  right: 48px;
-  top: 8px;
-  width: 350px;
-  height: 350px;
-  opacity: 0.10;
+  right: 3.2%;
+  top: 0.8%;
+  width: 33.3%;
+  aspect-ratio: 1 / 1;
+  height: auto;
+  opacity: 0.13;
   pointer-events: none;
   z-index: 1;
 }
@@ -590,10 +619,9 @@ address {
 .philosophy__kimono {
   position: relative;
   z-index: 3;
-  width: min(586px, 49%);
-  margin-left: 26.5%;
-  margin-top: -106px;
-  box-shadow: 0 18px 42px rgba(0, 0, 0, 0.22);
+  width: 49.04%;
+  margin-left: 26.53%;
+  margin-top: -6.44%;
 }
 
 .philosophy__kimono img {
@@ -616,6 +644,10 @@ address {
 .split-level--one {
   background-color: var(--bg-white);
   color: var(--color-espresso);
+}
+
+.split-level--one .split-level__media-col {
+  z-index: 4;
 }
 
 .split-level--two {
@@ -686,23 +718,23 @@ address {
   overflow: hidden;
 }
 
-.carousel__viewport,
-.carousel__slide {
+.carousel__viewport {
   width: 100%;
   height: 100%;
+  overflow: hidden;
 }
 
-@keyframes slideFadeIn {
-  from {
-    opacity: 0.35;
-  }
-  to {
-    opacity: 1;
-  }
+.carousel__track {
+  display: flex;
+  width: 100%;
+  height: 100%;
+  transition: transform 0.65s cubic-bezier(0.22, 1, 0.36, 1);
 }
 
-.carousel__slide.is-active {
-  animation: slideFadeIn 0.45s ease-out;
+.carousel__slide {
+  flex: 0 0 100%;
+  width: 100%;
+  height: 100%;
 }
 
 .carousel__slide img {
@@ -990,9 +1022,9 @@ address {
 
 .atmosphere-strip img {
   position: absolute;
-  inset: -14% 0;
+  inset: -56% 0;
   width: 100%;
-  height: 128%;
+  height: 212%;
   object-fit: cover;
   object-position: center;
   will-change: transform;
@@ -1031,29 +1063,31 @@ address {
   flex-shrink: 0;
 }
 
-.latest-news__grid {
-  width: 100%;
+.latest-news__viewport {
+  flex: 1 1 0%;
+  min-width: 0;
   max-width: var(--container-max);
   margin-inline: auto;
-  display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  gap: 32px;
+  overflow: hidden;
 }
 
-@media (min-width: 769px) {
-  .latest-news__grid .news-card:nth-child(n + 4) {
-    display: none;
-  }
+.latest-news__grid {
+  --news-gap: 32px;
+  --news-cols: 3;
+  width: 100%;
+  display: flex;
+  gap: var(--news-gap);
+  transform: translate3d(
+    calc(-1 * var(--news-idx, 0) * (100% + var(--news-gap)) / var(--news-cols)),
+    0,
+    0
+  );
+  transition: transform 0.65s cubic-bezier(0.22, 1, 0.36, 1);
+}
 
-  .latest-news__grid.is-carousel-ready .news-card {
-    display: none;
-    order: var(--slot-order, 0);
-  }
-
-  .latest-news__grid.is-carousel-ready .news-card.is-desktop-visible {
-    display: flex;
-    animation: slideFadeIn 0.4s ease-out;
-  }
+.latest-news__grid .news-card {
+  flex: 0 0 calc((100% - (var(--news-cols) - 1) * var(--news-gap)) / var(--news-cols));
+  min-width: 0;
 }
 
 .news-card {
@@ -1154,17 +1188,19 @@ address {
 
 .footer-glimpse__bg {
   position: absolute;
-  inset: -14% 0;
+  inset: -38% 0;
+  width: 100%;
+  height: 176%;
   z-index: 0;
   will-change: transform;
 }
 
 @keyframes iroriParallax {
   from {
-    transform: translate3d(0, calc(-1 * var(--parallax-shift, 10%)), 0);
+    transform: translate3d(0, calc(-1 * var(--parallax-shift, 25%)), 0);
   }
   to {
-    transform: translate3d(0, var(--parallax-shift, 10%), 0);
+    transform: translate3d(0, var(--parallax-shift, 25%), 0);
   }
 }
 
@@ -1176,23 +1212,34 @@ address {
 
   .atmosphere-strip img,
   .footer-glimpse__bg {
-    --parallax-shift: 10%;
+    --parallax-shift: 25%;
     animation: iroriParallax linear both;
     animation-timeline: --irori-parallax;
     animation-range: entry 0% exit 100%;
   }
+
+  .footer-glimpse__bg {
+    --parallax-shift: 20%;
+    animation-range: entry 0% exit 55%;
+  }
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .hero__discover-arrow,
-  .carousel__slide.is-active,
-  .latest-news__grid.is-carousel-ready .news-card.is-desktop-visible {
+  .hero__discover-arrow {
     animation: none;
   }
 
-  .atmosphere-strip img,
+  .carousel__track,
+  .latest-news__grid {
+    transition-duration: 0.45s;
+  }
+
+  .atmosphere-strip img {
+    --parallax-shift: 22%;
+  }
+
   .footer-glimpse__bg {
-    --parallax-shift: 4.5%;
+    --parallax-shift: 18%;
   }
 }
 
@@ -2061,6 +2108,11 @@ address {
     grid-template-columns: repeat(2, 1fr);
   }
 
+  .latest-news__grid {
+    --news-cols: 2;
+    --news-gap: 24px;
+  }
+
   .menu-viewer {
     aspect-ratio: auto;
   }
@@ -2100,9 +2152,18 @@ address {
     height: 81px;
   }
 
+  .site-header.is-scrolled .header-banner {
+    height: 52px;
+  }
+
   .header-logo img {
     width: 52px;
     height: 57px;
+  }
+
+  .site-header.is-scrolled .header-logo img {
+    width: 34px;
+    height: 38px;
   }
 
   .mobile-bar {
@@ -2112,6 +2173,11 @@ address {
     height: 40px;
     border-bottom: 1px solid var(--color-border-light);
     background-color: rgba(10, 10, 10, 0.78);
+    transition: height 0.25s ease;
+  }
+
+  .site-header.is-scrolled .mobile-bar {
+    height: 34px;
   }
 
   .site-header.is-scrolled .mobile-bar,
@@ -2216,7 +2282,7 @@ address {
   }
 
   .split-level__media-col,
-  .carousel__slide img {
+  .split-level__media-col .carousel__slide img {
     min-height: 360px;
     height: 360px;
   }
@@ -2231,13 +2297,15 @@ address {
     justify-content: center;
   }
 
-  .latest-news__grid {
-    grid-template-columns: 1fr;
+  .latest-news__viewport {
+    flex: 0 0 100%;
+    width: 100%;
     order: 1;
   }
 
-  .latest-news__grid .news-card:not(.is-mobile-visible) {
-    display: none;
+  .latest-news__grid {
+    --news-cols: 1;
+    --news-gap: 16px;
   }
 
   .latest-news__nav {
