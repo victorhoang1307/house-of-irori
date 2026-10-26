@@ -692,6 +692,19 @@ address {
   height: 100%;
 }
 
+@keyframes slideFadeIn {
+  from {
+    opacity: 0.35;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+.carousel__slide.is-active {
+  animation: slideFadeIn 0.45s ease-out;
+}
+
 .carousel__slide img {
   width: 100%;
   height: 530px;
@@ -965,19 +978,24 @@ address {
 }
 
 /* ==========================================================================
-   8. ATMOSPHERIC BANNER STRIP (1920x438)
+   8. ATMOSPHERIC BANNER STRIP (1920x438 — Subtle Scroll Parallax)
    ========================================================================== */
 .atmosphere-strip {
+  position: relative;
   width: 100%;
   height: 365px;
   overflow: hidden;
+  overflow: clip;
 }
 
 .atmosphere-strip img {
+  position: absolute;
+  inset: -14% 0;
   width: 100%;
-  height: 100%;
+  height: 128%;
   object-fit: cover;
   object-position: center;
+  will-change: transform;
 }
 
 /* ==========================================================================
@@ -1020,6 +1038,22 @@ address {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
   gap: 32px;
+}
+
+@media (min-width: 769px) {
+  .latest-news__grid .news-card:nth-child(n + 4) {
+    display: none;
+  }
+
+  .latest-news__grid.is-carousel-ready .news-card {
+    display: none;
+    order: var(--slot-order, 0);
+  }
+
+  .latest-news__grid.is-carousel-ready .news-card.is-desktop-visible {
+    display: flex;
+    animation: slideFadeIn 0.4s ease-out;
+  }
 }
 
 .news-card {
@@ -1095,12 +1129,48 @@ address {
   text-align: center;
   color: var(--color-white);
   overflow: hidden;
+  overflow: clip;
 }
 
 .footer-glimpse__bg {
   position: absolute;
-  inset: 0;
+  inset: -14% 0;
   z-index: 0;
+  will-change: transform;
+}
+
+@keyframes iroriParallax {
+  from {
+    transform: translate3d(0, -8%, 0);
+  }
+  to {
+    transform: translate3d(0, 8%, 0);
+  }
+}
+
+@supports ((animation-timeline: view()) and (animation-range: entry)) {
+  .atmosphere-strip,
+  .footer-glimpse {
+    view-timeline: --irori-parallax block;
+  }
+
+  .atmosphere-strip img,
+  .footer-glimpse__bg {
+    animation: iroriParallax linear both;
+    animation-timeline: --irori-parallax;
+    animation-range: entry 0% exit 100%;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .hero__discover-arrow,
+  .carousel__slide.is-active,
+  .latest-news__grid.is-carousel-ready .news-card.is-desktop-visible,
+  .atmosphere-strip img,
+  .footer-glimpse__bg {
+    animation: none !important;
+    transform: none !important;
+  }
 }
 
 .footer-glimpse__bg img {

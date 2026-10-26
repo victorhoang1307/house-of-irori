@@ -169,12 +169,28 @@ assert.ok(
   '.upcoming-showcase__bg must use opaque tiled hero-wood-pattern.png per Figma 622:1324'
 );
 
+// Phase 2B Slice 2: Parallax & Motion Assertions
+assert.ok(
+  css.includes('@supports ((animation-timeline: view()) and (animation-range: entry))') &&
+    css.includes('view-timeline:') &&
+    css.includes('prefers-reduced-motion: reduce'),
+  'css/style.css must implement native scroll-driven parallax with feature detection and prefers-reduced-motion'
+);
+
 console.log(`✓ css/style.css passes token and budget checks (${(cssStat.size / 1024).toFixed(1)} KB).`);
 
 // 4. Verify JS interactive module & size budget
 const jsPath = checkFileExists('js/main.js', 500);
 const jsStat = fs.statSync(jsPath);
 assert.ok(jsStat.size <= 15 * 1024, `js/main.js exceeds 15KB budget (${jsStat.size}B)`);
+const jsSource = fs.readFileSync(jsPath, 'utf8');
+assert.ok(
+  jsSource.includes('mouseenter') &&
+    jsSource.includes('mouseleave') &&
+    jsSource.includes('setInterval') &&
+    jsSource.includes('IntersectionObserver'),
+  'js/main.js must implement carousel autoplay with hover pause and IntersectionObserver parallax fallback'
+);
 console.log(`✓ js/main.js passes budget check (${(jsStat.size / 1024).toFixed(1)} KB).`);
 
 // 5. Verify all 4 subpages (menu.html, events.html, blogs.html, blog-detail.html)

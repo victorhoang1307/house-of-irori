@@ -126,10 +126,10 @@
 ## Task 11: Motion & Autoplay (Carousel Autoplay + Pause on Hover, Parallax Sections)
 **Description:** Enable `4500ms` autoplay with pause-on-hover/focus across all carousels and sliders (`[data-carousel]`, `#reviews-slider`, `#latest-news`), and add subtle compositor-friendly scroll parallax on `.atmosphere-strip` and `.footer-glimpse` across all 5 pages.
 **Acceptance criteria:**
-- [ ] All carousels/sliders auto-advance when unhovered and pause on `mouseenter` / `focusin` (and disable under `prefers-reduced-motion: reduce`).
-- [ ] `.atmosphere-strip` and `.footer-glimpse` use CSS Scroll-Driven Animations (`@supports ((animation-timeline: view()) and (animation-range: entry))`) with `IntersectionObserver` + `rAF` fallback.
+- [x] All carousels/sliders auto-advance when unhovered and pause on `mouseenter` / `focusin` (and disable under `prefers-reduced-motion: reduce`).
+- [x] `.atmosphere-strip` and `.footer-glimpse` use CSS Scroll-Driven Animations (`@supports ((animation-timeline: view()) and (animation-range: entry))`) with `IntersectionObserver` + `rAF` fallback.
 **Verification:**
-- [ ] `node --check js/main.js && node tests/verify-home.mjs`
+- [x] `node --check js/main.js && node tests/verify-home.mjs`
 **Dependencies:** Task 10
 **Files likely touched:** `index.html`, `blog-detail.html`, `css/style.css`, `js/main.js`, `tests/verify-home.mjs`
 **Estimated scope:** Medium

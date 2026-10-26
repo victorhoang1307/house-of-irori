@@ -7,6 +7,62 @@
  */
 
 document.addEventListener('DOMContentLoaded', () => {
+  const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+  /**
+   * Reusable autoplay controller that pauses on hover, keyboard focus, and hidden tab.
+   */
+  const createAutoplay = (containerEl, stepFn, intervalMs = 4500) => {
+    if (!containerEl || prefersReducedMotion) {
+      return { restart: () => {} };
+    }
+    let timerId = null;
+    let isHoveredOrFocused = false;
+
+    const stop = () => {
+      if (timerId !== null) {
+        clearInterval(timerId);
+        timerId = null;
+      }
+    };
+
+    const start = () => {
+      stop();
+      if (!isHoveredOrFocused && !document.hidden) {
+        timerId = setInterval(stepFn, intervalMs);
+      }
+    };
+
+    containerEl.addEventListener('mouseenter', () => {
+      isHoveredOrFocused = true;
+      stop();
+    });
+    containerEl.addEventListener('mouseleave', () => {
+      isHoveredOrFocused = false;
+      start();
+    });
+    containerEl.addEventListener('focusin', () => {
+      isHoveredOrFocused = true;
+      stop();
+    });
+    containerEl.addEventListener('focusout', (e) => {
+      if (!containerEl.contains(e.relatedTarget)) {
+        isHoveredOrFocused = false;
+        start();
+      }
+    });
+    document.addEventListener('visibilitychange', () => {
+      if (document.hidden) {
+        stop();
+      } else {
+        start();
+      }
+    });
+
+    start();
+    return { restart: start };
+  };
+
   // 1. Sticky Header Scroll State
   const header = document.getElementById('site-header');
   const syncHeaderScroll = () => {
@@ -61,15 +117,26 @@ document.addEventListener('DOMContentLoaded', () => {
       });
     };
 
+    const autoplay = createAutoplay(carouselEl, () => activateSlide(currentIdx + 1), 4500);
+
     dots.forEach((dot, idx) => {
-      dot.addEventListener('click', () => activateSlide(idx));
+      dot.addEventListener('click', () => {
+        activateSlide(idx);
+        autoplay.restart();
+      });
     });
 
     if (prevBtn) {
-      prevBtn.addEventListener('click', () => activateSlide(currentIdx - 1));
+      prevBtn.addEventListener('click', () => {
+        activateSlide(currentIdx - 1);
+        autoplay.restart();
+      });
     }
     if (nextBtn) {
-      nextBtn.addEventListener('click', () => activateSlide(currentIdx + 1));
+      nextBtn.addEventListener('click', () => {
+        activateSlide(currentIdx + 1);
+        autoplay.restart();
+      });
     }
   });
 
@@ -123,45 +190,151 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   }
 
-  // 4. Google Reviews Slider Controls
+  // 6. Google Reviews Slider Controls + Autoplay
+  const reviewsSlider = document.getElementById('reviews-slider');
   const reviewsTrack = document.getElementById('reviews-track');
   const reviewsPrev = document.getElementById('reviews-prev');
   const reviewsNext = document.getElementById('reviews-next');
 
   if (reviewsTrack && reviewsPrev && reviewsNext) {
     const scrollAmount = 263; // card width (245) + gap (18)
+    const stepReviewsNext = () => {
+      const atEnd = reviewsTrack.scrollLeft + reviewsTrack.clientWidth >= reviewsTrack.scrollWidth - 16;
+      if (atEnd) {
+        reviewsTrack.scrollTo({ left: 0, behavior: 'smooth' });
+      } else {
+        reviewsTrack.scrollBy({ left: scrollAmount, behavior: 'smooth' });
+      }
+    };
+    const reviewsAutoplay = createAutoplay(reviewsSlider || reviewsTrack, stepReviewsNext, 4500);
+
     reviewsPrev.addEventListener('click', () => {
-      reviewsTrack.scrollBy({ left: -scrollAmount, behavior: 'smooth' });
+      if (reviewsTrack.scrollLeft <= 8) {
+        reviewsTrack.scrollTo({ left: reviewsTrack.scrollWidth, behavior: 'smooth' });
+      } else {
+        reviewsTrack.scrollBy({ left: -scrollAmount, behavior: 'smooth' });
+      }
+      reviewsAutoplay.restart();
     });
     reviewsNext.addEventListener('click', () => {
-      reviewsTrack.scrollBy({ left: scrollAmount, behavior: 'smooth' });
+      stepReviewsNext();
+      reviewsAutoplay.restart();
     });
   }
 
-  // 5. Latest News Slider Controls (Mobile single-card cycling + Desktop highlight)
+  // 7. Latest News Slider Controls + Autoplay (Desktop 3-card window + Mobile single-card)
   const newsTrack = document.getElementById('news-track');
   const newsPrev = document.getElementById('news-prev');
   const newsNext = document.getElementById('news-next');
 
   if (newsTrack && newsPrev && newsNext) {
     const cards = Array.from(newsTrack.querySelectorAll('.news-card'));
+    const sliderWrap = newsTrack.closest('.latest-news__slider-wrap') || newsTrack;
     let activeNewsIdx = 0;
+    newsTrack.classList.add('is-carousel-ready');
 
     const syncNewsCards = () => {
+      const total = cards.length;
+      if (total === 0) return;
+      const visibleDesktopMap = new Map();
+      const desktopCount = Math.min(3, total);
+      for (let slot = 0; slot < desktopCount; slot += 1) {
+        visibleDesktopMap.set((activeNewsIdx + slot) % total, slot);
+      }
+
       cards.forEach((card, idx) => {
         card.classList.toggle('is-mobile-visible', idx === activeNewsIdx);
+        const slotOrder = visibleDesktopMap.get(idx);
+        const isDesktopVisible = slotOrder !== undefined;
+        card.classList.toggle('is-desktop-visible', isDesktopVisible);
+        if (isDesktopVisible) {
+          card.style.setProperty('--slot-order', String(slotOrder));
+        }
       });
     };
     syncNewsCards();
 
+    const stepNewsNext = () => {
+      activeNewsIdx = (activeNewsIdx + 1) % cards.length;
+      syncNewsCards();
+    };
+    const newsAutoplay = createAutoplay(sliderWrap, stepNewsNext, 4500);
+
     newsPrev.addEventListener('click', () => {
       activeNewsIdx = (activeNewsIdx - 1 + cards.length) % cards.length;
       syncNewsCards();
+      newsAutoplay.restart();
     });
 
     newsNext.addEventListener('click', () => {
-      activeNewsIdx = (activeNewsIdx + 1) % cards.length;
-      syncNewsCards();
+      stepNewsNext();
+      newsAutoplay.restart();
     });
+  }
+
+  // 8. Parallax Fallback for Browsers without Native Scroll-Driven Animations
+  const supportsScrollDriven =
+    typeof window.CSS !== 'undefined' &&
+    typeof window.CSS.supports === 'function' &&
+    window.CSS.supports('(animation-timeline: view()) and (animation-range: entry)');
+
+  if (!prefersReducedMotion && !supportsScrollDriven && 'IntersectionObserver' in window) {
+    const parallaxPairs = [
+      ...Array.from(document.querySelectorAll('.atmosphere-strip')).map((wrap) => ({
+        wrap,
+        layer: wrap.querySelector('img'),
+      })),
+      ...Array.from(document.querySelectorAll('.footer-glimpse')).map((wrap) => ({
+        wrap,
+        layer: wrap.querySelector('.footer-glimpse__bg'),
+      })),
+    ].filter((item) => item.layer);
+
+    if (parallaxPairs.length > 0) {
+      const visibleSet = new Set();
+      let rafPending = false;
+
+      const updateParallax = () => {
+        rafPending = false;
+        const vh = window.innerHeight || 1;
+        visibleSet.forEach((item) => {
+          const rect = item.wrap.getBoundingClientRect();
+          const progress = (vh - rect.top) / (vh + rect.height);
+          const clamped = Math.max(0, Math.min(1, progress));
+          const shiftPercent = (clamped - 0.5) * 16; // -8% to +8%
+          item.layer.style.transform = `translate3d(0, ${shiftPercent.toFixed(2)}%, 0)`;
+        });
+      };
+
+      const onScroll = () => {
+        if (!rafPending && visibleSet.size > 0) {
+          rafPending = true;
+          window.requestAnimationFrame(updateParallax);
+        }
+      };
+
+      const observer = new IntersectionObserver(
+        (entries) => {
+          entries.forEach((entry) => {
+            const match = parallaxPairs.find((p) => p.wrap === entry.target);
+            if (!match) return;
+            if (entry.isIntersecting) {
+              visibleSet.add(match);
+            } else {
+              visibleSet.delete(match);
+            }
+          });
+          if (visibleSet.size > 0) {
+            window.addEventListener('scroll', onScroll, { passive: true });
+            onScroll();
+          } else {
+            window.removeEventListener('scroll', onScroll);
+          }
+        },
+        { threshold: 0 }
+      );
+
+      parallaxPairs.forEach((item) => observer.observe(item.wrap));
+    }
   }
 });
