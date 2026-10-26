@@ -107,7 +107,7 @@ address {
   width: 100%;
   z-index: 100;
   color: var(--bg-cream);
-  transition: background-color 0.3s ease, box-shadow 0.3s ease, backdrop-filter 0.3s ease;
+  transition: background-color 0.3s ease, box-shadow 0.3s ease;
 }
 
 .site-header.is-scrolled,
@@ -117,25 +117,13 @@ address {
   box-shadow: 0 6px 24px rgba(0, 0, 0, 0.25);
 }
 
-.site-header.is-scrolled .header-topbar,
-.site-header.is-scrolled .header-banner,
-.site-header.is-scrolled .mobile-bar,
-.site-header.is-scrolled .mobile-drawer,
-.site-header--solid .header-topbar,
-.site-header--solid .header-banner,
-.site-header--solid .mobile-bar,
-.site-header--solid .mobile-drawer {
+:is(.site-header.is-scrolled, .site-header.is-menu-open, .site-header--solid)
+  :is(.header-topbar, .header-banner, .mobile-bar) {
   border-bottom-color: rgba(244, 241, 234, 0.5);
 }
 
-.site-header.is-scrolled .header-topbar__contact,
-.site-header.is-scrolled .header-nav__link,
-.site-header.is-scrolled .mobile-menu-trigger,
-.site-header.is-scrolled .mobile-drawer__link,
-.site-header--solid .header-topbar__contact,
-.site-header--solid .header-nav__link,
-.site-header--solid .mobile-menu-trigger,
-.site-header--solid .mobile-drawer__link {
+:is(.site-header.is-scrolled, .site-header.is-menu-open, .site-header--solid)
+  :is(.header-topbar__contact, .header-nav__link, .mobile-menu-trigger) {
   color: #F4F1EA;
 }
 
@@ -272,41 +260,14 @@ address {
   background-color: var(--color-gold);
 }
 
-/* Mobile Header Bar (Hidden on Desktop) */
-.mobile-bar {
+/* Mobile Header Bar & Fullscreen Drawer (Hidden on Desktop) */
+.mobile-bar,
+.mobile-drawer {
   display: none;
 }
 
-.mobile-drawer {
-  background-color: rgba(10, 10, 10, 0.97);
-  border-bottom: 1px solid var(--color-border-light);
-  padding: 24px;
-  text-align: center;
-}
-
-.mobile-drawer__list {
-  display: flex;
-  flex-direction: column;
-  gap: 18px;
-  margin-bottom: 20px;
-}
-
-.mobile-drawer__link {
-  font-family: var(--font-display);
-  font-size: 14px;
-  letter-spacing: 0.22em;
-  text-transform: uppercase;
-  color: var(--bg-cream);
-}
-
-.mobile-drawer__contact {
-  padding-top: 16px;
-  border-top: 1px solid rgba(255, 255, 255, 0.12);
-  font-size: 12px;
-  color: var(--color-white-80);
-  display: flex;
-  flex-direction: column;
-  gap: 6px;
+body.is-menu-open {
+  overflow: hidden;
 }
 
 /* ==========================================================================
@@ -2132,17 +2093,24 @@ address {
 }
 
 @media (max-width: 768px) {
-  /* Match Figma 390w Mobile Header */
+  /* Match Figma 390w Mobile Header + The Grand Hanoi Fullscreen Menu */
   .header-topbar,
   .header-nav {
     display: none;
   }
 
   .site-header {
+    --mobile-header-h: 121px;
+    z-index: 110;
     background-color: rgba(10, 10, 10, 0.92);
   }
 
+  .site-header.is-scrolled {
+    --mobile-header-h: 86px;
+  }
+
   .site-header.is-scrolled,
+  .site-header.is-menu-open,
   .site-header--solid {
     background-color: #4A3B32;
     color: #F4F1EA;
@@ -2173,42 +2141,178 @@ address {
     height: 40px;
     border-bottom: 1px solid var(--color-border-light);
     background-color: rgba(10, 10, 10, 0.78);
-    transition: height 0.25s ease;
+    transition: height 0.25s ease, background-color 0.3s ease, border-color 0.3s ease;
   }
 
   .site-header.is-scrolled .mobile-bar {
     height: 34px;
   }
 
-  .site-header.is-scrolled .mobile-bar,
-  .site-header.is-scrolled .mobile-drawer,
-  .site-header--solid .mobile-bar,
-  .site-header--solid .mobile-drawer {
+  :is(.site-header.is-scrolled, .site-header.is-menu-open, .site-header--solid) .mobile-bar {
     background-color: #4A3B32;
-    border-bottom-color: rgba(244, 241, 234, 0.5);
   }
 
   .mobile-menu-trigger {
     display: inline-flex;
     align-items: center;
-    gap: 14px;
+    gap: 10px;
+    padding: 2px 8px;
+    color: #F4F1EA;
+  }
+
+  .mobile-menu-trigger__label {
     font-family: var(--font-serif);
-    font-size: 13px;
-    color: var(--color-white);
+    font-size: 11px;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
   }
 
   .mobile-menu-trigger__bars {
-    display: flex;
-    flex-direction: column;
-    gap: 5px;
-    width: 26px;
+    position: relative;
+    width: 30px;
+    height: 30px;
+    flex-shrink: 0;
   }
 
   .mobile-menu-trigger__bars span {
-    display: block;
-    width: 100%;
+    position: absolute;
+    top: 14px;
+    inset-inline: 3px;
     height: 2px;
-    background-color: var(--color-white);
+    background-color: #F4F1EA;
+    transition: transform 0.22s ease, opacity 0.18s ease;
+  }
+
+  .mobile-menu-trigger__bars span:nth-child(1) { transform: translate3d(0, -6px, 0); }
+  .mobile-menu-trigger__bars span:nth-child(3) { transform: translate3d(0, 6px, 0); }
+  .mobile-menu-trigger[aria-expanded="true"] .mobile-menu-trigger__bars span:nth-child(1) { transform: rotate(-45deg); }
+  .mobile-menu-trigger[aria-expanded="true"] .mobile-menu-trigger__bars span:nth-child(2) { opacity: 0; transform: scaleX(0); }
+  .mobile-menu-trigger[aria-expanded="true"] .mobile-menu-trigger__bars span:nth-child(3) { transform: rotate(45deg); }
+
+  .mobile-drawer {
+    display: flex;
+    position: fixed;
+    inset: var(--mobile-header-h, 121px) 0 0;
+    z-index: 109;
+    background-color: #4A3B32;
+    padding: 36px 24px calc(28px + env(safe-area-inset-bottom, 0px));
+    overflow-y: auto;
+    overscroll-behavior: contain;
+    opacity: 0;
+    visibility: hidden;
+    pointer-events: none;
+    clip-path: inset(0 0 70% 0);
+    text-align: center;
+    transition: clip-path 0.26s ease, opacity 0.2s ease, visibility 0s linear 0.26s;
+  }
+
+  .site-header.is-menu-open .mobile-drawer {
+    opacity: 1;
+    visibility: visible;
+    pointer-events: auto;
+    clip-path: inset(0 0 0% 0);
+    transition: clip-path 0.26s ease, opacity 0.2s ease, visibility 0s linear 0s;
+  }
+
+  .mobile-drawer__nav {
+    width: 100%;
+    min-height: 100%;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    align-items: center;
+    gap: 32px;
+  }
+
+  .mobile-drawer__list {
+    width: 100%;
+    padding-block: 16px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 24px;
+  }
+
+  .mobile-drawer__link {
+    display: inline-block;
+    padding: 4px 12px;
+    font: 20px / 30px var(--font-display);
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: #F4F1EA;
+  }
+
+  .mobile-drawer__link[aria-current="page"] {
+    text-decoration: underline;
+    text-decoration-color: var(--color-gold);
+    text-underline-offset: 8px;
+    text-decoration-thickness: 1px;
+  }
+
+  .mobile-drawer__link:hover {
+    color: var(--color-gold);
+    opacity: 1;
+  }
+
+  .mobile-drawer__contact {
+    width: 100%;
+    padding-top: 16px;
+    display: flex;
+    flex-direction: column-reverse;
+    align-items: center;
+    gap: 14px;
+    color: #F4F1EA;
+  }
+
+  .mobile-drawer__contact p:last-child a {
+    font-size: 12px;
+    letter-spacing: 0.22em;
+    color: rgba(244, 241, 234, 0.72);
+  }
+
+  .mobile-drawer__contact p:first-child a {
+    font-size: 10px;
+    letter-spacing: 0.32em;
+    text-transform: uppercase;
+    color: #F4F1EA;
+  }
+
+  .mobile-drawer__list li,
+  .mobile-drawer__contact {
+    opacity: 0;
+    transform: translate3d(0, 100px, 0);
+    transition: opacity 0.16s ease 0s, transform 0.22s ease 0s;
+  }
+
+  .site-header.is-menu-open :where(.mobile-drawer__list li, .mobile-drawer__contact) {
+    opacity: 1;
+    transform: translate3d(0, 0, 0);
+    transition: opacity 0.85s cubic-bezier(0, 0.15, 0, 1), transform 1s cubic-bezier(0, 0.15, 0, 1);
+  }
+
+  .site-header.is-menu-open .mobile-drawer__list li:nth-child(1) { transition-delay: 0.03s; }
+  .site-header.is-menu-open .mobile-drawer__list li:nth-child(2) { transition-delay: 0.11s; }
+  .site-header.is-menu-open .mobile-drawer__list li:nth-child(3) { transition-delay: 0.19s; }
+  .site-header.is-menu-open .mobile-drawer__list li:nth-child(4) { transition-delay: 0.27s; }
+  .site-header.is-menu-open .mobile-drawer__list li:nth-child(5) { transition-delay: 0.35s; }
+  .site-header.is-menu-open .mobile-drawer__contact { transition-delay: 0.43s; }
+
+  @media (prefers-reduced-motion: reduce) {
+    .mobile-drawer__list li,
+    .mobile-drawer__contact {
+      transform: translate3d(0, 64px, 0);
+    }
+
+    .site-header.is-menu-open :where(.mobile-drawer__list li, .mobile-drawer__contact) {
+      transform: translate3d(0, 0, 0);
+      transition-duration: 0.8s;
+    }
+  }
+
+  body.is-menu-open .hero__mobile-reservations {
+    opacity: 0;
+    visibility: hidden;
+    pointer-events: none;
   }
 
   /* Hero Mobile 390w */
