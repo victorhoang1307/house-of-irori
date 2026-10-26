@@ -141,6 +141,18 @@ assert.ok(
 );
 
 // Phase 2B Slice 1: Visual Fidelity Assertions
+const wmBuf = fs.readFileSync(path.join(ROOT, 'assets/images/watermark-line.png'));
+const wmWidth = wmBuf.readUInt32BE(16);
+const wmHeight = wmBuf.readUInt32BE(20);
+assert.ok(
+  wmWidth === 800 && wmHeight === 800,
+  `watermark-line.png must be cropped to 800x800 emblem-only without text (got ${wmWidth}x${wmHeight})`
+);
+assert.ok(
+  /\.philosophy__lower\s*\{[^}]*overflow:\s*hidden/s.test(css),
+  '.philosophy__lower must clip watermark overflow cleanly'
+);
+
 const heroShowcaseFrameMatch = css.match(/\.hero-showcase__frame\s*\{([^}]*)\}/s);
 assert.ok(heroShowcaseFrameMatch, 'Missing .hero-showcase__frame rule in css/style.css');
 assert.ok(
@@ -198,12 +210,14 @@ const jsPath = checkFileExists('js/main.js', 500);
 const jsStat = fs.statSync(jsPath);
 assert.ok(jsStat.size <= 15 * 1024, `js/main.js exceeds 15KB budget (${jsStat.size}B)`);
 const jsSource = fs.readFileSync(jsPath, 'utf8');
+const autoplayCallCount = (jsSource.match(/createAutoplay\(/g) || []).length;
 assert.ok(
   jsSource.includes('mouseenter') &&
     jsSource.includes('mouseleave') &&
     jsSource.includes('setInterval') &&
-    jsSource.includes('IntersectionObserver'),
-  'js/main.js must implement carousel autoplay with hover pause and IntersectionObserver parallax fallback'
+    jsSource.includes('IntersectionObserver') &&
+    autoplayCallCount >= 3,
+  'js/main.js must wire createAutoplay to all 3 carousel/slider controllers and include IntersectionObserver parallax fallback'
 );
 assert.ok(
   jsSource.includes('data-load-more') &&
@@ -350,6 +364,19 @@ for (const htmlFile of ['index.html', 'menu.html', 'events.html', 'blogs.html', 
     const assetDiskPath = path.join(ROOT, m[1]);
     assert.ok(fs.existsSync(assetDiskPath), `${htmlFile} references missing local asset: ${m[1]}`);
   }
+  for (const extraTag of srcText.matchAll(/<article[^>]*\bdata-extra-item\b[^>]*>/g)) {
+    assert.ok(
+      /\bhidden\b/.test(extraTag[0]),
+      `${htmlFile} has [data-extra-item] without initial hidden attribute: ${extraTag[0]}`
+    );
+  }
 }
+
+const eventsHtml = fs.readFileSync(path.join(ROOT, 'events.html'), 'utf8');
+const showcaseBgMatch = eventsHtml.match(/<div class="upcoming-showcase__bg"[^>]*>([\s\S]*?)<\/div>/);
+assert.ok(
+  showcaseBgMatch && !showcaseBgMatch[1].includes('<img'),
+  'events.html .upcoming-showcase__bg must use tiled CSS background rather than a stretched <img>'
+);
 
 console.log('ALL VERIFICATION CHECKS PASSED!');

@@ -44,7 +44,7 @@ Build the complete, responsive Static HTML5/CSS3/JS implementation of `Home v3B`
 - [x] Task 10: Figma Visual Fidelity Fixes — borderless/shadowless `hero-showcase`, zero-gap `hero-showcase__pattern`, text-free `philosophy__watermark`, `#4A3B32` / `#F4F1EA` scrolled header, `cover top center` `upcoming-banner__bg`, and opaque tiled dark wood `upcoming-showcase` background.
 - [x] Task 11: Motion & Autoplay — autoplay + pause-on-hover across all carousels/sliders (`[data-carousel]`, `#reviews-slider`, `#latest-news`) and subtle scroll parallax on `.atmosphere-strip` & `.footer-glimpse`.
 - [x] Task 12: Interactive Content & Taxonomy — distinct `Food (Pizza & Side dishes)` tab spread in `menu.html`, `Load More` pagination on `menu.html` / `events.html` / `blogs.html`, and larger clickable blog `#category` tags (`?category=<slug>`) across all blog views.
-- [ ] Task 13: Browser Runtime Verification, Multi-Agent QA, & GitHub Pages Demo Redeployment.
+- [x] Task 13: Browser Runtime Verification, Multi-Agent QA, & GitHub Pages Demo Redeployment.
 
 ## Risks and Mitigations
 | Risk | Impact | Mitigation |

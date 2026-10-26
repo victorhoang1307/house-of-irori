@@ -153,10 +153,10 @@
 ## Task 13: Browser Runtime Verification, QA Subagents, & GitHub Pages Redeployment
 **Description:** Verify all 11 client feedback items in Chrome DevTools MCP (`1920x1080` & `390x844`), confirm `0` console/network errors, run parallel QA subagents (`code-reviewer`, `web-performance-auditor`, `security-auditor`, `test-engineer`), update `graphify`, and push clean `gh-pages` build to live demo URL.
 **Acceptance criteria:**
-- [ ] Zero console errors/warnings or failed requests in Chrome DevTools MCP across all 5 pages.
-- [ ] Live GitHub Pages demo (`https://victorhoang1307.github.io/house-of-irori/`) returns `HTTP 200` with updated build.
+- [x] Zero console errors/warnings or failed requests in Chrome DevTools MCP across all 5 pages.
+- [x] Live GitHub Pages demo (`https://victorhoang1307.github.io/house-of-irori/`) returns `HTTP 200` with updated build.
 **Verification:**
-- [ ] Chrome DevTools MCP + QA subagents + live HTTP 200 check
+- [x] Chrome DevTools MCP + QA subagents + live HTTP 200 check
 **Dependencies:** Task 12
 **Files likely touched:** `graphify-out/graph.json`, `tasks/plan.md`, `tasks/todo.md`
 **Estimated scope:** Small

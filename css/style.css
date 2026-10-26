@@ -1100,6 +1100,14 @@ address {
   margin-bottom: 0;
 }
 
+.latest-news__grid .news-card__title {
+  min-height: calc(2 * 1.35em);
+}
+
+.latest-news__grid .news-card__excerpt {
+  min-height: calc(3 * 1.65em);
+}
+
 .news-card__title {
   font-family: var(--font-display);
   font-weight: 400;
@@ -1457,6 +1465,10 @@ address {
   justify-content: center;
 }
 
+.load-more-wrap:has(> [hidden]) {
+  display: none;
+}
+
 .btn-load-more {
   display: inline-flex;
   align-items: center;
@@ -1529,6 +1541,13 @@ address {
   align-items: center;
   justify-content: center;
   overflow: clip;
+}
+
+@media (min-width: 1025px) {
+  .menu-viewer:has(> [data-menu-panel="food"].is-active) {
+    aspect-ratio: auto;
+    min-height: 660px;
+  }
 }
 
 .menu-viewer__panel {

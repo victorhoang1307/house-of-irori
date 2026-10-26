@@ -19,7 +19,8 @@ document.addEventListener('DOMContentLoaded', () => {
     }
     const effectiveInterval = prefersReducedMotion ? Math.round(intervalMs * 1.3) : intervalMs;
     let timerId = null;
-    let isHoveredOrFocused = false;
+    let isHovered = false;
+    let isFocused = false;
 
     const stop = () => {
       if (timerId !== null) {
@@ -30,26 +31,26 @@ document.addEventListener('DOMContentLoaded', () => {
 
     const start = () => {
       stop();
-      if (!isHoveredOrFocused && !document.hidden) {
+      if (!isHovered && !isFocused && !document.hidden) {
         timerId = setInterval(stepFn, effectiveInterval);
       }
     };
 
     containerEl.addEventListener('mouseenter', () => {
-      isHoveredOrFocused = true;
+      isHovered = true;
       stop();
     });
     containerEl.addEventListener('mouseleave', () => {
-      isHoveredOrFocused = false;
+      isHovered = false;
       start();
     });
     containerEl.addEventListener('focusin', () => {
-      isHoveredOrFocused = true;
+      isFocused = true;
       stop();
     });
     containerEl.addEventListener('focusout', (e) => {
       if (!containerEl.contains(e.relatedTarget)) {
-        isHoveredOrFocused = false;
+        isFocused = false;
         start();
       }
     });
@@ -361,12 +362,16 @@ document.addEventListener('DOMContentLoaded', () => {
       const updateParallax = () => {
         rafPending = false;
         const vh = window.innerHeight || 1;
+        const pendingWrites = [];
         visibleSet.forEach((item) => {
           const rect = item.wrap.getBoundingClientRect();
           const progress = (vh - rect.top) / (vh + rect.height);
           const clamped = Math.max(0, Math.min(1, progress));
           const shiftPercent = (clamped - 0.5) * parallaxSpan;
-          item.layer.style.transform = `translate3d(0, ${shiftPercent.toFixed(2)}%, 0)`;
+          pendingWrites.push([item.layer, shiftPercent.toFixed(2)]);
+        });
+        pendingWrites.forEach(([layer, shift]) => {
+          layer.style.transform = `translate3d(0, ${shift}%, 0)`;
         });
       };
 
