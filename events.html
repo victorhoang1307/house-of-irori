@@ -119,15 +119,7 @@
 
       <!-- Overlapping Featured Event Carousel (Figma 622:1321) -->
       <div class="upcoming-showcase">
-        <div class="upcoming-showcase__bg" aria-hidden="true">
-          <img
-            src="assets/images/events-upcoming-bg.jpg"
-            alt=""
-            loading="lazy"
-            width="1920"
-            height="717"
-          >
-        </div>
+        <div class="upcoming-showcase__bg" aria-hidden="true"></div>
 
         <div class="container upcoming-showcase__inner">
           <div class="upcoming-carousel" data-carousel="upcoming">
@@ -275,6 +267,50 @@
               </p>
             </div>
           </article>
+
+          <!-- Event 5 (Extra item revealed via Load More) -->
+          <article class="occasional-card" data-cms-item="event" data-extra-item hidden>
+            <div class="occasional-card__media">
+              <img
+                src="assets/images/event-upcoming-featured.jpg"
+                alt="Midnight Vinyl & Rare Malt Listening Session"
+                loading="lazy"
+                width="563"
+                height="559"
+              >
+            </div>
+            <div class="occasional-card__body">
+              <h3 class="occasional-card__title">Midnight Vinyl &amp; Rare Malt Listening Session</h3>
+              <time class="occasional-card__date" datetime="2025-06-14">14th June 2025</time>
+              <p class="occasional-card__desc">
+                An unhurried late-evening session on Level Two featuring 1970s Japanese jazz pressings spun on analog turntables alongside rare single-cask pours from our reserve shelf.
+              </p>
+            </div>
+          </article>
+
+          <!-- Event 6 (Extra item revealed via Load More) -->
+          <article class="occasional-card" data-cms-item="event" data-extra-item hidden>
+            <div class="occasional-card__media">
+              <img
+                src="assets/images/level2-bar.jpg"
+                alt="Tokyo Counter Takeover — Craft Highball Night"
+                loading="lazy"
+                width="563"
+                height="559"
+              >
+            </div>
+            <div class="occasional-card__body">
+              <h3 class="occasional-card__title">Tokyo Counter Takeover - Craft Highball Night</h3>
+              <time class="occasional-card__date" datetime="2025-06-28">28th June 2025</time>
+              <p class="occasional-card__desc">
+                Precision carbonation, hand-chiseled ice spears, and bespoke botanical cordials in a one-night guest bartender showcase celebrating modern Ginza highball culture at House of IRORI.
+              </p>
+            </div>
+          </article>
+        </div>
+
+        <div class="load-more-wrap">
+          <button type="button" class="btn-load-more" data-load-more="occasional-events">Load More</button>
         </div>
       </div>
     </section>
