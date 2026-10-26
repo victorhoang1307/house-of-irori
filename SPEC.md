@@ -87,6 +87,16 @@ All repeatable sections use clean Strapi-ready DOM attributes (`data-cms-collect
 2. Cross-page navigation works seamlessly across all 5 pages (`WELCOME` → `index.html`, `MENU` → `menu.html`, `EVENTS` → `events.html`, `BLOGS` → `blogs.html`, `READ MORE` → `blog-detail.html`, `CONTACT` / `RESERVATIONS` → `#footer`).
 3. All new Figma images for `Menu`, `Events`, `Blogs`, and `Blog Articles` are exported directly from Figma API into `assets/images/` and load with HTTP `200`.
 4. Interactive controls on subpages (Menu category tabs + page viewer, Events `UP COMING` carousel, Blogs `#category` tag filter, Blog Detail `Latest News` slider, Mobile drawer, Mobile fixed bottom `RESERVATIONS` bar) work with `0` console errors.
+5. **Phase 2B Client Polish & Refinements (11-point feedback):**
+   - `hero-showcase`: Borderless, shadowless image (`padding: 0; border: none; box-shadow: none;`, baked-in `#F4F1EA` border cropped from `hero-bartender-framed.jpg`), with `hero-showcase__pattern` locked flush to `.hero` bottom (`0px` gap across all viewports).
+   - `philosophy__watermark`: Emblem-only watermark (cropped `"HOUSE OF IRORI"` text out of `watermark-line.png`), clipped cleanly inside `.philosophy__lower`.
+   - Scrolled & Solid Header (`.site-header.is-scrolled`, `.site-header--solid`): `background-color: #4A3B32`, font color `#F4F1EA`, divider borders `rgba(244, 241, 234, 0.5)` (`#F4F1EA` 50%), keeping desktop `.header-topbar` visible.
+   - Carousels & Sliders (`[data-carousel]`, `#reviews-slider`, `#latest-news`): Autoplay enabled (`4500ms`), pausing on hover/focus and respecting `prefers-reduced-motion: reduce`.
+   - Parallax: Subtle scroll-driven parallax on `.atmosphere-strip` and `.footer-glimpse` (CSS Scroll-Driven Animations with `IntersectionObserver` + `rAF` fallback).
+   - `menu-viewer-section`: Distinct `Food (Pizza & Side dishes)` two-page editorial spread when switching tabs.
+   - `events.html` `UP COMING`: `upcoming-banner__bg` uses cropped top ornamental strip with `object-fit: cover; object-position: top center;`; `upcoming-showcase` uses `100%` opaque dark carved wood tiled pattern (`#261A12` + `hero-wood-pattern.png`).
+   - `Load More`: Interactive `[data-load-more]` buttons revealing additional items on `menu.html` (`OCCASIONAL`), `events.html` (`OCCASIONAL`), and `blogs.html` (`Blogs`).
+   - Blog Category Tags: Larger `.category-pill` sizing (`13.5px`, `34px` min-height) and clickable tag navigation (`blogs.html?category=<slug>`) across `blogs.html`, `blog-detail.html`, and `.news-card` items.
 
 ## Open Questions
 - None (Confirmed by Victor: replace `House of Merlin` with `House of IRORI` in `Menu`/`Events` descriptions; keep the `ELLE Decoration PopUp Office` sample article copy in `Blog Articles`).

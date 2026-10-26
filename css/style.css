@@ -110,23 +110,33 @@ address {
   transition: background-color 0.3s ease, box-shadow 0.3s ease, backdrop-filter 0.3s ease;
 }
 
-.site-header.is-scrolled {
-  background-color: rgba(10, 10, 10, 0.92);
-  backdrop-filter: blur(10px);
-  box-shadow: 0 6px 24px rgba(0, 0, 0, 0.35);
+.site-header.is-scrolled,
+.site-header--solid {
+  background-color: #4A3B32;
+  color: #F4F1EA;
+  box-shadow: 0 6px 24px rgba(0, 0, 0, 0.25);
 }
 
-.site-header.is-scrolled .header-topbar {
-  display: none;
+.site-header.is-scrolled .header-topbar,
+.site-header.is-scrolled .header-banner,
+.site-header.is-scrolled .mobile-bar,
+.site-header.is-scrolled .mobile-drawer,
+.site-header--solid .header-topbar,
+.site-header--solid .header-banner,
+.site-header--solid .mobile-bar,
+.site-header--solid .mobile-drawer {
+  border-bottom-color: rgba(244, 241, 234, 0.5);
 }
 
-.site-header.is-scrolled .header-banner {
-  height: 76px;
-}
-
-.site-header.is-scrolled .header-logo img {
-  width: 58px;
-  height: 63px;
+.site-header.is-scrolled .header-topbar__contact,
+.site-header.is-scrolled .header-nav__link,
+.site-header.is-scrolled .mobile-menu-trigger,
+.site-header.is-scrolled .mobile-drawer__link,
+.site-header--solid .header-topbar__contact,
+.site-header--solid .header-nav__link,
+.site-header--solid .mobile-menu-trigger,
+.site-header--solid .mobile-drawer__link {
+  color: #F4F1EA;
 }
 
 /* Top Utility Bar (41px) */
@@ -360,26 +370,26 @@ address {
 }
 
 /* ==========================================================================
-   2. HERO FRAMED BARTENDER SHOWCASE (Overlaps Hero by 201px + 377px wood strip)
+   2. HERO FRAMED BARTENDER SHOWCASE (Overlaps Hero + zero-gap wood strip)
    ========================================================================== */
 .hero-showcase {
+  --hero-overlap: 201px;
   position: relative;
   z-index: 5;
-  margin-top: -201px;
+  margin-top: calc(-1 * var(--hero-overlap));
   padding-bottom: 0;
 }
 
 .hero-showcase__pattern {
   position: absolute;
-  left: 0;
-  right: 0;
+  inset-inline: 0;
+  top: calc(var(--hero-overlap) - 1px);
   bottom: 0;
-  height: 377px;
   background-color: #261A12;
   background-image: url('../assets/images/hero-wood-pattern.png');
-  background-repeat: repeat-x;
-  background-position: center bottom;
-  background-size: auto 377px;
+  background-repeat: repeat;
+  background-position: top center;
+  background-size: 200px auto;
   z-index: 0;
 }
 
@@ -393,9 +403,10 @@ address {
 .hero-showcase__frame {
   width: 100%;
   max-width: 970px;
-  background-color: var(--color-white);
-  padding: 6px;
-  box-shadow: 0 20px 50px rgba(0, 0, 0, 0.35);
+  background-color: transparent;
+  padding: 0;
+  border: none;
+  box-shadow: none;
 }
 
 .hero-showcase__frame img {
@@ -555,16 +566,17 @@ address {
   background-color: var(--bg-white);
   display: flex;
   align-items: flex-end;
+  overflow: hidden;
   z-index: 2;
 }
 
 .philosophy__watermark {
   position: absolute;
-  right: -75px;
-  top: -35px;
-  width: 380px;
-  height: 380px;
-  opacity: 0.12;
+  right: 48px;
+  top: 8px;
+  width: 350px;
+  height: 350px;
+  opacity: 0.10;
   pointer-events: none;
   z-index: 1;
 }
@@ -1211,9 +1223,9 @@ address {
    SUBPAGES SHARED & SPECIFIC SECTIONS (Menu, Events, Blogs, Blog Articles)
    ========================================================================== */
 
-/* Solid Dark Header Variant (for Blog Article Detail page with white top) */
+/* Solid Header Variant (for Blog Article Detail page — Figma 622:2058 / 617:741) */
 .site-header--solid {
-  background-color: var(--bg-dark);
+  background-color: #4A3B32;
 }
 
 /* Shared Subpage Hero (Figma 617:1168 — 1920x602) */
@@ -1444,6 +1456,7 @@ address {
   width: 100%;
   height: 100%;
   object-fit: cover;
+  object-position: top center;
 }
 
 .upcoming-banner__overlay {
@@ -1468,26 +1481,25 @@ address {
 }
 
 .upcoming-showcase {
+  --upcoming-overlap: 156px;
   position: relative;
-  margin-top: -156px;
-  padding-bottom: 48px;
+  margin-top: calc(-1 * var(--upcoming-overlap));
+  padding-bottom: 84px;
   z-index: 3;
 }
 
 .upcoming-showcase__bg {
   position: absolute;
   inset-inline: 0;
-  top: 106px;
+  top: calc(var(--upcoming-overlap) - 1px);
   bottom: 0;
+  background-color: #261A12;
+  background-image: url('../assets/images/hero-wood-pattern.png');
+  background-repeat: repeat;
+  background-position: top center;
+  background-size: 200px auto;
   z-index: 0;
   pointer-events: none;
-  opacity: 0.35;
-}
-
-.upcoming-showcase__bg img {
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
 }
 
 .upcoming-showcase__inner {
@@ -1724,12 +1736,12 @@ address {
   }
 
   .philosophy__watermark {
-    right: 50%;
-    transform: translateX(50%);
+    right: 16px;
+    transform: none;
     top: auto;
-    bottom: -140px;
-    width: 260px;
-    height: 260px;
+    bottom: -24px;
+    width: 220px;
+    height: 220px;
   }
 
   .split-level,
@@ -1779,6 +1791,12 @@ address {
     background-color: rgba(10, 10, 10, 0.92);
   }
 
+  .site-header.is-scrolled,
+  .site-header--solid {
+    background-color: #4A3B32;
+    color: #F4F1EA;
+  }
+
   .header-banner {
     height: 81px;
   }
@@ -1795,6 +1813,14 @@ address {
     height: 40px;
     border-bottom: 1px solid var(--color-border-light);
     background-color: rgba(10, 10, 10, 0.78);
+  }
+
+  .site-header.is-scrolled .mobile-bar,
+  .site-header.is-scrolled .mobile-drawer,
+  .site-header--solid .mobile-bar,
+  .site-header--solid .mobile-drawer {
+    background-color: #4A3B32;
+    border-bottom-color: rgba(244, 241, 234, 0.5);
   }
 
   .mobile-menu-trigger {
@@ -1861,11 +1887,7 @@ address {
   }
 
   .hero-showcase {
-    margin-top: -90px;
-  }
-
-  .hero-showcase__pattern {
-    height: 150px;
+    --hero-overlap: 90px;
   }
 
   .story {
@@ -1980,7 +2002,8 @@ address {
   }
 
   .upcoming-showcase {
-    margin-top: -96px;
+    --upcoming-overlap: 96px;
+    padding-bottom: 48px;
   }
 
   .upcoming-carousel {

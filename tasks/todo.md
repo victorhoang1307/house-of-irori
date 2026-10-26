@@ -109,3 +109,54 @@
 **Dependencies:** Task 8
 **Files likely touched:** `css/style.css`, `menu.html`, `events.html`, `blogs.html`, `blog-detail.html`
 **Estimated scope:** Small
+
+## Task 10: Figma Visual Fidelity Fixes (Hero Showcase, Watermark, Scrolled Header, Events Banner & Showcase)
+**Description:** Remove border/shadow & baked-in `#F4F1EA` border on `hero-showcase`, lock `hero-showcase__pattern` flush to `.hero` with `0px` gap, remove `"HOUSE OF IRORI"` text from `watermark-line.png`, style `.site-header.is-scrolled` (`#4A3B32` bg, `#F4F1EA` text, `rgba(244, 241, 234, 0.5)` border), fix `upcoming-banner__bg` (`cover`, `top center` without white cutout), and restore `100%` opaque tiled dark wood pattern on `upcoming-showcase`.
+**Acceptance criteria:**
+- [x] `.hero-showcase__frame` has zero border, zero padding, zero box-shadow, and `hero-bartender-framed.jpg` has zero baked-in cream border; `0px` gap between `.hero` and `.hero-showcase__pattern` at `1920px` and `390px`.
+- [x] `watermark-line.png` contains only the circular brushstroke emblem (no `"HOUSE OF IRORI"` text).
+- [x] `.site-header.is-scrolled` has `background-color: #4A3B32`, `color: #F4F1EA`, and `rgba(244, 241, 234, 0.5)` borders with `.header-topbar` visible on desktop.
+- [x] `upcoming-banner__bg` displays embossed pattern (`cover`, `top center`, zero white hole) and `upcoming-showcase` displays opaque `#261A12` + tiled `hero-wood-pattern.png`.
+**Verification:**
+- [x] `node tests/verify-home.mjs`
+**Dependencies:** Task 9
+**Files likely touched:** `assets/images/hero-bartender-framed.jpg`, `assets/images/watermark-line.png`, `assets/images/events-upcoming-banner.jpg`, `index.html`, `events.html`, `css/style.css`, `tests/verify-home.mjs`
+**Estimated scope:** Medium
+
+## Task 11: Motion & Autoplay (Carousel Autoplay + Pause on Hover, Parallax Sections)
+**Description:** Enable `4500ms` autoplay with pause-on-hover/focus across all carousels and sliders (`[data-carousel]`, `#reviews-slider`, `#latest-news`), and add subtle compositor-friendly scroll parallax on `.atmosphere-strip` and `.footer-glimpse` across all 5 pages.
+**Acceptance criteria:**
+- [ ] All carousels/sliders auto-advance when unhovered and pause on `mouseenter` / `focusin` (and disable under `prefers-reduced-motion: reduce`).
+- [ ] `.atmosphere-strip` and `.footer-glimpse` use CSS Scroll-Driven Animations (`@supports ((animation-timeline: view()) and (animation-range: entry))`) with `IntersectionObserver` + `rAF` fallback.
+**Verification:**
+- [ ] `node --check js/main.js && node tests/verify-home.mjs`
+**Dependencies:** Task 10
+**Files likely touched:** `index.html`, `blog-detail.html`, `css/style.css`, `js/main.js`, `tests/verify-home.mjs`
+**Estimated scope:** Medium
+
+## Task 12: Menu Tab Content, Load More Pagination, & Clickable Larger Blog Category Tags
+**Description:** Differentiate `Food (Pizza & Side dishes)` tab content in `menu-viewer-section`, add `Load More` buttons + extra items on `menu.html` (`OCCASIONAL`), `events.html` (`OCCASIONAL`), and `blogs.html` (`Blogs`), and enlarge clickable `#category` tags (`?category=<slug>`) across `blogs.html`, `blog-detail.html`, and `.news-card` items.
+**Acceptance criteria:**
+- [ ] Switching between `Our top cocktail` and `Food (Pizza & Side dishes)` displays distinct menu content.
+- [ ] Clicking `Load More` on `menu.html`, `events.html`, and `blogs.html` reveals hidden items and hides the button when exhausted.
+- [ ] Category pills are larger (`>= 13px` font, `>= 32px` height) and clicking any category tag navigates/filters articles by that tag (`?category=<slug>`).
+**Verification:**
+- [ ] `node --check js/main.js && node tests/verify-home.mjs`
+**Dependencies:** Task 11
+**Files likely touched:** `menu.html`, `events.html`, `blogs.html`, `blog-detail.html`, `index.html`, `css/style.css`, `js/main.js`, `tests/verify-home.mjs`
+**Estimated scope:** Medium
+
+## Checkpoint: After Tasks 10-12
+- [ ] `node --check js/main.js && node tests/verify-home.mjs` passes 100%
+- [ ] CSS <= 50KB and JS <= 15KB budgets respected
+
+## Task 13: Browser Runtime Verification, QA Subagents, & GitHub Pages Redeployment
+**Description:** Verify all 11 client feedback items in Chrome DevTools MCP (`1920x1080` & `390x844`), confirm `0` console/network errors, run parallel QA subagents (`code-reviewer`, `web-performance-auditor`, `security-auditor`, `test-engineer`), update `graphify`, and push clean `gh-pages` build to live demo URL.
+**Acceptance criteria:**
+- [ ] Zero console errors/warnings or failed requests in Chrome DevTools MCP across all 5 pages.
+- [ ] Live GitHub Pages demo (`https://victorhoang1307.github.io/house-of-irori/`) returns `HTTP 200` with updated build.
+**Verification:**
+- [ ] Chrome DevTools MCP + QA subagents + live HTTP 200 check
+**Dependencies:** Task 12
+**Files likely touched:** `graphify-out/graph.json`, `tasks/plan.md`, `tasks/todo.md`
+**Estimated scope:** Small

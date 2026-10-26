@@ -139,6 +139,36 @@ assert.ok(
     /\.hero__mobile-reservations\s*\{[^}]*(bottom:\s*0|inset-block-end:\s*0)/s.test(css),
   'css/style.css must position .hero__mobile-reservations as fixed at bottom: 0 on mobile'
 );
+
+// Phase 2B Slice 1: Visual Fidelity Assertions
+const heroShowcaseFrameMatch = css.match(/\.hero-showcase__frame\s*\{([^}]*)\}/s);
+assert.ok(heroShowcaseFrameMatch, 'Missing .hero-showcase__frame rule in css/style.css');
+assert.ok(
+  !/box-shadow:\s*0\s+20px/i.test(heroShowcaseFrameMatch[1]) &&
+    !/padding:\s*6px/i.test(heroShowcaseFrameMatch[1]) &&
+    !/background-color:\s*var\(--color-white\)/i.test(heroShowcaseFrameMatch[1]),
+  '.hero-showcase__frame must not have border/padding/white-bg or drop shadow'
+);
+assert.ok(
+  /\.hero-showcase__pattern\s*\{[^}]*top:\s*calc\(var\(--hero-overlap\)\s*-\s*1px\)/s.test(css),
+  '.hero-showcase__pattern must lock its top edge to --hero-overlap so there is 0 gap with .hero'
+);
+assert.ok(
+  /\.site-header\.is-scrolled[^{]*\{[^}]*background-color:\s*(#4A3B32|var\(--color-espresso\))/is.test(css) &&
+    css.includes('rgba(244, 241, 234, 0.5)') &&
+    !/\.site-header\.is-scrolled\s+\.header-topbar\s*\{\s*display:\s*none/s.test(css),
+  '.site-header.is-scrolled must use #4A3B32 bg, rgba(244, 241, 234, 0.5) border, and keep .header-topbar visible on desktop'
+);
+assert.ok(
+  /\.upcoming-banner__bg\s+img\s*\{[^}]*object-fit:\s*cover[^}]*object-position:\s*top\s+center/s.test(css),
+  '.upcoming-banner__bg img must use object-fit: cover and object-position: top center'
+);
+assert.ok(
+  /\.upcoming-showcase__bg\s*\{[^}]*hero-wood-pattern\.png/s.test(css) &&
+    !/\.upcoming-showcase__bg\s*\{[^}]*opacity:\s*0\.35/s.test(css),
+  '.upcoming-showcase__bg must use opaque tiled hero-wood-pattern.png per Figma 622:1324'
+);
+
 console.log(`✓ css/style.css passes token and budget checks (${(cssStat.size / 1024).toFixed(1)} KB).`);
 
 // 4. Verify JS interactive module & size budget
