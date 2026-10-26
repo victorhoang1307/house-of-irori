@@ -137,18 +137,18 @@
 ## Task 12: Menu Tab Content, Load More Pagination, & Clickable Larger Blog Category Tags
 **Description:** Differentiate `Food (Pizza & Side dishes)` tab content in `menu-viewer-section`, add `Load More` buttons + extra items on `menu.html` (`OCCASIONAL`), `events.html` (`OCCASIONAL`), and `blogs.html` (`Blogs`), and enlarge clickable `#category` tags (`?category=<slug>`) across `blogs.html`, `blog-detail.html`, and `.news-card` items.
 **Acceptance criteria:**
-- [ ] Switching between `Our top cocktail` and `Food (Pizza & Side dishes)` displays distinct menu content.
-- [ ] Clicking `Load More` on `menu.html`, `events.html`, and `blogs.html` reveals hidden items and hides the button when exhausted.
-- [ ] Category pills are larger (`>= 13px` font, `>= 32px` height) and clicking any category tag navigates/filters articles by that tag (`?category=<slug>`).
+- [x] Switching between `Our top cocktail` and `Food (Pizza & Side dishes)` displays distinct menu content.
+- [x] Clicking `Load More` on `menu.html`, `events.html`, and `blogs.html` reveals hidden items and hides the button when exhausted.
+- [x] Category pills are larger (`>= 13px` font, `>= 32px` height) and clicking any category tag navigates/filters articles by that tag (`?category=<slug>`).
 **Verification:**
-- [ ] `node --check js/main.js && node tests/verify-home.mjs`
+- [x] `node --check js/main.js && node tests/verify-home.mjs`
 **Dependencies:** Task 11
 **Files likely touched:** `menu.html`, `events.html`, `blogs.html`, `blog-detail.html`, `index.html`, `css/style.css`, `js/main.js`, `tests/verify-home.mjs`
 **Estimated scope:** Medium
 
 ## Checkpoint: After Tasks 10-12
-- [ ] `node --check js/main.js && node tests/verify-home.mjs` passes 100%
-- [ ] CSS <= 50KB and JS <= 15KB budgets respected
+- [x] `node --check js/main.js && node tests/verify-home.mjs` passes 100%
+- [x] CSS <= 50KB and JS <= 15KB budgets respected
 
 ## Task 13: Browser Runtime Verification, QA Subagents, & GitHub Pages Redeployment
 **Description:** Verify all 11 client feedback items in Chrome DevTools MCP (`1920x1080` & `390x844`), confirm `0` console/network errors, run parallel QA subagents (`code-reviewer`, `web-performance-auditor`, `security-auditor`, `test-engineer`), update `graphify`, and push clean `gh-pages` build to live demo URL.

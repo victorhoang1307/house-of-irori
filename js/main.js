@@ -162,32 +162,92 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   }
 
-  // 5. Blogs Page #category Tag Filter
+  // 5. Load More Pagination (Occasionals & Events)
+  document.querySelectorAll('[data-load-more]').forEach((btn) => {
+    if (btn.getAttribute('data-load-more') === 'blogs') return;
+    btn.addEventListener('click', () => {
+      const section = btn.closest('section') || document;
+      section.querySelectorAll('[data-extra-item]').forEach((item) => {
+        item.hidden = false;
+      });
+      btn.hidden = true;
+    });
+  });
+
+  // 6. Blogs Page #category Tag Filter + ?category= URL Query + Load More
   const filterButtons = Array.from(document.querySelectorAll('[data-filter-category]'));
   const blogGrid = document.getElementById('blogs-grid');
+  const blogsLoadMore = document.querySelector('[data-load-more="blogs"]');
 
   if (filterButtons.length > 0 && blogGrid) {
     const blogCards = Array.from(blogGrid.querySelectorAll('.news-card'));
+    const validCategories = new Set(
+      filterButtons.map((b) => b.getAttribute('data-filter-category'))
+    );
     let activeCategory = null;
+    let blogsExpanded = false;
+
+    const applyBlogState = (updateUrl) => {
+      filterButtons.forEach((b) => {
+        const isPressed = b.getAttribute('data-filter-category') === activeCategory;
+        b.classList.toggle('is-active', isPressed);
+        b.setAttribute('aria-pressed', String(isPressed));
+      });
+
+      blogCards.forEach((card) => {
+        const cardCat = card.getAttribute('data-category');
+        const isExtra = card.hasAttribute('data-extra-item');
+        card.hidden = activeCategory
+          ? cardCat !== activeCategory
+          : !blogsExpanded && isExtra;
+      });
+
+      if (blogsLoadMore) {
+        blogsLoadMore.hidden = Boolean(activeCategory) || blogsExpanded;
+      }
+
+      if (updateUrl && window.history && window.history.replaceState) {
+        const url = new URL(window.location.href);
+        if (activeCategory) {
+          url.searchParams.set('category', activeCategory);
+        } else {
+          url.searchParams.delete('category');
+        }
+        window.history.replaceState(null, '', url.pathname + url.search + url.hash);
+      }
+    };
+
+    const initialCat = (new URLSearchParams(window.location.search).get('category') || '').toLowerCase();
+    if (validCategories.has(initialCat)) {
+      activeCategory = initialCat;
+    }
+    applyBlogState(false);
 
     filterButtons.forEach((btn) => {
       btn.addEventListener('click', () => {
         const clickedCat = btn.getAttribute('data-filter-category');
-        // Clicking the already active category resets to show all articles
         activeCategory = activeCategory === clickedCat ? null : clickedCat;
-
-        filterButtons.forEach((b) => {
-          const isPressed = b.getAttribute('data-filter-category') === activeCategory;
-          b.classList.toggle('is-active', isPressed);
-          b.setAttribute('aria-pressed', String(isPressed));
-        });
-
-        blogCards.forEach((card) => {
-          const cardCat = card.getAttribute('data-category');
-          card.hidden = Boolean(activeCategory && cardCat !== activeCategory);
-        });
+        applyBlogState(true);
       });
     });
+
+    blogGrid.addEventListener('click', (e) => {
+      const catLink = e.target.closest('[data-category-link]');
+      if (!catLink) return;
+      const targetCat = (catLink.getAttribute('data-category-link') || '').toLowerCase();
+      if (validCategories.has(targetCat)) {
+        e.preventDefault();
+        activeCategory = targetCat;
+        applyBlogState(true);
+      }
+    });
+
+    if (blogsLoadMore) {
+      blogsLoadMore.addEventListener('click', () => {
+        blogsExpanded = true;
+        applyBlogState(false);
+      });
+    }
   }
 
   // 6. Google Reviews Slider Controls + Autoplay

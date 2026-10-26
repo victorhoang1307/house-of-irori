@@ -177,6 +177,20 @@ assert.ok(
   'css/style.css must implement native scroll-driven parallax with feature detection and prefers-reduced-motion'
 );
 
+// Phase 2B Slice 3: Larger .category-pill & .btn-load-more + .menu-book-spread styles
+const categoryPillMatch = css.match(/\.category-pill\s*\{([^}]*)\}/s);
+assert.ok(categoryPillMatch, 'Missing .category-pill rule in css/style.css');
+const pillMinBlock = categoryPillMatch[1].match(/min-block-size:\s*(\d+(?:\.\d+)?)px/);
+const pillFontSize = categoryPillMatch[1].match(/font-size:\s*(\d+(?:\.\d+)?)px/);
+assert.ok(
+  pillMinBlock && Number(pillMinBlock[1]) >= 34 && pillFontSize && Number(pillFontSize[1]) >= 13.5,
+  '.category-pill must have larger sizing (min-block-size >= 34px, font-size >= 13.5px)'
+);
+assert.ok(
+  css.includes('.btn-load-more') && css.includes('.menu-book-spread'),
+  'css/style.css must style .btn-load-more and .menu-book-spread'
+);
+
 console.log(`✓ css/style.css passes token and budget checks (${(cssStat.size / 1024).toFixed(1)} KB).`);
 
 // 4. Verify JS interactive module & size budget
@@ -190,6 +204,12 @@ assert.ok(
     jsSource.includes('setInterval') &&
     jsSource.includes('IntersectionObserver'),
   'js/main.js must implement carousel autoplay with hover pause and IntersectionObserver parallax fallback'
+);
+assert.ok(
+  jsSource.includes('data-load-more') &&
+    jsSource.includes('data-extra-item') &&
+    jsSource.includes('URLSearchParams'),
+  'js/main.js must handle Load More buttons and ?category= URL query filtering'
 );
 console.log(`✓ js/main.js passes budget check (${(jsStat.size / 1024).toFixed(1)} KB).`);
 
@@ -210,6 +230,9 @@ const subpageSpecs = [
       'data-cms-item="occasional-menu"',
       'data-menu-tab="cocktail"',
       'data-menu-tab="food"',
+      'class="menu-book-spread"',
+      'data-load-more="occasional-menu"',
+      'data-extra-item',
       'id="mobile-reservations-bar"',
       'fetchpriority="high"',
     ],
@@ -227,6 +250,8 @@ const subpageSpecs = [
       'data-cms-collection="events"',
       'data-cms-item="event"',
       'data-carousel="upcoming"',
+      'data-load-more="occasional-events"',
+      'data-extra-item',
       'id="mobile-reservations-bar"',
       'fetchpriority="high"',
     ],
@@ -246,6 +271,9 @@ const subpageSpecs = [
       'data-cms-collection="articles"',
       'data-cms-item="article"',
       'data-filter-category=',
+      'data-load-more="blogs"',
+      'data-extra-item',
+      'blogs.html?category=interior',
       'href="blog-detail.html"',
       'id="mobile-reservations-bar"',
       'fetchpriority="high"',
@@ -263,6 +291,9 @@ const subpageSpecs = [
     hooks: [
       'data-cms-collection="articles"',
       'data-cms-item="article"',
+      'href="blogs.html?category=interior"',
+      'href="blogs.html?category=concept"',
+      'href="blogs.html?category=club"',
       'id="news-prev"',
       'id="news-next"',
       'id="mobile-reservations-bar"',
@@ -299,5 +330,17 @@ for (const spec of subpageSpecs) {
   }
   console.log(`✓ ${spec.file} passes all copy, Strapi attribute, and mobile fixed CTA checks.`);
 }
+
+// Verify menu.html food panel does not duplicate cocktail panel image
+const menuHtml = fs.readFileSync(path.join(ROOT, 'menu.html'), 'utf8');
+const foodPanelMatch = menuHtml.match(/data-menu-panel="food"[^>]*>([\s\S]*?)<\/section>/);
+assert.ok(
+  foodPanelMatch && !foodPanelMatch[1].includes('menu-showcase-1.jpg'),
+  'menu.html data-menu-panel="food" must render distinct food content instead of duplicating menu-showcase-1.jpg'
+);
+assert.ok(
+  html.includes('blogs.html?category='),
+  'index.html Latest News cards must include clickable category tag links (blogs.html?category=...)'
+);
 
 console.log('ALL VERIFICATION CHECKS PASSED!');
