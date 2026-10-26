@@ -214,34 +214,36 @@
 
       <div class="split-level__media-col" data-carousel="alley">
         <div class="carousel__viewport">
-          <div class="carousel__slide is-active" data-slide-index="0">
-            <img
-              src="assets/images/level1-alley.jpg"
-              alt="The Alley — narrow lantern-lit wooden passage inspired by 1970s Tokyo"
-              loading="lazy"
-              width="960"
-              height="530"
-            >
-          </div>
-          <div class="carousel__slide" data-slide-index="1" hidden>
-            <img
-              src="assets/images/collage-interior.jpg"
-              alt="Intimate timber architecture and vintage Japanese signage along The Alley"
-              loading="lazy"
-              fetchpriority="low"
-              width="960"
-              height="530"
-            >
-          </div>
-          <div class="carousel__slide" data-slide-index="2" hidden>
-            <img
-              src="assets/images/floating-banner.jpg"
-              alt="Warm tungsten glow across aged wooden walls in Level One"
-              loading="lazy"
-              fetchpriority="low"
-              width="960"
-              height="530"
-            >
+          <div class="carousel__track">
+            <div class="carousel__slide is-active" data-slide-index="0" aria-hidden="false">
+              <img
+                src="assets/images/level1-alley.jpg"
+                alt="The Alley — narrow lantern-lit wooden passage inspired by 1970s Tokyo"
+                loading="lazy"
+                width="960"
+                height="530"
+              >
+            </div>
+            <div class="carousel__slide" data-slide-index="1" aria-hidden="true" inert>
+              <img
+                src="assets/images/collage-interior.jpg"
+                alt="Intimate timber architecture and vintage Japanese signage along The Alley"
+                loading="lazy"
+                fetchpriority="low"
+                width="960"
+                height="530"
+              >
+            </div>
+            <div class="carousel__slide" data-slide-index="2" aria-hidden="true" inert>
+              <img
+                src="assets/images/floating-banner.jpg"
+                alt="Warm tungsten glow across aged wooden walls in Level One"
+                loading="lazy"
+                fetchpriority="low"
+                width="960"
+                height="530"
+              >
+            </div>
           </div>
         </div>
         <div class="carousel__dots" role="group" aria-label="The Alley gallery slides">
@@ -256,34 +258,36 @@
     <section class="split-level split-level--two" id="level-two">
       <div class="split-level__media-col" data-carousel="bar">
         <div class="carousel__viewport">
-          <div class="carousel__slide is-active" data-slide-index="0">
-            <img
-              src="assets/images/level2-bar.jpg"
-              alt="The Bar — guests gathered at the intimate wooden counter watching the bartender"
-              loading="lazy"
-              width="960"
-              height="530"
-            >
-          </div>
-          <div class="carousel__slide" data-slide-index="1" hidden>
-            <img
-              src="assets/images/footer-glimpse-bg.jpg"
-              alt="Handcrafted spirits shelf and warm ambient lighting at The Bar"
-              loading="lazy"
-              fetchpriority="low"
-              width="960"
-              height="530"
-            >
-          </div>
-          <div class="carousel__slide" data-slide-index="2" hidden>
-            <img
-              src="assets/images/collage-interior.jpg"
-              alt="Quiet precision and Japanese omotenashi at Level Two counter"
-              loading="lazy"
-              fetchpriority="low"
-              width="960"
-              height="530"
-            >
+          <div class="carousel__track">
+            <div class="carousel__slide is-active" data-slide-index="0" aria-hidden="false">
+              <img
+                src="assets/images/level2-bar.jpg"
+                alt="The Bar — guests gathered at the intimate wooden counter watching the bartender"
+                loading="lazy"
+                width="960"
+                height="530"
+              >
+            </div>
+            <div class="carousel__slide" data-slide-index="1" aria-hidden="true" inert>
+              <img
+                src="assets/images/footer-glimpse-bg.jpg"
+                alt="Handcrafted spirits shelf and warm ambient lighting at The Bar"
+                loading="lazy"
+                fetchpriority="low"
+                width="960"
+                height="530"
+              >
+            </div>
+            <div class="carousel__slide" data-slide-index="2" aria-hidden="true" inert>
+              <img
+                src="assets/images/collage-interior.jpg"
+                alt="Quiet precision and Japanese omotenashi at Level Two counter"
+                loading="lazy"
+                fetchpriority="low"
+                width="960"
+                height="530"
+              >
+            </div>
           </div>
         </div>
         <div class="carousel__dots" role="group" aria-label="The Bar gallery slides">
@@ -500,6 +504,7 @@
           </button>
 
           <!-- Strapi-ready Articles Collection -->
+          <div class="latest-news__viewport">
           <div class="latest-news__grid" data-cms-collection="articles" id="news-track">
             <!-- Article 1 -->
             <article class="news-card" data-cms-item="article">
@@ -674,6 +679,7 @@
                 </a>
               </div>
             </article>
+          </div>
           </div>
 
           <button type="button" class="slider-btn slider-btn--light latest-news__nav latest-news__nav--next" id="news-next" aria-label="Next articles">

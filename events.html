@@ -133,33 +133,35 @@
             </button>
 
             <div class="upcoming-carousel__viewport">
-              <div class="carousel__slide is-active" data-slide-index="0">
-                <img
-                  src="assets/images/event-upcoming-featured.jpg"
-                  alt="Featured Upcoming Guestshift at House of IRORI"
-                  width="970"
-                  height="683"
-                >
-              </div>
-              <div class="carousel__slide" data-slide-index="1" hidden>
-                <img
-                  src="assets/images/event-wild-turkey.jpg"
-                  alt="Wild Turkey 8ys Takeover Night at House of IRORI"
-                  loading="lazy"
-                  fetchpriority="low"
-                  width="970"
-                  height="683"
-                >
-              </div>
-              <div class="carousel__slide" data-slide-index="2" hidden>
-                <img
-                  src="assets/images/level2-bar.jpg"
-                  alt="Intimate Japanese Spirits Tasting at Level Two Counter"
-                  loading="lazy"
-                  fetchpriority="low"
-                  width="970"
-                  height="683"
-                >
+              <div class="carousel__track">
+                <div class="carousel__slide is-active" data-slide-index="0" aria-hidden="false">
+                  <img
+                    src="assets/images/event-upcoming-featured.jpg"
+                    alt="Featured Upcoming Guestshift at House of IRORI"
+                    width="970"
+                    height="683"
+                  >
+                </div>
+                <div class="carousel__slide" data-slide-index="1" aria-hidden="true" inert>
+                  <img
+                    src="assets/images/event-wild-turkey.jpg"
+                    alt="Wild Turkey 8ys Takeover Night at House of IRORI"
+                    loading="lazy"
+                    fetchpriority="low"
+                    width="970"
+                    height="683"
+                  >
+                </div>
+                <div class="carousel__slide" data-slide-index="2" aria-hidden="true" inert>
+                  <img
+                    src="assets/images/level2-bar.jpg"
+                    alt="Intimate Japanese Spirits Tasting at Level Two Counter"
+                    loading="lazy"
+                    fetchpriority="low"
+                    width="970"
+                    height="683"
+                  >
+                </div>
               </div>
 
               <div class="upcoming-carousel__dots" role="group" aria-label="Upcoming event slides">

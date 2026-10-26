@@ -21,6 +21,8 @@ document.addEventListener('DOMContentLoaded', () => {
     let timerId = null;
     let isHovered = false;
     let isFocused = false;
+    let inView = !('IntersectionObserver' in window);
+    let warmed = false;
 
     const stop = () => {
       if (timerId !== null) {
@@ -31,10 +33,27 @@ document.addEventListener('DOMContentLoaded', () => {
 
     const start = () => {
       stop();
-      if (!isHovered && !isFocused && !document.hidden) {
+      if (inView && !isHovered && !isFocused && !document.hidden) {
         timerId = setInterval(stepFn, effectiveInterval);
       }
     };
+
+    if ('IntersectionObserver' in window) {
+      new IntersectionObserver(
+        (entries) => {
+          inView = Boolean(entries[0] && entries[0].isIntersecting);
+          if (inView && !warmed) {
+            warmed = true;
+            containerEl.querySelectorAll('img[loading="lazy"]').forEach((img) => {
+              img.removeAttribute('loading');
+            });
+          }
+          if (inView) start();
+          else stop();
+        },
+        { threshold: 0.05 }
+      ).observe(containerEl);
+    }
 
     containerEl.addEventListener('mouseenter', () => {
       isHovered = true;
@@ -70,11 +89,7 @@ document.addEventListener('DOMContentLoaded', () => {
   const header = document.getElementById('site-header');
   const syncHeaderScroll = () => {
     if (!header) return;
-    if (window.scrollY > 60) {
-      header.classList.add('is-scrolled');
-    } else {
-      header.classList.remove('is-scrolled');
-    }
+    header.classList.toggle('is-scrolled', window.scrollY > 40);
   };
   window.addEventListener('scroll', syncHeaderScroll, { passive: true });
   syncHeaderScroll();
@@ -98,8 +113,9 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   }
 
-  // 3. Multi-Carousel Controller (Level One, Level Two, and Events UP COMING)
+  // 3. Multi-Carousel Horizontal Track Slider (Level One, Level Two, Events UP COMING)
   document.querySelectorAll('[data-carousel]').forEach((carouselEl) => {
+    const track = carouselEl.querySelector('.carousel__track');
     const slides = Array.from(carouselEl.querySelectorAll('.carousel__slide'));
     const dots = Array.from(carouselEl.querySelectorAll('.carousel__dot'));
     const prevBtn = carouselEl.querySelector('[data-carousel-prev]');
@@ -107,11 +123,16 @@ document.addEventListener('DOMContentLoaded', () => {
     let currentIdx = 0;
 
     const activateSlide = (targetIndex) => {
+      if (!slides.length) return;
       currentIdx = (targetIndex + slides.length) % slides.length;
+      if (track) {
+        track.style.transform = `translate3d(-${currentIdx * 100}%, 0, 0)`;
+      }
       slides.forEach((slide, idx) => {
         const active = idx === currentIdx;
         slide.classList.toggle('is-active', active);
-        slide.hidden = !active;
+        slide.setAttribute('aria-hidden', String(!active));
+        slide.inert = !active;
       });
       dots.forEach((dot, idx) => {
         const active = idx === currentIdx;
@@ -286,7 +307,7 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   }
 
-  // 7. Latest News Slider Controls + Autoplay (Desktop 3-card window + Mobile single-card)
+  // 7. Latest News Horizontal Track Slider + Autoplay
   const newsTrack = document.getElementById('news-track');
   const newsPrev = document.getElementById('news-prev');
   const newsNext = document.getElementById('news-next');
@@ -295,37 +316,39 @@ document.addEventListener('DOMContentLoaded', () => {
     const cards = Array.from(newsTrack.querySelectorAll('.news-card'));
     const sliderWrap = newsTrack.closest('.latest-news__slider-wrap') || newsTrack;
     let activeNewsIdx = 0;
-    newsTrack.classList.add('is-carousel-ready');
+
+    const getPerView = () =>
+      window.matchMedia('(max-width: 768px)').matches
+        ? 1
+        : window.matchMedia('(max-width: 1024px)').matches
+          ? 2
+          : 3;
 
     const syncNewsCards = () => {
-      const total = cards.length;
-      if (total === 0) return;
-      const visibleDesktopMap = new Map();
-      const desktopCount = Math.min(3, total);
-      for (let slot = 0; slot < desktopCount; slot += 1) {
-        visibleDesktopMap.set((activeNewsIdx + slot) % total, slot);
-      }
-
+      const perView = getPerView();
+      const maxIdx = Math.max(0, cards.length - perView);
+      if (activeNewsIdx > maxIdx) activeNewsIdx = maxIdx;
+      if (activeNewsIdx < 0) activeNewsIdx = 0;
+      newsTrack.style.setProperty('--news-idx', String(activeNewsIdx));
       cards.forEach((card, idx) => {
-        card.classList.toggle('is-mobile-visible', idx === activeNewsIdx);
-        const slotOrder = visibleDesktopMap.get(idx);
-        const isDesktopVisible = slotOrder !== undefined;
-        card.classList.toggle('is-desktop-visible', isDesktopVisible);
-        if (isDesktopVisible) {
-          card.style.setProperty('--slot-order', String(slotOrder));
-        }
+        const visible = idx >= activeNewsIdx && idx < activeNewsIdx + perView;
+        card.setAttribute('aria-hidden', String(!visible));
+        card.inert = !visible;
       });
     };
     syncNewsCards();
+    window.addEventListener('resize', syncNewsCards, { passive: true });
 
     const stepNewsNext = () => {
-      activeNewsIdx = (activeNewsIdx + 1) % cards.length;
+      const maxIdx = Math.max(0, cards.length - getPerView());
+      activeNewsIdx = activeNewsIdx >= maxIdx ? 0 : activeNewsIdx + 1;
       syncNewsCards();
     };
     const newsAutoplay = createAutoplay(sliderWrap, stepNewsNext, 4500);
 
     newsPrev.addEventListener('click', () => {
-      activeNewsIdx = (activeNewsIdx - 1 + cards.length) % cards.length;
+      const maxIdx = Math.max(0, cards.length - getPerView());
+      activeNewsIdx = activeNewsIdx <= 0 ? maxIdx : activeNewsIdx - 1;
       syncNewsCards();
       newsAutoplay.restart();
     });
@@ -343,15 +366,18 @@ document.addEventListener('DOMContentLoaded', () => {
     window.CSS.supports('(animation-timeline: view()) and (animation-range: entry)');
 
   if (!supportsScrollDriven && 'IntersectionObserver' in window) {
-    const parallaxSpan = prefersReducedMotion ? 9 : 20; // -4.5%..+4.5% or -10%..+10%
+    const stripSpan = prefersReducedMotion ? 44 : 50; // -22%..+22% or -25%..+25%
+    const glimpseSpan = prefersReducedMotion ? 36 : 40; // -18%..+18% or -20%..+20%
     const parallaxPairs = [
       ...Array.from(document.querySelectorAll('.atmosphere-strip')).map((wrap) => ({
         wrap,
         layer: wrap.querySelector('img'),
+        span: stripSpan,
       })),
       ...Array.from(document.querySelectorAll('.footer-glimpse')).map((wrap) => ({
         wrap,
         layer: wrap.querySelector('.footer-glimpse__bg'),
+        span: glimpseSpan,
       })),
     ].filter((item) => item.layer);
 
@@ -367,7 +393,7 @@ document.addEventListener('DOMContentLoaded', () => {
           const rect = item.wrap.getBoundingClientRect();
           const progress = (vh - rect.top) / (vh + rect.height);
           const clamped = Math.max(0, Math.min(1, progress));
-          const shiftPercent = (clamped - 0.5) * parallaxSpan;
+          const shiftPercent = (clamped - 0.5) * item.span;
           pendingWrites.push([item.layer, shiftPercent.toFixed(2)]);
         });
         pendingWrites.forEach(([layer, shift]) => {
