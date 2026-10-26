@@ -50,6 +50,10 @@ Build the complete, responsive Static HTML5/CSS3/JS implementation of `Home v3B`
 - [x] Task 14: Implement compact Logo + Menu scrolled header (`~110px`), scale-invariant unclipped `.philosophy__watermark`, GPU-composited horizontal `.carousel__track` & `.latest-news__viewport` sliders, and high-visibility scroll parallax (`~0.27x` depth).
 - [x] Task 15: Verify across `1440x900`, `1920x1080`, and `390x844` in Chrome DevTools MCP, run delta QA subagent checks, and redeploy `gh-pages`.
 
+### Phase 9: Mobile Fullscreen Navigation Menu (The Grand Hanoi Style & Motion)
+- [x] Task 16: Implement TDD assertions (`tests/verify-home.mjs`), fullscreen mobile curtain menu + staggered upward item cascade + hamburger-to-`✕` morph (`css/style.css`), and accessible `is-menu-open` / `inert` / `Escape` state controller within the `15 KB` JS budget (`js/main.js`).
+- [x] Task 17: Verify mobile (`390x844` unscrolled & scrolled) and desktop (`1440x900`) runtime behavior in Chrome DevTools MCP, run delta QA subagent checks, and redeploy `gh-pages`.
+
 ## Risks and Mitigations
 | Risk | Impact | Mitigation |
 |------|--------|------------|

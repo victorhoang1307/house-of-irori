@@ -184,3 +184,26 @@
 **Dependencies:** Task 14
 **Files likely touched:** `graphify-out/graph.json`, `tasks/plan.md`, `tasks/todo.md`
 **Estimated scope:** Small
+
+## Task 16: Mobile Fullscreen Navigation Menu (The Grand Hanoi Layout & Motion)
+**Description:** Add TDD assertions in `tests/verify-home.mjs` (Red -> Green) and implement the fullscreen `#4A3B32` mobile menu curtain, unified header color takeover (`.site-header.is-menu-open`), `30x30` hamburger-to-`✕` icon morph, `1s cubic-bezier(0, 0.15, 0, 1)` staggered upward item cascade (`WELCOME`..`CONTACT` + bottom contact block), scroll lock, `inert` background locking, and `Escape`/resize dismissal in `css/style.css` and `js/main.js`.
+**Acceptance criteria:**
+- [x] Clicking `#mobile-menu-trigger` on `<= 768px` opens `.mobile-drawer` fullscreen (`top: var(--mobile-header-h)` to `bottom: 0`) with unified `#4A3B32` header + panel, `✕` icon morph, and staggered upward item glide (`cubic-bezier(0, 0.15, 0, 1)`).
+- [x] `<main>`, `<footer>`, and `#mobile-reservations-bar` become `inert` when open; `Escape`, link click, or resizing `> 768px` closes cleanly and restores focus.
+- [x] `css/style.css` <= `50 KB` and `js/main.js` <= `15 KB` (`15,360 B`).
+**Verification:**
+- [x] `node --check js/main.js && node tests/verify-home.mjs`
+**Dependencies:** Task 15
+**Files likely touched:** `tests/verify-home.mjs`, `css/style.css`, `js/main.js`
+**Estimated scope:** Small
+
+## Task 17: Mobile Fullscreen Menu Browser Verification, QA Subagents, & `gh-pages` Redeployment
+**Description:** Verify fullscreen mobile menu geometry, colors, `✕` morph, staggered motion, scrolled-header offset (`86px` vs `121px`), `Escape` close, and desktop `display: none` in Chrome DevTools MCP (`390x844` & `1440x900`), run delta review across all 4 QA subagents, update `graphify`, and redeploy `gh-pages`.
+**Acceptance criteria:**
+- [x] Zero console errors/warnings or failed requests in Chrome DevTools MCP.
+- [x] Live GitHub Pages demo (`https://victorhoang1307.github.io/house-of-irori/`) returns `HTTP 200` with updated CSS/JS.
+**Verification:**
+- [x] Chrome DevTools MCP + QA subagents + live HTTP 200 check
+**Dependencies:** Task 16
+**Files likely touched:** `graphify-out/graph.json`, `tasks/plan.md`, `tasks/todo.md`
+**Estimated scope:** Small

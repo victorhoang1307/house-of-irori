@@ -100,6 +100,7 @@ const requiredHooks = [
   'id="atmosphere-strip"',
   'id="mobile-menu-trigger"',
   'id="mobile-drawer"',
+  'id="mobile-reservations-bar"',
   'data-carousel="alley"',
   'data-carousel="bar"',
   'id="reviews-prev"',
@@ -209,6 +210,19 @@ assert.ok(
   'css/style.css must style .btn-load-more and .menu-book-spread'
 );
 
+// Phase 9: Fullscreen Mobile Menu (The Grand Hanoi style & staggered motion)
+assert.ok(
+  css.includes('.site-header.is-menu-open') &&
+    css.includes('body.is-menu-open') &&
+    css.includes('--mobile-header-h') &&
+    css.includes('clip-path: inset(0 0 70% 0)') &&
+    css.includes('rotate(-45deg)') &&
+    css.includes('rotate(45deg)') &&
+    css.includes('cubic-bezier(0, 0.15, 0, 1)') &&
+    css.includes('transition-delay:'),
+  'css/style.css must implement fullscreen mobile menu (.is-menu-open), hamburger-to-X rotation, and cubic-bezier(0, 0.15, 0, 1) staggered upward item cascade'
+);
+
 console.log(`✓ css/style.css passes token and budget checks (${(cssStat.size / 1024).toFixed(1)} KB).`);
 
 // 4. Verify JS interactive module & size budget
@@ -231,8 +245,12 @@ assert.ok(
     jsSource.includes('URLSearchParams') &&
     jsSource.includes('.carousel__track') &&
     jsSource.includes('translate3d(-') &&
-    jsSource.includes('--news-idx'),
-  'js/main.js must handle Load More buttons, ?category= URL filtering, and horizontal translate3d track sliders'
+    jsSource.includes('--news-idx') &&
+    jsSource.includes('is-menu-open') &&
+    jsSource.includes('bgRegions') &&
+    jsSource.includes('(min-width: 769px)') &&
+    jsSource.includes('Escape'),
+  'js/main.js must handle Load More buttons, ?category= URL filtering, horizontal translate3d track sliders, and fullscreen mobile menu (is-menu-open + Escape)'
 );
 assert.ok(
   html.includes('class="carousel__track"') &&

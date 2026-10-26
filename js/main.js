@@ -7,6 +7,7 @@
  */
 
 document.addEventListener('DOMContentLoaded', () => {
+  const $$ = (sel, root = document) => [...root.querySelectorAll(sel)];
   const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
   /**
@@ -14,9 +15,7 @@ document.addEventListener('DOMContentLoaded', () => {
    * Tones down cadence gently when prefers-reduced-motion is enabled instead of breaking autoplay.
    */
   const createAutoplay = (containerEl, stepFn, intervalMs = 4500) => {
-    if (!containerEl) {
-      return { restart: () => {} };
-    }
+    if (!containerEl) return { restart: () => {} };
     const effectiveInterval = prefersReducedMotion ? Math.round(intervalMs * 1.3) : intervalMs;
     let timerId = null;
     let isHovered = false;
@@ -25,10 +24,8 @@ document.addEventListener('DOMContentLoaded', () => {
     let warmed = false;
 
     const stop = () => {
-      if (timerId !== null) {
-        clearInterval(timerId);
-        timerId = null;
-      }
+      clearInterval(timerId);
+      timerId = null;
     };
 
     const start = () => {
@@ -41,12 +38,10 @@ document.addEventListener('DOMContentLoaded', () => {
     if ('IntersectionObserver' in window) {
       new IntersectionObserver(
         (entries) => {
-          inView = Boolean(entries[0] && entries[0].isIntersecting);
+          inView = Boolean(entries[0]?.isIntersecting);
           if (inView && !warmed) {
             warmed = true;
-            containerEl.querySelectorAll('img[loading="lazy"]').forEach((img) => {
-              img.removeAttribute('loading');
-            });
+            $$('img[loading="lazy"]', containerEl).forEach((img) => img.removeAttribute('loading'));
           }
           if (inView) start();
           else stop();
@@ -73,13 +68,7 @@ document.addEventListener('DOMContentLoaded', () => {
         start();
       }
     });
-    document.addEventListener('visibilitychange', () => {
-      if (document.hidden) {
-        stop();
-      } else {
-        start();
-      }
-    });
+    document.addEventListener('visibilitychange', () => (document.hidden ? stop() : start()));
 
     start();
     return { restart: start };
@@ -88,7 +77,7 @@ document.addEventListener('DOMContentLoaded', () => {
   // 1. Sticky Header Scroll State
   const header = document.getElementById('site-header');
   const syncHeaderScroll = () => {
-    if (!header) return;
+    if (!header || header.classList.contains('is-menu-open')) return;
     header.classList.toggle('is-scrolled', window.scrollY > 40);
   };
   window.addEventListener('scroll', syncHeaderScroll, { passive: true });
@@ -99,25 +88,46 @@ document.addEventListener('DOMContentLoaded', () => {
   const mobileDrawer = document.getElementById('mobile-drawer');
 
   if (mobileTrigger && mobileDrawer) {
+    const bgRegions = $$('main, footer, #mobile-reservations-bar');
+    const setMenuOpen = (open, restoreFocus = false) => {
+      mobileTrigger.setAttribute('aria-expanded', String(open));
+      mobileDrawer.inert = !open;
+      mobileDrawer.setAttribute('aria-hidden', String(!open));
+      header?.classList.toggle('is-menu-open', open);
+      document.body.classList.toggle('is-menu-open', open);
+      bgRegions.forEach((el) => {
+        el.inert = open;
+      });
+      if (!open && restoreFocus) mobileTrigger.focus();
+    };
+
+    mobileDrawer.hidden = false;
+    setMenuOpen(false);
+
     mobileTrigger.addEventListener('click', () => {
-      const isExpanded = mobileTrigger.getAttribute('aria-expanded') === 'true';
-      mobileTrigger.setAttribute('aria-expanded', String(!isExpanded));
-      mobileDrawer.hidden = isExpanded;
+      setMenuOpen(mobileTrigger.getAttribute('aria-expanded') !== 'true');
     });
 
-    mobileDrawer.querySelectorAll('a').forEach((link) => {
-      link.addEventListener('click', () => {
-        mobileTrigger.setAttribute('aria-expanded', 'false');
-        mobileDrawer.hidden = true;
-      });
+    $$('.mobile-drawer a, .header-logo', header || mobileDrawer).forEach((link) =>
+      link.addEventListener('click', () => setMenuOpen(false))
+    );
+
+    document.addEventListener('keydown', (e) => {
+      if (e.key === 'Escape' && mobileTrigger.getAttribute('aria-expanded') === 'true') {
+        setMenuOpen(false, true);
+      }
+    });
+
+    window.matchMedia('(min-width: 769px)').addEventListener('change', (e) => {
+      if (e.matches) setMenuOpen(false);
     });
   }
 
   // 3. Multi-Carousel Horizontal Track Slider (Level One, Level Two, Events UP COMING)
-  document.querySelectorAll('[data-carousel]').forEach((carouselEl) => {
+  $$('[data-carousel]').forEach((carouselEl) => {
     const track = carouselEl.querySelector('.carousel__track');
-    const slides = Array.from(carouselEl.querySelectorAll('.carousel__slide'));
-    const dots = Array.from(carouselEl.querySelectorAll('.carousel__dot'));
+    const slides = $$('.carousel__slide', carouselEl);
+    const dots = $$('.carousel__dot', carouselEl);
     const prevBtn = carouselEl.querySelector('[data-carousel-prev]');
     const nextBtn = carouselEl.querySelector('[data-carousel-next]');
     let currentIdx = 0;
@@ -165,10 +175,10 @@ document.addEventListener('DOMContentLoaded', () => {
   });
 
   // 4. Menu Page Category Tabs (Cocktail vs Food)
-  const menuTabs = Array.from(document.querySelectorAll('[data-menu-tab]'));
-  const menuPanels = Array.from(document.querySelectorAll('[data-menu-panel]'));
+  const menuTabs = $$('[data-menu-tab]');
+  const menuPanels = $$('[data-menu-panel]');
 
-  if (menuTabs.length > 0 && menuPanels.length > 0) {
+  if (menuTabs.length && menuPanels.length) {
     menuTabs.forEach((tab) => {
       tab.addEventListener('click', () => {
         const targetKey = tab.getAttribute('data-menu-tab');
@@ -187,11 +197,10 @@ document.addEventListener('DOMContentLoaded', () => {
   }
 
   // 5. Load More Pagination (Occasionals & Events)
-  document.querySelectorAll('[data-load-more]').forEach((btn) => {
+  $$('[data-load-more]').forEach((btn) => {
     if (btn.getAttribute('data-load-more') === 'blogs') return;
     btn.addEventListener('click', () => {
-      const section = btn.closest('section') || document;
-      section.querySelectorAll('[data-extra-item]').forEach((item) => {
+      $$('[data-extra-item]', btn.closest('section') || document).forEach((item) => {
         item.hidden = false;
       });
       btn.hidden = true;
@@ -199,15 +208,13 @@ document.addEventListener('DOMContentLoaded', () => {
   });
 
   // 6. Blogs Page #category Tag Filter + ?category= URL Query + Load More
-  const filterButtons = Array.from(document.querySelectorAll('[data-filter-category]'));
+  const filterButtons = $$('[data-filter-category]');
   const blogGrid = document.getElementById('blogs-grid');
   const blogsLoadMore = document.querySelector('[data-load-more="blogs"]');
 
-  if (filterButtons.length > 0 && blogGrid) {
-    const blogCards = Array.from(blogGrid.querySelectorAll('.news-card'));
-    const validCategories = new Set(
-      filterButtons.map((b) => b.getAttribute('data-filter-category'))
-    );
+  if (filterButtons.length && blogGrid) {
+    const blogCards = $$('.news-card', blogGrid);
+    const validCategories = new Set(filterButtons.map((b) => b.getAttribute('data-filter-category')));
     let activeCategory = null;
     let blogsExpanded = false;
 
@@ -219,32 +226,23 @@ document.addEventListener('DOMContentLoaded', () => {
       });
 
       blogCards.forEach((card) => {
-        const cardCat = card.getAttribute('data-category');
-        const isExtra = card.hasAttribute('data-extra-item');
         card.hidden = activeCategory
-          ? cardCat !== activeCategory
-          : !blogsExpanded && isExtra;
+          ? card.getAttribute('data-category') !== activeCategory
+          : !blogsExpanded && card.hasAttribute('data-extra-item');
       });
 
-      if (blogsLoadMore) {
-        blogsLoadMore.hidden = Boolean(activeCategory) || blogsExpanded;
-      }
+      if (blogsLoadMore) blogsLoadMore.hidden = Boolean(activeCategory) || blogsExpanded;
 
-      if (updateUrl && window.history && window.history.replaceState) {
-        const url = new URL(window.location.href);
-        if (activeCategory) {
-          url.searchParams.set('category', activeCategory);
-        } else {
-          url.searchParams.delete('category');
-        }
-        window.history.replaceState(null, '', url.pathname + url.search + url.hash);
+      if (updateUrl && history.replaceState) {
+        const url = new URL(location.href);
+        if (activeCategory) url.searchParams.set('category', activeCategory);
+        else url.searchParams.delete('category');
+        history.replaceState(null, '', url.pathname + url.search + url.hash);
       }
     };
 
-    const initialCat = (new URLSearchParams(window.location.search).get('category') || '').toLowerCase();
-    if (validCategories.has(initialCat)) {
-      activeCategory = initialCat;
-    }
+    const initialCat = (new URLSearchParams(location.search).get('category') || '').toLowerCase();
+    if (validCategories.has(initialCat)) activeCategory = initialCat;
     applyBlogState(false);
 
     filterButtons.forEach((btn) => {
@@ -256,9 +254,7 @@ document.addEventListener('DOMContentLoaded', () => {
     });
 
     blogGrid.addEventListener('click', (e) => {
-      const catLink = e.target.closest('[data-category-link]');
-      if (!catLink) return;
-      const targetCat = (catLink.getAttribute('data-category-link') || '').toLowerCase();
+      const targetCat = e.target.closest('[data-category-link]')?.getAttribute('data-category-link')?.toLowerCase();
       if (validCategories.has(targetCat)) {
         e.preventDefault();
         activeCategory = targetCat;
@@ -266,12 +262,10 @@ document.addEventListener('DOMContentLoaded', () => {
       }
     });
 
-    if (blogsLoadMore) {
-      blogsLoadMore.addEventListener('click', () => {
-        blogsExpanded = true;
-        applyBlogState(false);
-      });
-    }
+    blogsLoadMore?.addEventListener('click', () => {
+      blogsExpanded = true;
+      applyBlogState(false);
+    });
   }
 
   // 6. Google Reviews Slider Controls + Autoplay
@@ -282,23 +276,19 @@ document.addEventListener('DOMContentLoaded', () => {
 
   if (reviewsTrack && reviewsPrev && reviewsNext) {
     const scrollAmount = 263; // card width (245) + gap (18)
-    const scrollBehavior = prefersReducedMotion ? 'auto' : 'smooth';
+    const behavior = prefersReducedMotion ? 'auto' : 'smooth';
     const stepReviewsNext = () => {
       const atEnd = reviewsTrack.scrollLeft + reviewsTrack.clientWidth >= reviewsTrack.scrollWidth - 16;
-      if (atEnd) {
-        reviewsTrack.scrollTo({ left: 0, behavior: scrollBehavior });
-      } else {
-        reviewsTrack.scrollBy({ left: scrollAmount, behavior: scrollBehavior });
-      }
+      reviewsTrack.scrollTo({ left: atEnd ? 0 : reviewsTrack.scrollLeft + scrollAmount, behavior });
     };
     const reviewsAutoplay = createAutoplay(reviewsSlider || reviewsTrack, stepReviewsNext, 4500);
 
     reviewsPrev.addEventListener('click', () => {
-      if (reviewsTrack.scrollLeft <= 8) {
-        reviewsTrack.scrollTo({ left: reviewsTrack.scrollWidth, behavior: scrollBehavior });
-      } else {
-        reviewsTrack.scrollBy({ left: -scrollAmount, behavior: scrollBehavior });
-      }
+      const atStart = reviewsTrack.scrollLeft <= 8;
+      reviewsTrack.scrollTo({
+        left: atStart ? reviewsTrack.scrollWidth : reviewsTrack.scrollLeft - scrollAmount,
+        behavior,
+      });
       reviewsAutoplay.restart();
     });
     reviewsNext.addEventListener('click', () => {
@@ -313,7 +303,7 @@ document.addEventListener('DOMContentLoaded', () => {
   const newsNext = document.getElementById('news-next');
 
   if (newsTrack && newsPrev && newsNext) {
-    const cards = Array.from(newsTrack.querySelectorAll('.news-card'));
+    const cards = $$('.news-card', newsTrack);
     const sliderWrap = newsTrack.closest('.latest-news__slider-wrap') || newsTrack;
     let activeNewsIdx = 0;
 
@@ -327,8 +317,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const syncNewsCards = () => {
       const perView = getPerView();
       const maxIdx = Math.max(0, cards.length - perView);
-      if (activeNewsIdx > maxIdx) activeNewsIdx = maxIdx;
-      if (activeNewsIdx < 0) activeNewsIdx = 0;
+      activeNewsIdx = Math.max(0, Math.min(maxIdx, activeNewsIdx));
       newsTrack.style.setProperty('--news-idx', String(activeNewsIdx));
       cards.forEach((card, idx) => {
         const visible = idx >= activeNewsIdx && idx < activeNewsIdx + perView;
@@ -360,66 +349,53 @@ document.addEventListener('DOMContentLoaded', () => {
   }
 
   // 8. Parallax Fallback for Browsers without Native Scroll-Driven Animations
-  const supportsScrollDriven =
-    typeof window.CSS !== 'undefined' &&
-    typeof window.CSS.supports === 'function' &&
-    window.CSS.supports('(animation-timeline: view()) and (animation-range: entry)');
+  const supportsScrollDriven = window.CSS?.supports?.(
+    '(animation-timeline: view()) and (animation-range: entry)'
+  );
 
   if (!supportsScrollDriven && 'IntersectionObserver' in window) {
     const stripSpan = prefersReducedMotion ? 44 : 50; // -22%..+22% or -25%..+25%
     const glimpseSpan = prefersReducedMotion ? 36 : 40; // -18%..+18% or -20%..+20%
     const parallaxPairs = [
-      ...Array.from(document.querySelectorAll('.atmosphere-strip')).map((wrap) => ({
-        wrap,
-        layer: wrap.querySelector('img'),
-        span: stripSpan,
-      })),
-      ...Array.from(document.querySelectorAll('.footer-glimpse')).map((wrap) => ({
-        wrap,
-        layer: wrap.querySelector('.footer-glimpse__bg'),
-        span: glimpseSpan,
-      })),
+      ...$$('.atmosphere-strip').map((wrap) => ({ wrap, layer: wrap.querySelector('img'), span: stripSpan })),
+      ...$$('.footer-glimpse').map((wrap) => ({ wrap, layer: wrap.querySelector('.footer-glimpse__bg'), span: glimpseSpan })),
     ].filter((item) => item.layer);
 
-    if (parallaxPairs.length > 0) {
+    if (parallaxPairs.length) {
+      const pairMap = new Map(parallaxPairs.map((p) => [p.wrap, p]));
       const visibleSet = new Set();
       let rafPending = false;
 
       const updateParallax = () => {
         rafPending = false;
         const vh = window.innerHeight || 1;
-        const pendingWrites = [];
+        const writes = [];
         visibleSet.forEach((item) => {
           const rect = item.wrap.getBoundingClientRect();
-          const progress = (vh - rect.top) / (vh + rect.height);
-          const clamped = Math.max(0, Math.min(1, progress));
-          const shiftPercent = (clamped - 0.5) * item.span;
-          pendingWrites.push([item.layer, shiftPercent.toFixed(2)]);
+          const clamped = Math.max(0, Math.min(1, (vh - rect.top) / (vh + rect.height)));
+          writes.push([item.layer, ((clamped - 0.5) * item.span).toFixed(2)]);
         });
-        pendingWrites.forEach(([layer, shift]) => {
+        writes.forEach(([layer, shift]) => {
           layer.style.transform = `translate3d(0, ${shift}%, 0)`;
         });
       };
 
       const onScroll = () => {
-        if (!rafPending && visibleSet.size > 0) {
+        if (!rafPending && visibleSet.size) {
           rafPending = true;
-          window.requestAnimationFrame(updateParallax);
+          requestAnimationFrame(updateParallax);
         }
       };
 
       const observer = new IntersectionObserver(
         (entries) => {
           entries.forEach((entry) => {
-            const match = parallaxPairs.find((p) => p.wrap === entry.target);
+            const match = pairMap.get(entry.target);
             if (!match) return;
-            if (entry.isIntersecting) {
-              visibleSet.add(match);
-            } else {
-              visibleSet.delete(match);
-            }
+            if (entry.isIntersecting) visibleSet.add(match);
+            else visibleSet.delete(match);
           });
-          if (visibleSet.size > 0) {
+          if (visibleSet.size) {
             window.addEventListener('scroll', onScroll, { passive: true });
             onScroll();
           } else {
