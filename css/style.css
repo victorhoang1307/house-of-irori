@@ -1153,10 +1153,10 @@ address {
 
 @keyframes iroriParallax {
   from {
-    transform: translate3d(0, -8%, 0);
+    transform: translate3d(0, calc(-1 * var(--parallax-shift, 10%)), 0);
   }
   to {
-    transform: translate3d(0, 8%, 0);
+    transform: translate3d(0, var(--parallax-shift, 10%), 0);
   }
 }
 
@@ -1168,6 +1168,7 @@ address {
 
   .atmosphere-strip img,
   .footer-glimpse__bg {
+    --parallax-shift: 10%;
     animation: iroriParallax linear both;
     animation-timeline: --irori-parallax;
     animation-range: entry 0% exit 100%;
@@ -1177,11 +1178,13 @@ address {
 @media (prefers-reduced-motion: reduce) {
   .hero__discover-arrow,
   .carousel__slide.is-active,
-  .latest-news__grid.is-carousel-ready .news-card.is-desktop-visible,
+  .latest-news__grid.is-carousel-ready .news-card.is-desktop-visible {
+    animation: none;
+  }
+
   .atmosphere-strip img,
   .footer-glimpse__bg {
-    animation: none !important;
-    transform: none !important;
+    --parallax-shift: 4.5%;
   }
 }
 
@@ -1474,17 +1477,6 @@ address {
 .btn-load-more:hover {
   background-color: var(--color-espresso);
   color: var(--bg-cream);
-}
-
-.occasional-section:not(.occasional-section--cream) .btn-load-more {
-  border-color: var(--color-gold);
-  background-color: rgba(198, 161, 91, 0.14);
-  color: var(--bg-cream);
-}
-
-.occasional-section:not(.occasional-section--cream) .btn-load-more:hover {
-  background-color: var(--color-gold);
-  color: var(--bg-dark);
 }
 
 /* Menu Page: Interactive Tabbed Viewer (Figma 622:492) */
@@ -2056,6 +2048,7 @@ address {
 
   .menu-viewer__panel img {
     height: auto;
+    aspect-ratio: 1170 / 660;
   }
 
   .menu-book-spread__pages {

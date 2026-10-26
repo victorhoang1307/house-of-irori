@@ -11,11 +11,13 @@ document.addEventListener('DOMContentLoaded', () => {
 
   /**
    * Reusable autoplay controller that pauses on hover, keyboard focus, and hidden tab.
+   * Tones down cadence gently when prefers-reduced-motion is enabled instead of breaking autoplay.
    */
   const createAutoplay = (containerEl, stepFn, intervalMs = 4500) => {
-    if (!containerEl || prefersReducedMotion) {
+    if (!containerEl) {
       return { restart: () => {} };
     }
+    const effectiveInterval = prefersReducedMotion ? Math.round(intervalMs * 1.3) : intervalMs;
     let timerId = null;
     let isHoveredOrFocused = false;
 
@@ -29,7 +31,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const start = () => {
       stop();
       if (!isHoveredOrFocused && !document.hidden) {
-        timerId = setInterval(stepFn, intervalMs);
+        timerId = setInterval(stepFn, effectiveInterval);
       }
     };
 
@@ -258,21 +260,22 @@ document.addEventListener('DOMContentLoaded', () => {
 
   if (reviewsTrack && reviewsPrev && reviewsNext) {
     const scrollAmount = 263; // card width (245) + gap (18)
+    const scrollBehavior = prefersReducedMotion ? 'auto' : 'smooth';
     const stepReviewsNext = () => {
       const atEnd = reviewsTrack.scrollLeft + reviewsTrack.clientWidth >= reviewsTrack.scrollWidth - 16;
       if (atEnd) {
-        reviewsTrack.scrollTo({ left: 0, behavior: 'smooth' });
+        reviewsTrack.scrollTo({ left: 0, behavior: scrollBehavior });
       } else {
-        reviewsTrack.scrollBy({ left: scrollAmount, behavior: 'smooth' });
+        reviewsTrack.scrollBy({ left: scrollAmount, behavior: scrollBehavior });
       }
     };
     const reviewsAutoplay = createAutoplay(reviewsSlider || reviewsTrack, stepReviewsNext, 4500);
 
     reviewsPrev.addEventListener('click', () => {
       if (reviewsTrack.scrollLeft <= 8) {
-        reviewsTrack.scrollTo({ left: reviewsTrack.scrollWidth, behavior: 'smooth' });
+        reviewsTrack.scrollTo({ left: reviewsTrack.scrollWidth, behavior: scrollBehavior });
       } else {
-        reviewsTrack.scrollBy({ left: -scrollAmount, behavior: 'smooth' });
+        reviewsTrack.scrollBy({ left: -scrollAmount, behavior: scrollBehavior });
       }
       reviewsAutoplay.restart();
     });
@@ -338,7 +341,8 @@ document.addEventListener('DOMContentLoaded', () => {
     typeof window.CSS.supports === 'function' &&
     window.CSS.supports('(animation-timeline: view()) and (animation-range: entry)');
 
-  if (!prefersReducedMotion && !supportsScrollDriven && 'IntersectionObserver' in window) {
+  if (!supportsScrollDriven && 'IntersectionObserver' in window) {
+    const parallaxSpan = prefersReducedMotion ? 9 : 20; // -4.5%..+4.5% or -10%..+10%
     const parallaxPairs = [
       ...Array.from(document.querySelectorAll('.atmosphere-strip')).map((wrap) => ({
         wrap,
@@ -361,7 +365,7 @@ document.addEventListener('DOMContentLoaded', () => {
           const rect = item.wrap.getBoundingClientRect();
           const progress = (vh - rect.top) / (vh + rect.height);
           const clamped = Math.max(0, Math.min(1, progress));
-          const shiftPercent = (clamped - 0.5) * 16; // -8% to +8%
+          const shiftPercent = (clamped - 0.5) * parallaxSpan;
           item.layer.style.transform = `translate3d(0, ${shiftPercent.toFixed(2)}%, 0)`;
         });
       };

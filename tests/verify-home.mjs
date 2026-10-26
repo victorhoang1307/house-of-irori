@@ -343,4 +343,13 @@ assert.ok(
   'index.html Latest News cards must include clickable category tag links (blogs.html?category=...)'
 );
 
+// Verify all local asset src/href references across all 5 HTML files resolve on disk
+for (const htmlFile of ['index.html', 'menu.html', 'events.html', 'blogs.html', 'blog-detail.html']) {
+  const srcText = fs.readFileSync(path.join(ROOT, htmlFile), 'utf8');
+  for (const m of srcText.matchAll(/\b(?:src|href)="(assets\/[^"#?]+)"/g)) {
+    const assetDiskPath = path.join(ROOT, m[1]);
+    assert.ok(fs.existsSync(assetDiskPath), `${htmlFile} references missing local asset: ${m[1]}`);
+  }
+}
+
 console.log('ALL VERIFICATION CHECKS PASSED!');
