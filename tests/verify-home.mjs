@@ -122,8 +122,11 @@ for (const hook of requiredHooks) {
 }
 
 assert.ok(
-  !html.includes('class="reviews-map__map-link"') && !html.toLowerCase().includes('house of merlin'),
-  'index.html must replace full-surface .reviews-map__map-link anchor with interactive #irori-map and contain zero "House of Merlin" text'
+  !html.includes('class="reviews-map__map-link"') &&
+    !html.toLowerCase().includes('house of merlin') &&
+    html.includes('href="css/style.css?v=') &&
+    html.includes('src="js/main.js?v='),
+  'index.html must replace .reviews-map__map-link with #irori-map, cache-bust css/style.css & js/main.js, and contain zero "House of Merlin" text'
 );
 
 // Ensure modern-web-guidance LCP image fetchpriority="high" is applied
@@ -285,18 +288,23 @@ assert.ok(
 );
 assert.ok(
   jsSource.includes('leaflet@1.9.4') &&
+    jsSource.includes('cdn.jsdelivr.net') &&
+    jsSource.includes('unpkg.com') &&
     jsSource.includes("crossOrigin: 'anonymous'") &&
     jsSource.includes('sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=') &&
     jsSource.includes('sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=') &&
     jsSource.includes('scrollWheelZoom: false') &&
     jsSource.includes('touchZoom: true') &&
     jsSource.includes('dragging: true') &&
-    jsSource.includes('tile.openstreetmap.org/{z}/{x}/{y}.png') &&
+    jsSource.includes('server.arcgisonline.com/ArcGIS/rest/services/World_Street_Map/MapServer/tile/{z}/{y}/{x}') &&
+    jsSource.includes('tile.openstreetmap.fr/hot/{z}/{x}/{y}.png') &&
+    !jsSource.includes('tile.openstreetmap.org') &&
+    jsSource.includes('tileerror') &&
     jsSource.includes('is-ready') &&
     jsSource.includes('House of IRORI') &&
     jsSource.includes('map-zoom-in') &&
     jsSource.includes('map-zoom-out'),
-  'js/main.js must lazy-load Leaflet 1.9.4 with SHA-256 SRI, OpenStreetMap tiles, House of IRORI marker, zoom buttons, and mobile pan/pinch-zoom'
+  'js/main.js must lazy-load Leaflet 1.9.4 with multi-CDN SRI failover, CloudFront Esri World_Street_Map tiles + tileerror backup, House of IRORI marker, zoom buttons, and mobile pan/pinch-zoom'
 );
 assert.ok(
   html.includes('class="carousel__track"') &&

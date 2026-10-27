@@ -233,7 +233,7 @@ document.addEventListener('DOMContentLoaded', () => {
     }
   }
 
-  // 9. Interactive Grayscale Homepage Map (Leaflet 1.9.4 + OpenStreetMap)
+  // 9. Interactive Grayscale Homepage Map (Leaflet 1.9.4 + Multi-CDN Failover)
   const mapEl = $('irori-map'), zoomIn = $('map-zoom-in'), zoomOut = $('map-zoom-out');
   if (mapEl) {
     const clampNum = (v, min, max, fb) => {
@@ -244,31 +244,51 @@ document.addEventListener('DOMContentLoaded', () => {
     const lat = clampNum(mapEl.dataset.mapLat, -90, 90, 10.78492);
     const lng = clampNum(mapEl.dataset.mapLng, -180, 180, 106.7006);
     const zoom = clampNum(mapEl.dataset.mapZoom, 13, 19, 16);
-    const cdn = 'https://unpkg.com/leaflet@1.9.4/dist/';
+    const cdns = ['https://cdn.jsdelivr.net/npm/leaflet@1.9.4/dist/', 'https://unpkg.com/leaflet@1.9.4/dist/'];
     let mapP = null;
 
-    const loadTag = (tag, attrs, pre = false) => new Promise((res, rej) => {
-      const el = Object.assign(document.createElement(tag), attrs, { crossOrigin: 'anonymous', onload: res, onerror: rej });
+    const loadOnce = (tag, attrs, pre) => new Promise((res, rej) => {
+      const el = Object.assign(document.createElement(tag), attrs, {
+        crossOrigin: 'anonymous',
+        onload: res,
+        onerror: () => { el.remove(); rej(); },
+      });
       pre ? document.head.prepend(el) : document.head.append(el);
     });
+    const loadAsset = (tag, urlKey, file, integrity, pre = false) =>
+      loadOnce(tag, { ...(tag === 'link' ? { rel: 'stylesheet' } : {}), [urlKey]: cdns[0] + file, integrity }, pre)
+        .catch(() => loadOnce(tag, { ...(tag === 'link' ? { rel: 'stylesheet' } : {}), [urlKey]: cdns[1] + file, integrity }, pre));
 
     const initMap = () => mapP || (mapP = Promise.all([
-      loadTag('link', { rel: 'stylesheet', href: `${cdn}leaflet.css`, integrity: 'sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=' }, true),
-      window.L ? 0 : loadTag('script', { src: `${cdn}leaflet.js`, integrity: 'sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=' }),
+      loadAsset('link', 'href', 'leaflet.css', 'sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=', true),
+      window.L ? 0 : loadAsset('script', 'src', 'leaflet.js', 'sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo='),
     ]).then(() => {
       const L = window.L;
       const map = L.map(mapEl, {
         center: [lat, lng], zoom, minZoom: 13, maxZoom: 19, zoomControl: false,
         scrollWheelZoom: false, touchZoom: true, dragging: true,
       });
-      const tiles = L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
-        maxZoom: 19,
-        attribution: '&copy; <a href="https://www.openstreetmap.org/copyright" target="_blank" rel="noopener noreferrer">OpenStreetMap</a> contributors',
+      let okCount = 0, backedUp = false;
+      const markReady = () => { if (++okCount >= 4) mapEl.classList.add('is-ready'); };
+      const attachTiles = (url, opts) => {
+        const layer = L.tileLayer(url, { maxZoom: 19, ...opts });
+        layer.on('tileload', markReady);
+        layer.on('load', () => okCount && mapEl.classList.add('is-ready'));
+        layer.on('tileerror', () => {
+          if (!okCount && !backedUp) {
+            backedUp = true;
+            map.removeLayer(layer);
+            attachTiles('https://{s}.tile.openstreetmap.fr/hot/{z}/{x}/{y}.png', {
+              subdomains: 'abc',
+              attribution: '&copy; <a href="https://www.openstreetmap.org/copyright" target="_blank" rel="noopener noreferrer">OpenStreetMap</a>',
+            });
+          }
+        });
+        return layer.addTo(map);
+      };
+      attachTiles('https://server.arcgisonline.com/ArcGIS/rest/services/World_Street_Map/MapServer/tile/{z}/{y}/{x}', {
+        attribution: 'Tiles &copy; Esri &mdash; Esri, HERE, OpenStreetMap',
       });
-      let tileOk = false;
-      tiles.once('tileload', () => (tileOk = true));
-      tiles.on('load', () => tileOk && mapEl.classList.add('is-ready'));
-      tiles.addTo(map);
       L.marker([lat, lng], {
         interactive: false, keyboard: false,
         icon: L.divIcon({
