@@ -207,3 +207,26 @@
 **Dependencies:** Task 16
 **Files likely touched:** `graphify-out/graph.json`, `tasks/plan.md`, `tasks/todo.md`
 **Estimated scope:** Small
+
+## Task 18: Interactive Grayscale Homepage Map (Zoom Controls + Mobile Pan & Pinch-Zoom)
+**Description:** Extend `tests/verify-home.mjs` (TDD Red -> Green), replace the static `<a class="reviews-map__map-link">` in `index.html` with `#irori-map` (`data-map-lat="10.78492"`, `data-map-lng="106.7006"`, `data-map-zoom="16"`, progressive-enhancement `saigon-map.jpg` fallback, `#map-zoom-in` / `#map-zoom-out` `44x44` buttons, and `.map-external-link`), style isolated map stacking (`isolation: isolate`), monochrome tiles, custom `House of IRORI — Cocktail Bar & Eatery` pin, and controls in `css/style.css` (`<= 50 KB`), and lazy-load `Leaflet 1.9.4` with SHA-256 SRI in `js/main.js` (`<= 15 KB`) enabling mobile touch pan + pinch-to-zoom (`dragging: true`, `touchZoom: true`) and desktop pan (`scrollWheelZoom: false`).
+**Acceptance criteria:**
+- [x] `#irori-map` renders crisp monochrome OpenStreetMap tiles (`tile.openstreetmap.org/{z}/{x}/{y}.png`) centered on `17/3 Nguyen Thi Minh Khai` (`10.78492, 106.7006`) with a custom `House of IRORI — Cocktail Bar & Eatery` pin and zero `"House Of Merlin"` text.
+- [x] `#map-zoom-in` (`+`) and `#map-zoom-out` (`−`) buttons (`>= 44x44px`) zoom smoothly across desktop & mobile and disable at `minZoom`/`maxZoom`; mobile supports 2D touch pan + 2-finger pinch-zoom while desktop keeps `scrollWheelZoom: false`.
+- [x] `css/style.css` `<= 50 KB` (`51,200 B`) and `js/main.js` `<= 15 KB` (`15,360 B`) with `node tests/verify-home.mjs` passing.
+**Verification:**
+- [x] `node --check js/main.js && node tests/verify-home.mjs`
+**Dependencies:** Task 17
+**Files likely touched:** `tests/verify-home.mjs`, `index.html`, `css/style.css`, `js/main.js`
+**Estimated scope:** Medium
+
+## Task 19: Interactive Map Browser Verification, QA Subagents, & `gh-pages` Redeployment
+**Description:** Verify desktop (`1440x900`) and mobile (`390x844`) map rendering, `+`/`−` zoom controls, drag-pan, multi-touch pinch-zoom, stacking below sticky header/mobile menu, and `0` console/network errors in Chrome DevTools MCP (port `8091`), run all 4 QA subagents (`code-reviewer`, `web-performance-auditor`, `security-auditor`, `test-engineer`), update `graphify`, and redeploy `gh-pages`.
+**Acceptance criteria:**
+- [x] Zero console errors/warnings or failed requests in Chrome DevTools MCP across desktop and mobile viewports.
+- [x] All 4 QA subagents approve with zero Critical/High/Medium findings, and live GitHub Pages (`https://victorhoang1307.github.io/house-of-irori/`) returns `HTTP 200` with `#irori-map` deployed.
+**Verification:**
+- [x] Chrome DevTools MCP + 4 QA subagents + live HTTP 200 check
+**Dependencies:** Task 18
+**Files likely touched:** `graphify-out/graph.json`, `tasks/plan.md`, `tasks/todo.md`
+**Estimated scope:** Small

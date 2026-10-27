@@ -54,6 +54,10 @@ Build the complete, responsive Static HTML5/CSS3/JS implementation of `Home v3B`
 - [x] Task 16: Implement TDD assertions (`tests/verify-home.mjs`), fullscreen mobile curtain menu + staggered upward item cascade + hamburger-to-`✕` morph (`css/style.css`), and accessible `is-menu-open` / `inert` / `Escape` state controller within the `15 KB` JS budget (`js/main.js`).
 - [x] Task 17: Verify mobile (`390x844` unscrolled & scrolled) and desktop (`1440x900`) runtime behavior in Chrome DevTools MCP, run delta QA subagent checks, and redeploy `gh-pages`.
 
+### Phase 10: Interactive Grayscale Homepage Map (Zoom Controls + Mobile Pan & Pinch-Zoom)
+- [x] Task 18: Add TDD assertions (`tests/verify-home.mjs`) and implement `#irori-map` markup (`index.html`), isolated stacking & luxury `+`/`−` zoom controls (`css/style.css`), and lazy-loaded `Leaflet 1.9.4` grayscale tile + custom `House of IRORI` pin + mobile pan/pinch-zoom controller (`js/main.js`) within the `50 KB` CSS and `15 KB` JS budgets.
+- [x] Task 19: Verify desktop (`1440x900`) and mobile (`390x844`, touch pan & pinch-zoom + `+`/`−` buttons) runtime behavior in Chrome DevTools MCP, run all 4 QA subagents, update `graphify`, and redeploy `gh-pages`.
+
 ## Risks and Mitigations
 | Risk | Impact | Mitigation |
 |------|--------|------------|

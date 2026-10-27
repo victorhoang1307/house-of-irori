@@ -8,6 +8,8 @@
   <link rel="icon" type="image/png" href="assets/icons/favicon.png">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="dns-prefetch" href="https://unpkg.com">
+  <link rel="dns-prefetch" href="https://tile.openstreetmap.org">
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Lora:wght@400;500&family=Playfair+Display:wght@400;500&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="css/style.css">
 </head>
@@ -462,21 +464,43 @@
       </div>
 
       <div class="reviews-map__map-col">
-        <a
-          href="https://maps.google.com/?q=17/3+Nguyen+Thi+Minh+Khai,+Ho+Chi+Minh+City"
-          target="_blank"
-          rel="noopener noreferrer"
-          class="reviews-map__map-link"
-          aria-label="Open House of IRORI location (17/3 Nguyen Thi Minh Khai, HCMC) in Google Maps"
+        <div
+          class="reviews-map__canvas"
+          id="irori-map"
+          data-map-lat="10.78492"
+          data-map-lng="106.7006"
+          data-map-zoom="16"
+          role="region"
+          aria-label="Interactive map showing House of IRORI at 17/3 Nguyen Thi Minh Khai, Sai Gon Ward, HCMC"
         >
           <img
             src="assets/images/saigon-map.jpg"
             alt="Map showing House of IRORI at 17/3 Nguyen Thi Minh Khai, Sai Gon Ward, HCMC"
+            class="reviews-map__fallback"
             loading="lazy"
             width="960"
             height="800"
           >
-        </a>
+        </div>
+        <div class="map-controls" role="group" aria-label="Map zoom controls">
+          <button type="button" class="map-ctrl-btn" id="map-zoom-in" aria-label="Zoom in map">
+            <svg width="16" height="16" viewBox="0 0 16 16" fill="none" aria-hidden="true">
+              <path d="M8 3V13M3 8H13" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/>
+            </svg>
+          </button>
+          <button type="button" class="map-ctrl-btn" id="map-zoom-out" aria-label="Zoom out map">
+            <svg width="16" height="16" viewBox="0 0 16 16" fill="none" aria-hidden="true">
+              <path d="M3 8H13" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/>
+            </svg>
+          </button>
+        </div>
+        <a
+          href="https://maps.google.com/?q=17/3+Nguyen+Thi+Minh+Khai,+Ben+Nghe,+District+1,+Ho+Chi+Minh+City"
+          target="_blank"
+          rel="noopener noreferrer"
+          class="map-external-link"
+          aria-label="Open House of IRORI location (17/3 Nguyen Thi Minh Khai, HCMC) in Google Maps"
+        >Google Maps <span aria-hidden="true">↗</span></a>
       </div>
     </section>
 

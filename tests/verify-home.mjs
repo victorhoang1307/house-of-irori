@@ -107,11 +107,24 @@ const requiredHooks = [
   'id="reviews-next"',
   'id="news-prev"',
   'id="news-next"',
+  'id="irori-map"',
+  'data-map-lat="10.78492"',
+  'data-map-lng="106.7006"',
+  'data-map-zoom="16"',
+  'id="map-zoom-in"',
+  'id="map-zoom-out"',
+  'class="map-controls"',
+  'class="map-external-link"',
 ];
 
 for (const hook of requiredHooks) {
   assert.ok(html.includes(hook), `index.html missing required selector/attribute: ${hook}`);
 }
+
+assert.ok(
+  !html.includes('class="reviews-map__map-link"') && !html.toLowerCase().includes('house of merlin'),
+  'index.html must replace full-surface .reviews-map__map-link anchor with interactive #irori-map and contain zero "House of Merlin" text'
+);
 
 // Ensure modern-web-guidance LCP image fetchpriority="high" is applied
 assert.ok(html.includes('fetchpriority="high"'), 'Missing fetchpriority="high" on LCP image');
@@ -223,6 +236,24 @@ assert.ok(
   'css/style.css must implement fullscreen mobile menu (.is-menu-open), hamburger-to-X rotation, and cubic-bezier(0, 0.15, 0, 1) staggered upward item cascade'
 );
 
+// Phase 10: Interactive Grayscale Homepage Map CSS & Specificity Guard Assertions
+assert.ok(
+  !/\:where\([^)]*(?:\bimg\b|page-hero__bg-img)/.test(css) &&
+    css.includes(':is(.site-header.is-scrolled, .site-header.is-menu-open, .site-header--solid)'),
+  'css/style.css must preserve natural specificity on cover img selectors and :is(...) specificity on .site-header--solid'
+);
+assert.ok(
+  /\.reviews-map__map-col\s*\{[^}]*isolation:\s*isolate/s.test(css) &&
+    /\.reviews-map__fallback\s*\{[^}]*position:\s*absolute/s.test(css) &&
+    css.includes('.reviews-map__canvas.is-ready .reviews-map__fallback') &&
+    /\.reviews-map__canvas\s*\{[^}]*overscroll-behavior:\s*contain/s.test(css) &&
+    css.includes('-webkit-user-select: none') &&
+    css.includes('.map-ctrl-btn') &&
+    /\.leaflet-tile-pane\s*\{[^}]*filter:\s*[^;}]*grayscale\(1\)/s.test(css) &&
+    css.includes('.irori-pin'),
+  'css/style.css must isolate .reviews-map__map-col stacking, position .reviews-map__fallback absolutely, contain overscroll on .reviews-map__canvas, style .map-ctrl-btn & .irori-pin, and filter .leaflet-tile-pane grayscale(1)'
+);
+
 console.log(`✓ css/style.css passes token and budget checks (${(cssStat.size / 1024).toFixed(1)} KB).`);
 
 // 4. Verify JS interactive module & size budget
@@ -251,6 +282,21 @@ assert.ok(
     jsSource.includes('(min-width: 769px)') &&
     jsSource.includes('Escape'),
   'js/main.js must handle Load More buttons, ?category= URL filtering, horizontal translate3d track sliders, and fullscreen mobile menu (is-menu-open + Escape)'
+);
+assert.ok(
+  jsSource.includes('leaflet@1.9.4') &&
+    jsSource.includes("crossOrigin: 'anonymous'") &&
+    jsSource.includes('sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=') &&
+    jsSource.includes('sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=') &&
+    jsSource.includes('scrollWheelZoom: false') &&
+    jsSource.includes('touchZoom: true') &&
+    jsSource.includes('dragging: true') &&
+    jsSource.includes('tile.openstreetmap.org/{z}/{x}/{y}.png') &&
+    jsSource.includes('is-ready') &&
+    jsSource.includes('House of IRORI') &&
+    jsSource.includes('map-zoom-in') &&
+    jsSource.includes('map-zoom-out'),
+  'js/main.js must lazy-load Leaflet 1.9.4 with SHA-256 SRI, OpenStreetMap tiles, House of IRORI marker, zoom buttons, and mobile pan/pinch-zoom'
 );
 assert.ok(
   html.includes('class="carousel__track"') &&
