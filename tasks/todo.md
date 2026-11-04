@@ -230,3 +230,28 @@
 **Dependencies:** Task 18
 **Files likely touched:** `graphify-out/graph.json`, `tasks/plan.md`, `tasks/todo.md`
 **Estimated scope:** Small
+
+## Task 20: 4-Point UI & Interaction Update (Hero Frame Border, Flush-Left Philosophy, Carousel Wheel/Swipe, Ultrawide Reviews Width)
+**Description:** Update `tests/verify-home.mjs` (TDD Red -> Green), restore the Figma `10px solid var(--bg-cream)` border on `.hero-showcase__frame` (`3px` on `<= 768px`), remove `max-width: 1920px` from `.philosophy__grid` so `.philosophy__interior` sits flush left at `x = 0` on all desktop screens, expand `.reviews-map__inner` (`max-width: 960px`) and center `.reviews-map__reviews-col` with balanced `clamp(24px, 6vw, 120px)` padding, and bind `wheel` + `touchstart`/`touchend` swipe detection across `[data-carousel]`, `#reviews-slider`, and `.latest-news__slider-wrap` while keeping `css/style.css <= 50 KB` and `js/main.js <= 15 KB`.
+**Acceptance criteria:**
+- [x] `.hero-showcase__frame` renders a `10px solid #F4F1EA` (`var(--bg-cream)`) border on desktop (`3px` on `<= 768px`).
+- [x] `.philosophy__grid` has no `max-width: 1920px` cap; `.philosophy__interior` sits at `left: 0px` even at `2560x1440`.
+- [x] `.reviews-map__inner` (`max-width: 960px`) fills the left column cleanly on `1920x1080` and `2560x1440` without excessive left whitespace.
+- [x] Scrolling (`wheel`) or swiping (`touchstart`/`touchend`) on `[data-carousel]`, `#reviews-slider`, and `.latest-news__slider-wrap` advances/rewinds slides and resets autoplay.
+- [x] `css/style.css <= 51,200 B` and `js/main.js <= 15,360 B`.
+**Verification:**
+- [x] `node --check js/main.js && node tests/verify-home.mjs`
+**Dependencies:** Task 19
+**Files likely touched:** `tests/verify-home.mjs`, `css/style.css`, `js/main.js`, `index.html`, `menu.html`, `events.html`, `blogs.html`, `blog-detail.html`
+**Estimated scope:** Small
+
+## Task 21: Browser Runtime Verification (`1440px`, `1920px`, `2560px`, `390px`), QA Delta Review, & `gh-pages` Redeployment
+**Description:** Verify all 4 items in Chrome DevTools MCP (`1440x900`, `1920x1080`, `2560x1440`, `390x844`), run QA subagents, update `graphify`, and redeploy `gh-pages` (`?v=10.3`).
+**Acceptance criteria:**
+- [x] Zero console errors/warnings or failed requests in Chrome DevTools MCP.
+- [x] Live GitHub Pages (`https://victorhoang1307.github.io/house-of-irori/?v=10.3`) verified end-to-end.
+**Verification:**
+- [x] Chrome DevTools MCP + QA subagents + live check
+**Dependencies:** Task 20
+**Files likely touched:** `graphify-out/graph.json`, `tasks/todo.md`
+**Estimated scope:** Small

@@ -63,3 +63,4 @@ Build the complete, responsive Static HTML5/CSS3/JS implementation of `Home v3B`
 |------|--------|------------|
 | Composite masked frames in Figma (e.g., embossed bartender frame, kimono frame, watermark) | Med | Export composite node renders directly from Figma `/v1/images` endpoint at 2x scale so embossed borders and masks are 100% preserved |
 | Hebrew placeholder text in Figma Google Review cards | High | Replace with authentic English reviews for House of IRORI while preserving exact card layout and stars |
+| Ultrawide (`>1920px`) layout alignment & wheel/swipe carousel ergonomics | Medium | Restore Figma `10px` cream frame border on `.hero-showcase__frame`, remove `max-width: 1920px` on `.philosophy__grid` for flush-left alignment, widen `.reviews-map__inner` (`max-width: 960px`) with balanced padding, and bind `wheel` + touch swipe across all carousels within the `15 KB` JS / `50 KB` CSS budgets |

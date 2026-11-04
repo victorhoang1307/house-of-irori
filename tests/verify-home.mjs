@@ -174,10 +174,22 @@ assert.ok(
 const heroShowcaseFrameMatch = css.match(/\.hero-showcase__frame\s*\{([^}]*)\}/s);
 assert.ok(heroShowcaseFrameMatch, 'Missing .hero-showcase__frame rule in css/style.css');
 assert.ok(
-  !/box-shadow:\s*0\s+20px/i.test(heroShowcaseFrameMatch[1]) &&
-    !/padding:\s*6px/i.test(heroShowcaseFrameMatch[1]) &&
-    !/background-color:\s*var\(--color-white\)/i.test(heroShowcaseFrameMatch[1]),
-  '.hero-showcase__frame must not have border/padding/white-bg or drop shadow'
+  /border:\s*10px\s+solid\s+(var\(--bg-cream\)|#F4F1EA)/i.test(heroShowcaseFrameMatch[1]) &&
+    !/box-shadow:\s*0\s+20px/i.test(heroShowcaseFrameMatch[1]),
+  '.hero-showcase__frame must have 10px solid var(--bg-cream) border per Figma 494:1043 and no drop shadow'
+);
+const philosophyGridMatch = css.match(/\.philosophy__grid\s*\{([^}]*)\}/s);
+assert.ok(
+  philosophyGridMatch && !/max-width:\s*1920px/i.test(philosophyGridMatch[1]),
+  '.philosophy__grid must not cap max-width at 1920px so .philosophy__interior sits flush left on all viewports'
+);
+const reviewsMapInnerMatch = css.match(/\.reviews-map__inner\s*\{([^}]*)\}/s);
+assert.ok(
+  reviewsMapInnerMatch &&
+    /max-width:\s*(8[0-9]{2}|9[0-9]{2}|1[0-9]{3})px/i.test(reviewsMapInnerMatch[1]) &&
+    /\.reviews-map__reviews-col\s*\{[^}]*justify-content:\s*center[^}]*padding:\s*72px\s+clamp\(24px,\s*6vw,\s*120px\)/is.test(css) &&
+    /\.hero-showcase__frame\s*\{\s*border-width:\s*3px/is.test(css),
+  '.reviews-map__inner must use an expanded max-width (>= 800px) with centered clamp padding on .reviews-map__reviews-col, and 3px mobile border on .hero-showcase__frame'
 );
 assert.ok(
   /\.hero-showcase__pattern\s*\{[^}]*top:\s*calc\(var\(--hero-overlap\)\s*-\s*1px\)/s.test(css),
@@ -265,13 +277,19 @@ const jsStat = fs.statSync(jsPath);
 assert.ok(jsStat.size <= 15 * 1024, `js/main.js exceeds 15KB budget (${jsStat.size}B)`);
 const jsSource = fs.readFileSync(jsPath, 'utf8');
 const autoplayCallCount = (jsSource.match(/createAutoplay\(/g) || []).length;
+const bindScrollCallCount = (jsSource.match(/bindScroll\(/g) || []).length;
 assert.ok(
   jsSource.includes('mouseenter') &&
     jsSource.includes('mouseleave') &&
     jsSource.includes('setInterval') &&
     jsSource.includes('IntersectionObserver') &&
-    autoplayCallCount >= 3,
-  'js/main.js must wire createAutoplay to all 3 carousel/slider controllers and include IntersectionObserver parallax fallback'
+    jsSource.includes("'wheel'") &&
+    jsSource.includes("'touchstart'") &&
+    jsSource.includes("'touchend'") &&
+    jsSource.includes('bindScroll(revWrap, stepRev, revAuto, 0)') &&
+    autoplayCallCount >= 3 &&
+    bindScrollCallCount >= 3,
+  'js/main.js must wire createAutoplay and bindScroll (wheel + touch swipe) to all 3 carousel/slider controllers and include IntersectionObserver parallax fallback'
 );
 assert.ok(
   jsSource.includes('data-load-more') &&

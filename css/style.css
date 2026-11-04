@@ -394,10 +394,7 @@ body.is-menu-open {
 .hero-showcase__frame {
   width: 100%;
   max-width: 970px;
-  background-color: transparent;
-  padding: 0;
-  border: none;
-  box-shadow: none;
+  border: 10px solid var(--bg-cream);
 }
 
 .hero-showcase__frame img {
@@ -465,8 +462,6 @@ body.is-menu-open {
 .philosophy__grid {
   position: relative;
   width: 100%;
-  max-width: 1920px;
-  margin-inline: auto;
 }
 
 .philosophy__interior {
@@ -737,14 +732,14 @@ body.is-menu-open {
 .reviews-map__reviews-col {
   display: flex;
   align-items: center;
-  justify-content: flex-end;
-  padding: 72px 48px 72px 24px;
+  justify-content: center;
+  padding: 72px clamp(24px, 6vw, 120px);
   overflow: hidden;
 }
 
 .reviews-map__inner {
   width: 100%;
-  max-width: 585px;
+  max-width: 960px;
 }
 
 .reviews-header {
@@ -2333,6 +2328,10 @@ body.is-menu-open {
 
   .hero-showcase {
     --hero-overlap: 90px;
+  }
+
+  .hero-showcase__frame {
+    border-width: 3px;
   }
 
   .story {

@@ -102,3 +102,8 @@ All repeatable sections use clean Strapi-ready DOM attributes (`data-cms-collect
 
 ## Open Questions
 - None (Confirmed by Victor: replace `House of Merlin` with `House of IRORI` in `Menu`/`Events` descriptions; keep the `ELLE Decoration PopUp Office` sample article copy in `Blog Articles`).
+- Phase 11 Refinements:
+  1. `.hero-showcase__frame` border: `10px solid var(--bg-cream)` on desktop (Figma `494:1043`) and `3px solid var(--bg-cream)` on mobile (`<= 768px`, Figma `494:1370`).
+  2. `.philosophy__grid`: remove `max-width: 1920px; margin-inline: auto` so `.philosophy__interior` and `.philosophy__lower` sit flush against the left viewport edge (`x = 0`) on all desktop viewports (`>= 1025px`).
+  3. Carousel Scroll & Swipe Detection: support `wheel` (mouse wheel / trackpad) and touch swipe (`touchstart`/`touchend`) directly over `[data-carousel]` (`alley`, `bar`, `upcoming`), Google Reviews (`#reviews-slider`), and Latest News (`#latest-news` / `.latest-news__slider-wrap`) to advance/rewind slides with a `450ms` wheel cooldown and autoplay timer reset.
+  4. `.reviews-map__inner` & `.reviews-map__reviews-col`: expand `.reviews-map__inner` (`max-width: 960px`) with centered alignment and balanced responsive inline padding (`padding: 72px clamp(24px, 6vw, 120px)`) so ultrawide/QHD screens (`1920px–2560px+`) have no excessive left empty space.
