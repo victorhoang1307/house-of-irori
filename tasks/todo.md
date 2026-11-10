@@ -255,3 +255,38 @@
 **Dependencies:** Task 20
 **Files likely touched:** `graphify-out/graph.json`, `tasks/todo.md`
 **Estimated scope:** Small
+
+## Task 22: Headless WordPress Must-Use Plugin (`wordpress/mu-plugins/irori-headless-cms.php`)
+**Description:** Author `wordpress/mu-plugins/irori-headless-cms.php` registering CPTs (`irori_occasional_menu`, `irori_event`, `irori_review`), blog categories (`interior`, `concept`, `club`), `IRORI Menu Book` & `IRORI Settings` admin screens, initial Figma content seeder (`irori_seeded_v1`), allowlisted CORS, and transient-cached REST endpoints (`/wp-json/irori/v1/bootstrap` and `/wp-json/irori/v1/article/<slug>`).
+**Acceptance criteria:**
+- [x] Zero PHP syntax warnings/errors (`php -l` / server execution) and all inputs/outputs sanitized with `sanitize_text_field`, `esc_url_raw`, `wp_kses_post`, and capability/nonce checks (`manage_options`, `edit_post`, `wp_verify_nonce`).
+- [x] First-boot seeder populates default Articles, Occasional Menus, Menu Book (Cocktail image + Pizza & Izakaya lists), Upcoming & Occasional Events, Reviews, and Site Settings once without duplicates.
+**Verification:**
+- [x] REST API `/cms/wp-json/irori/v1/bootstrap` returns HTTP `200` JSON containing all seeded collections.
+**Dependencies:** Task 21
+**Files likely touched:** `wordpress/mu-plugins/irori-headless-cms.php`
+**Estimated scope:** Medium
+
+## Task 23: Frontend Headless CMS Hydration (`js/cms.js` + `js/main.js` + 5 HTML Pages + `tests/verify-home.mjs`)
+**Description:** Add TDD assertions in `tests/verify-home.mjs` (Red -> Green), build `js/cms.js` (`<= 10 KB`, total JS `<= 25 KB`) using safe DOM creation (`document.createElement` + `textContent`) and `Element.prototype.setHTML` / allowlist DOM tree sanitization for rich blog prose, wire `irori:cms` dynamic refresh in `js/main.js` (`<= 15 KB`), and link `js/cms.js?v=11.0` + `js/main.js?v=11.0` across all 5 HTML pages.
+**Acceptance criteria:**
+- [x] `js/main.js <= 15,360 B`, `js/cms.js <= 10,240 B`, total JS `<= 25,600 B`, `css/style.css <= 51,200 B`.
+- [x] Zero `innerHTML` sinks in `js/cms.js`; progressive fallback preserves static Figma content when CMS API is unreachable.
+- [x] `node --check js/main.js && node --check js/cms.js && node tests/verify-home.mjs` passes.
+**Verification:**
+- [x] `node --check js/main.js && node --check js/cms.js && node tests/verify-home.mjs`
+**Dependencies:** Task 22
+**Files likely touched:** `tests/verify-home.mjs`, `js/cms.js`, `js/main.js`, `index.html`, `menu.html`, `events.html`, `blogs.html`, `blog-detail.html`
+**Estimated scope:** Medium
+
+## Task 24: cPanel Provisioning (`sites-test.houseofirori.com.vn`), WordPress Setup, Browser Verification & QA Gate
+**Description:** Create Addon Domain `sites-test.houseofirori.com.vn` on cPanel (`zhorktpv`), create isolated MariaDB database & user, install WordPress 6.x in `/cms/` (`alt-php83`) with admin credentials, deploy `irori-headless-cms.php` + 5-page static frontend + `.htaccess`, verify live REST API & frontend hydration on cPanel (`45.252.249.25` `Host: sites-test.houseofirori.com.vn`) and Chrome DevTools MCP (`127.0.0.1:8091` mocked/proxied to live API), run Final QA Gate (`code-reviewer`, `security-auditor`, `web-performance-auditor`), commit on `master`, and update `gh-pages`.
+**Acceptance criteria:**
+- [x] `/cms/wp-login.php` and `/cms/wp-json/irori/v1/bootstrap` on `sites-test.houseofirori.com.vn` (`45.252.249.25`) return HTTP `200` with valid seeded JSON.
+- [x] All 5 pages render and hydrate cleanly in Chrome DevTools MCP (`1920x1080` & `390x844`) with `0` console errors/warnings, including dynamic `blog-detail.html?slug=...` navigation.
+- [x] All 3 QA subagents approve with `0` Critical/High/Medium issues.
+**Verification:**
+- [x] cPanel HTTP/API checks + Chrome DevTools MCP + QA Gate + `node tests/verify-home.mjs`
+**Dependencies:** Task 23
+**Files likely touched:** `.htaccess`, `tasks/plan.md`, `tasks/todo.md`, `graphify-out/graph.json`
+**Estimated scope:** Medium

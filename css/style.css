@@ -1188,7 +1188,7 @@ body.is-menu-open {
   margin-bottom: 0;
 }
 
-.latest-news__grid .news-card__title {
+:is(.latest-news__grid, .blogs-grid) .news-card__title {
   min-height: calc(2 * 1.35em);
 }
 

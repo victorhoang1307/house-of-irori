@@ -486,4 +486,64 @@ assert.ok(
   'events.html .upcoming-showcase__bg must use tiled CSS background rather than a stretched <img>'
 );
 
+// Phase 12: Headless WordPress CMS Integration Assertions
+const cmsPath = checkFileExists('js/cms.js', 500);
+const cmsStat = fs.statSync(cmsPath);
+assert.ok(cmsStat.size <= 10 * 1024, `js/cms.js exceeds 10KB budget (${cmsStat.size}B)`);
+assert.ok(
+  jsStat.size + cmsStat.size <= 25 * 1024,
+  `Combined JS bundle exceeds 25KB CONSTRAINTS.md ceiling (${jsStat.size + cmsStat.size}B)`
+);
+const cmsSource = fs.readFileSync(cmsPath, 'utf8');
+assert.ok(
+  !cmsSource.includes('.innerHTML') &&
+    cmsSource.includes("'setHTML' in Element.prototype") &&
+    cmsSource.includes('try { el.setHTML') &&
+    cmsSource.includes('div,span') &&
+    cmsSource.includes('DOMParser') &&
+    cmsSource.includes("priority: 'low'") &&
+    cmsSource.includes('/irori/v1/bootstrap') &&
+    cmsSource.includes('/irori/v1/article/') &&
+    cmsSource.includes("'irori:cms'"),
+  'js/cms.js must avoid innerHTML, guard Element.prototype.setHTML with try/catch + div/span allowlist DOMParser fallback, deprioritize background fetch, query /irori/v1/*, and dispatch irori:cms'
+);
+assert.ok(
+  jsSource.includes("'irori:cms'") && jsSource.includes('mapEl._pin'),
+  'js/main.js must listen to irori:cms and expose mapEl._pin for dynamic CMS coordinate updates'
+);
+
+const htaccessPath = checkFileExists('.htaccess', 200);
+const htaccessSrc = fs.readFileSync(htaccessPath, 'utf8');
+assert.ok(
+  htaccessSrc.includes('RewriteRule ^cms/ /cms/index.php [L]') &&
+    htaccessSrc.includes('xmlrpc|wp-config') &&
+    htaccessSrc.includes('X-Content-Type-Options "nosniff"') &&
+    htaccessSrc.includes('image/webp'),
+  '.htaccess must route /cms/* to WordPress, block dotfiles & xmlrpc/wp-config, set security headers, and cache WebP/AVIF'
+);
+
+const wpPluginPath = checkFileExists('wordpress/mu-plugins/irori-headless-cms.php', 2000);
+const wpPluginSrc = fs.readFileSync(wpPluginPath, 'utf8');
+assert.ok(
+  wpPluginSrc.includes("register_rest_route('irori/v1', '/bootstrap'") &&
+    wpPluginSrc.includes("register_rest_route('irori/v1', '/article/") &&
+    wpPluginSrc.includes("'has_password' => false") &&
+    wpPluginSrc.includes('clean_post_cache') &&
+    wpPluginSrc.includes('wp_kses_post') &&
+    wpPluginSrc.includes('wp_verify_nonce') &&
+    wpPluginSrc.includes('xmlrpc_methods'),
+  'irori-headless-cms.php must register /irori/v1/bootstrap & /article routes, exclude password-protected posts, bust cache on clean_post_cache, use wp_kses_post & nonces, and disable XML-RPC'
+);
+
+for (const htmlFile of ['index.html', 'menu.html', 'events.html', 'blogs.html', 'blog-detail.html']) {
+  const pageHtml = fs.readFileSync(path.join(ROOT, htmlFile), 'utf8');
+  assert.ok(
+    pageHtml.includes('href="css/style.css?v=11.') &&
+      pageHtml.includes('src="js/cms.js?v=11.') &&
+      pageHtml.includes('src="js/main.js?v=11.'),
+    `${htmlFile} must load css/style.css?v=11.x, js/cms.js?v=11.x, and js/main.js?v=11.x`
+  );
+}
+console.log(`✓ Headless WordPress CMS plugin & client pass checks (${(cmsStat.size / 1024).toFixed(1)} KB cms.js).`);
+
 console.log('ALL VERIFICATION CHECKS PASSED!');

@@ -58,6 +58,15 @@ Build the complete, responsive Static HTML5/CSS3/JS implementation of `Home v3B`
 - [x] Task 18: Add TDD assertions (`tests/verify-home.mjs`) and implement `#irori-map` markup (`index.html`), isolated stacking & luxury `+`/`−` zoom controls (`css/style.css`), and lazy-loaded `Leaflet 1.9.4` grayscale tile + custom `House of IRORI` pin + mobile pan/pinch-zoom controller (`js/main.js`) within the `50 KB` CSS and `15 KB` JS budgets.
 - [x] Task 19: Verify desktop (`1440x900`) and mobile (`390x844`, touch pan & pinch-zoom + `+`/`−` buttons) runtime behavior in Chrome DevTools MCP, run all 4 QA subagents, update `graphify`, and redeploy `gh-pages`.
 
+### Phase 11: 4-Point Ultrawide & Carousel Scroll Refinements
+- [x] Task 20: Restore `.hero-showcase__frame` border (`10px` desktop / `3px` mobile), flush-left `.philosophy__grid`, wheel/touch swipe carousel scrolling, and `960px` `.reviews-map__inner`.
+- [x] Task 21: Browser runtime verification (`1440px`, `1920px`, `2560px`, `390px`), QA gate, and `gh-pages` redeployment (`?v=10.3`).
+
+### Phase 12: Headless WordPress CMS (`/cms/`) & cPanel Deployment (`sites-test.houseofirori.com.vn`)
+- [x] Task 22: Build `wordpress/mu-plugins/irori-headless-cms.php` (CPTs, Menu Book & Site Settings admin UI, transient-cached REST API `/irori/v1/bootstrap` & `/irori/v1/article/<slug>`, and automatic initial Figma content seeder).
+- [x] Task 23: Extend `tests/verify-home.mjs` (TDD Red -> Green) and implement `js/cms.js` (`<= 10 KB`) + dynamic `irori:cms` refresh hooks in `js/main.js` (`<= 15 KB`) + script wiring across all 5 HTML pages (`?v=11.0`).
+- [x] Task 24: Provision `sites-test.houseofirori.com.vn` on cPanel (`zhorktpv`), create isolated DB `zhorktpv_irori`, install WordPress 6.x in `/cms/` with `irori-headless-cms.php`, deploy the 5-page frontend + `.htaccess` to webroot, and verify end-to-end (cPanel HTTP/REST API + Chrome DevTools MCP + QA subagents).
+
 ## Risks and Mitigations
 | Risk | Impact | Mitigation |
 |------|--------|------------|
