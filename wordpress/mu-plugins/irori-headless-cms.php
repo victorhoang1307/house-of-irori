@@ -10,7 +10,7 @@ if (!defined('ABSPATH')) {
     exit;
 }
 
-define('IRORI_CMS_CACHE_KEY', 'irori_bootstrap_payload_v1');
+define('IRORI_CMS_CACHE_KEY', 'irori_bootstrap_payload_v3');
 
 /**
  * 1. Security Hardening for Headless WordPress on Shared Hosting
@@ -150,27 +150,84 @@ function irori_register_acf_field_groups(): void {
     $blogs_id = $page_id('blogs');
     $contact_id = $page_id('contact');
 
-    // 1. Welcome Page (matches Merlin Welcome Page group)
+    // 1. Welcome Page (1:1 with index.html sections)
     if ($welcome_id) {
         acf_add_local_field_group([
             'key' => 'group_irori_welcome_page',
-            'title' => 'Welcome Page',
+            'title' => 'Welcome Page (Home)',
             'fields' => [
                 [
                     'key' => 'field_irori_welcome_banner',
-                    'label' => 'Welcome Banner',
+                    'label' => '1. Hero Banner & Framed Bartender Showcase',
                     'name' => 'welcome_banner',
                     'type' => 'group',
                     'sub_fields' => [
-                        ['key' => 'field_irori_wb_banner', 'label' => 'Banner', 'name' => 'banner', 'type' => 'image', 'return_format' => 'id'],
-                        ['key' => 'field_irori_wb_headline', 'label' => 'Headline', 'name' => 'headline', 'type' => 'text'],
-                        ['key' => 'field_irori_wb_sub', 'label' => 'Sub Headline', 'name' => 'sub_headline', 'type' => 'text'],
+                        ['key' => 'field_irori_wb_banner', 'label' => 'Hero Background Image', 'name' => 'banner', 'type' => 'image', 'return_format' => 'id'],
+                        ['key' => 'field_irori_wb_headline', 'label' => 'Hero Headline', 'name' => 'headline', 'type' => 'textarea', 'rows' => 3],
+                        ['key' => 'field_irori_wb_sub', 'label' => 'Discover Button Text', 'name' => 'sub_headline', 'type' => 'text'],
+                        ['key' => 'field_irori_wb_showcase', 'label' => 'Framed Bartender Showcase Image', 'name' => 'showcase_image', 'type' => 'image', 'return_format' => 'id'],
                     ],
                 ],
-                ['key' => 'field_irori_welcome_message', 'label' => 'Welcome Message', 'name' => 'welcome_message', 'type' => 'wysiwyg'],
-                ['key' => 'field_irori_welcome_slider', 'label' => 'Welcome Slider', 'name' => 'welcome_slider', 'type' => 'gallery', 'return_format' => 'id'],
-                ['key' => 'field_irori_find_us_msg', 'label' => 'Find us here message', 'name' => 'find_us_here_message', 'type' => 'wysiwyg'],
-                ['key' => 'field_irori_find_us_img', 'label' => 'Find us here image', 'name' => 'find_us_here_image', 'type' => 'image', 'return_format' => 'id'],
+                [
+                    'key' => 'field_irori_story_section',
+                    'label' => '2. Story Section (Hidden in Plain Sight)',
+                    'name' => 'story_section',
+                    'type' => 'group',
+                    'sub_fields' => [
+                        ['key' => 'field_irori_st_bg', 'label' => 'Background Image', 'name' => 'bg_image', 'type' => 'image', 'return_format' => 'id'],
+                        ['key' => 'field_irori_st_head', 'label' => 'Headline', 'name' => 'headline', 'type' => 'text'],
+                        ['key' => 'field_irori_welcome_message', 'label' => 'Story Copy', 'name' => 'content', 'type' => 'wysiwyg'],
+                    ],
+                ],
+                [
+                    'key' => 'field_irori_philosophy_section',
+                    'label' => '3. Philosophy Collage (The Space Between)',
+                    'name' => 'philosophy_section',
+                    'type' => 'group',
+                    'sub_fields' => [
+                        ['key' => 'field_irori_ph_head', 'label' => 'Card Headline', 'name' => 'headline', 'type' => 'textarea', 'rows' => 2],
+                        ['key' => 'field_irori_ph_sub', 'label' => 'Ribbon Subtitle', 'name' => 'sub_headline', 'type' => 'text'],
+                        ['key' => 'field_irori_ph_int', 'label' => 'Upper Left Interior Image', 'name' => 'interior_image', 'type' => 'image', 'return_format' => 'id'],
+                        ['key' => 'field_irori_ph_kim', 'label' => 'Lower Framed Kimono Image', 'name' => 'kimono_image', 'type' => 'image', 'return_format' => 'id'],
+                    ],
+                ],
+                [
+                    'key' => 'field_irori_level_one',
+                    'label' => '4. Level One: The Alley',
+                    'name' => 'level_one',
+                    'type' => 'group',
+                    'sub_fields' => [
+                        ['key' => 'field_irori_l1_eye', 'label' => 'Eyebrow', 'name' => 'eyebrow', 'type' => 'text'],
+                        ['key' => 'field_irori_l1_head', 'label' => 'Headline', 'name' => 'headline', 'type' => 'text'],
+                        ['key' => 'field_irori_l1_desc', 'label' => 'Description', 'name' => 'description', 'type' => 'textarea', 'rows' => 4],
+                        ['key' => 'field_irori_l1_slider', 'label' => 'Gallery Slider', 'name' => 'slider', 'type' => 'gallery', 'return_format' => 'id'],
+                    ],
+                ],
+                [
+                    'key' => 'field_irori_level_two',
+                    'label' => '5. Level Two: The Bar',
+                    'name' => 'level_two',
+                    'type' => 'group',
+                    'sub_fields' => [
+                        ['key' => 'field_irori_l2_eye', 'label' => 'Eyebrow', 'name' => 'eyebrow', 'type' => 'text'],
+                        ['key' => 'field_irori_l2_head', 'label' => 'Headline', 'name' => 'headline', 'type' => 'text'],
+                        ['key' => 'field_irori_l2_desc', 'label' => 'Description', 'name' => 'description', 'type' => 'textarea', 'rows' => 4],
+                        ['key' => 'field_irori_l2_sub', 'label' => 'Closing Line', 'name' => 'sub_text', 'type' => 'text'],
+                        ['key' => 'field_irori_l2_slider', 'label' => 'Gallery Slider', 'name' => 'slider', 'type' => 'gallery', 'return_format' => 'id'],
+                    ],
+                ],
+                [
+                    'key' => 'field_irori_bottom_section',
+                    'label' => '6. Reviews, Map & Atmosphere Strip',
+                    'name' => 'bottom_section',
+                    'type' => 'group',
+                    'sub_fields' => [
+                        ['key' => 'field_irori_bt_score', 'label' => 'Google Rating Score', 'name' => 'rating_score', 'type' => 'text'],
+                        ['key' => 'field_irori_find_us_img', 'label' => 'Map Fallback Image', 'name' => 'map_image', 'type' => 'image', 'return_format' => 'id'],
+                        ['key' => 'field_irori_bt_atmo', 'label' => 'Atmosphere Strip Banner Image', 'name' => 'atmosphere_image', 'type' => 'image', 'return_format' => 'id'],
+                        ['key' => 'field_irori_bt_news', 'label' => 'Latest News Section Heading', 'name' => 'latest_news_heading', 'type' => 'text'],
+                    ],
+                ],
             ],
             'location' => [[['param' => 'page', 'operator' => '==', 'value' => (string) $welcome_id]]],
             'hide_on_screen' => ['the_content'],
@@ -225,7 +282,7 @@ function irori_register_acf_field_groups(): void {
         ]);
     }
 
-    // 3. Event Page (matches Merlin Event Page group: Event Banner + Occasional Events + Other events)
+    // 3. Event Page (1:1 top-to-bottom with events.html: Event Banner -> Up Coming Slider -> Occasional Events)
     if ($events_id) {
         acf_add_local_field_group([
             'key' => 'group_irori_event_page',
@@ -233,37 +290,39 @@ function irori_register_acf_field_groups(): void {
             'fields' => [
                 [
                     'key' => 'field_irori_event_banner',
-                    'label' => 'Event Banner',
+                    'label' => '1. Event Banner & Up Coming Header',
                     'name' => 'event_banner',
                     'type' => 'group',
                     'sub_fields' => [
-                        ['key' => 'field_irori_eb_banner', 'label' => 'Banner', 'name' => 'banner', 'type' => 'image', 'return_format' => 'id'],
-                        ['key' => 'field_irori_eb_headline', 'label' => 'Headline', 'name' => 'headline', 'type' => 'text'],
+                        ['key' => 'field_irori_eb_banner', 'label' => 'Hero Banner Image', 'name' => 'banner', 'type' => 'image', 'return_format' => 'id'],
+                        ['key' => 'field_irori_eb_headline', 'label' => 'Hero Headline', 'name' => 'headline', 'type' => 'text'],
+                        ['key' => 'field_irori_eb_up_bg', 'label' => 'Up Coming Section Wood Banner', 'name' => 'upcoming_bg', 'type' => 'image', 'return_format' => 'id'],
+                        ['key' => 'field_irori_eb_up_head', 'label' => 'Up Coming Section Heading', 'name' => 'upcoming_heading', 'type' => 'text'],
+                    ],
+                ],
+                [
+                    'key' => 'field_irori_other_events',
+                    'label' => '2. Up Coming Events (Featured Carousel Slides)',
+                    'name' => 'other_events',
+                    'type' => 'repeater',
+                    'layout' => 'table',
+                    'button_label' => 'Add Slide',
+                    'sub_fields' => [
+                        ['key' => 'field_irori_ote_thumb', 'label' => 'Slide Image', 'name' => 'thumbnail', 'type' => 'image', 'return_format' => 'id'],
                     ],
                 ],
                 [
                     'key' => 'field_irori_occasional_events',
-                    'label' => 'Occasional Events',
+                    'label' => '3. Occasional Events (2x2 Grid)',
                     'name' => 'occasional_events',
                     'type' => 'repeater',
                     'layout' => 'table',
-                    'button_label' => 'Add Row',
+                    'button_label' => 'Add Event',
                     'sub_fields' => [
                         ['key' => 'field_irori_oe_thumb', 'label' => 'Thumbnail', 'name' => 'thumbnail', 'type' => 'image', 'return_format' => 'id'],
                         ['key' => 'field_irori_oe_head', 'label' => 'Headline', 'name' => 'headline', 'type' => 'text'],
                         ['key' => 'field_irori_oe_date', 'label' => 'Date Label', 'name' => 'date', 'type' => 'text'],
                         ['key' => 'field_irori_oe_desc', 'label' => 'Description', 'name' => 'description', 'type' => 'textarea'],
-                    ],
-                ],
-                [
-                    'key' => 'field_irori_other_events',
-                    'label' => 'Other events (Up Coming Slider)',
-                    'name' => 'other_events',
-                    'type' => 'repeater',
-                    'layout' => 'table',
-                    'button_label' => 'Add Row',
-                    'sub_fields' => [
-                        ['key' => 'field_irori_ote_thumb', 'label' => 'Thumbnail', 'name' => 'thumbnail', 'type' => 'image', 'return_format' => 'id'],
                     ],
                 ],
             ],
@@ -272,7 +331,7 @@ function irori_register_acf_field_groups(): void {
         ]);
     }
 
-    // 4. Blogs Page
+    // 4. Blogs Page (1:1 with blogs.html)
     if ($blogs_id) {
         acf_add_local_field_group([
             'key' => 'group_irori_blogs_page',
@@ -280,12 +339,13 @@ function irori_register_acf_field_groups(): void {
             'fields' => [
                 [
                     'key' => 'field_irori_blogs_banner',
-                    'label' => 'Blogs Banner',
+                    'label' => 'Blogs Hero Banner & Section Heading',
                     'name' => 'blogs_banner',
                     'type' => 'group',
                     'sub_fields' => [
                         ['key' => 'field_irori_bb_banner', 'label' => 'Banner', 'name' => 'banner', 'type' => 'image', 'return_format' => 'id'],
                         ['key' => 'field_irori_bb_headline', 'label' => 'Headline', 'name' => 'headline', 'type' => 'text'],
+                        ['key' => 'field_irori_bb_sec_head', 'label' => 'Listing Section Heading', 'name' => 'section_heading', 'type' => 'text'],
                     ],
                 ],
             ],
@@ -294,20 +354,21 @@ function irori_register_acf_field_groups(): void {
         ]);
     }
 
-    // 5. Contact Page (matches Merlin Contact Page group)
+    // 5. Contact Page (Footer "A Glimpse Inside" Banner)
     if ($contact_id) {
         acf_add_local_field_group([
             'key' => 'group_irori_contact_page',
-            'title' => 'Contact Page',
+            'title' => 'Contact / Footer Banner',
             'fields' => [
                 [
                     'key' => 'field_irori_contact_banner',
-                    'label' => 'Contact Banner',
+                    'label' => 'Footer Top Banner (A Glimpse Inside)',
                     'name' => 'contact_banner',
                     'type' => 'group',
                     'sub_fields' => [
-                        ['key' => 'field_irori_cb_banner', 'label' => 'Banner', 'name' => 'banner', 'type' => 'image', 'return_format' => 'id'],
+                        ['key' => 'field_irori_cb_banner', 'label' => 'Banner Image', 'name' => 'banner', 'type' => 'image', 'return_format' => 'id'],
                         ['key' => 'field_irori_cb_headline', 'label' => 'Headline', 'name' => 'headline', 'type' => 'text'],
+                        ['key' => 'field_irori_cb_sub', 'label' => 'Subtitle', 'name' => 'subtitle', 'type' => 'textarea', 'rows' => 2],
                     ],
                 ],
             ],
@@ -316,20 +377,22 @@ function irori_register_acf_field_groups(): void {
         ]);
     }
 
-    // 6. Irori Config Options Page (matches Merlin Config group)
+    // 6. Irori Config Options Page (1:1 with Header & Footer across all 5 pages)
     acf_add_local_field_group([
         'key' => 'group_irori_config_options',
-        'title' => 'Irori Config',
+        'title' => 'Irori Config (Header & Footer)',
         'fields' => [
-            ['key' => 'field_irori_cfg_open_text', 'label' => 'Open Time Text', 'name' => 'open_time_text', 'type' => 'wysiwyg'],
-            ['key' => 'field_irori_cfg_open_img', 'label' => 'Open Time Image', 'name' => 'open_time_image', 'type' => 'image', 'return_format' => 'id'],
-            ['key' => 'field_irori_cfg_address', 'label' => 'Address', 'name' => 'address', 'type' => 'wysiwyg'],
+            ['key' => 'field_irori_cfg_open_text', 'label' => 'Footer Banner Text (A Glimpse Inside)', 'name' => 'open_time_text', 'type' => 'wysiwyg'],
+            ['key' => 'field_irori_cfg_open_img', 'label' => 'Footer Banner Image (A Glimpse Inside)', 'name' => 'open_time_image', 'type' => 'image', 'return_format' => 'id'],
+            ['key' => 'field_irori_cfg_tagline', 'label' => 'Footer Brand Tagline', 'name' => 'brand_tagline', 'type' => 'textarea', 'rows' => 2],
+            ['key' => 'field_irori_cfg_address', 'label' => 'Visit Address', 'name' => 'address', 'type' => 'wysiwyg'],
             ['key' => 'field_irori_cfg_phone', 'label' => 'Phone', 'name' => 'phone', 'type' => 'text'],
             ['key' => 'field_irori_cfg_email', 'label' => 'Email', 'name' => 'email', 'type' => 'text'],
             ['key' => 'field_irori_cfg_res_url', 'label' => 'Reservations Link', 'name' => 'reservations_url', 'type' => 'text'],
             ['key' => 'field_irori_cfg_gmap_link', 'label' => 'Google Map Link', 'name' => 'google_map_link', 'type' => 'text'],
-            ['key' => 'field_irori_cfg_gmap_embed', 'label' => 'Google Map Embed Link', 'name' => 'google_map_embed_link', 'type' => 'text'],
-            ['key' => 'field_irori_cfg_note', 'label' => 'Note', 'name' => 'after_phone_message', 'type' => 'wysiwyg'],
+            ['key' => 'field_irori_cfg_gmap_embed', 'label' => 'Google Map Coordinates (lat,lng,zoom)', 'name' => 'google_map_embed_link', 'type' => 'text'],
+            ['key' => 'field_irori_cfg_note', 'label' => 'Footer Disclaimer Note', 'name' => 'after_phone_message', 'type' => 'wysiwyg'],
+            ['key' => 'field_irori_cfg_copy', 'label' => 'Footer Copyright Text', 'name' => 'copyright_text', 'type' => 'text'],
             [
                 'key' => 'field_irori_cfg_socials',
                 'label' => 'Social links',
@@ -560,21 +623,21 @@ function irori_Ensure_Page(string $title, string $slug, int $order): int {
 }
 
 function irori_maybe_seed_defaults(): void {
-    if (get_option('irori_seeded_v2')) {
+    if (get_option('irori_seeded_v3')) {
         return;
     }
-    $lock = (int) get_option('irori_seed_lock_v2', 0);
+    $lock = (int) get_option('irori_seed_lock_v3', 0);
     if ($lock > 0 && (time() - $lock) < 300) {
         return;
     }
     if ($lock > 0) {
-        delete_option('irori_seed_lock_v2');
+        delete_option('irori_seed_lock_v3');
     }
-    if (!add_option('irori_seed_lock_v2', time(), '', 'no')) {
+    if (!add_option('irori_seed_lock_v3', time(), '', 'no')) {
         return;
     }
 
-    // Clean up WP boilerplate & legacy v1 custom post types if present
+    // Clean up WP boilerplate & previous seed posts so CMS matches website 1:1
     foreach (['hello-world', 'sample-page', 'privacy-policy'] as $bp_slug) {
         foreach (['post', 'page'] as $bp_type) {
             $bp = get_page_by_path($bp_slug, OBJECT, $bp_type);
@@ -583,7 +646,7 @@ function irori_maybe_seed_defaults(): void {
             }
         }
     }
-    foreach (['irori_occasional', 'irori_event', 'irori_review', 'google_reviews'] as $legacy_pt) {
+    foreach (['post', 'irori_occasional', 'irori_event', 'irori_review', 'google_reviews'] as $legacy_pt) {
         $old_posts = get_posts(['post_type' => $legacy_pt, 'post_status' => 'any', 'numberposts' => -1, 'fields' => 'ids']);
         foreach ($old_posts as $old_id) {
             wp_delete_post((int) $old_id, true);
@@ -591,9 +654,15 @@ function irori_maybe_seed_defaults(): void {
     }
 
     // Import core images & PDF menu files into WordPress Media Library
-    $att_welcome_banner = irori_import_local_asset('assets/images/hero-bartender-framed.jpg', 'House of IRORI Welcome Banner');
+    $att_hero_bg = irori_import_local_asset('assets/images/hero-bg.jpg', 'House of IRORI Hero Background');
+    $att_showcase = irori_import_local_asset('assets/images/hero-bartender-framed.jpg', 'House of IRORI Framed Bartender Showcase');
+    $att_story_bg = irori_import_local_asset('assets/images/story-bg.jpg', 'Hidden in Plain Sight Background');
+    $att_interior = irori_import_local_asset('assets/images/collage-interior.jpg', 'House of IRORI Timber & Spirits Interior');
+    $att_kimono = irori_import_local_asset('assets/images/collage-kimono-framed.jpg', 'House of IRORI Framed Kimono Artwork');
+    $att_floating = irori_import_local_asset('assets/images/floating-banner.jpg', 'House of IRORI Atmosphere Banner');
     $att_menu_banner = irori_import_local_asset('assets/images/hero-menu.jpg', 'Cocktail & Eatery Menu Banner');
     $att_event_banner = irori_import_local_asset('assets/images/hero-events.jpg', 'Events Banner');
+    $att_up_banner = irori_import_local_asset('assets/images/events-upcoming-banner.jpg', 'Events Up Coming Wood Banner');
     $att_blogs_banner = irori_import_local_asset('assets/images/hero-blogs.jpg', 'Blogs Banner');
     $att_wild_turkey = irori_import_local_asset('assets/images/event-wild-turkey.jpg', 'Guestshift Wild Turkey Takeover');
     $att_upcoming = irori_import_local_asset('assets/images/event-upcoming-featured.jpg', 'Featured Upcoming Event');
@@ -615,14 +684,66 @@ function irori_maybe_seed_defaults(): void {
     if ($welcome_id) {
         update_option('show_on_front', 'page');
         update_option('page_on_front', $welcome_id);
+        foreach (['welcome_message', '_welcome_message', 'find_us_img', '_find_us_img'] as $old_meta) {
+            delete_post_meta($welcome_id, $old_meta);
+        }
+
+        // 1.1 Hero Banner & Framed Bartender Showcase
         irori_set_acf_meta($welcome_id, 'welcome_banner', '', 'field_irori_welcome_banner');
-        irori_set_acf_meta($welcome_id, 'welcome_banner_banner', $att_welcome_banner, 'field_irori_wb_banner');
-        irori_set_acf_meta($welcome_id, 'welcome_banner_headline', 'WHERE CONVERSATION COMES FIRST', 'field_irori_wb_headline');
-        irori_set_acf_meta($welcome_id, 'welcome_banner_sub_headline', 'Cocktail Bar & Eatery', 'field_irori_wb_sub');
-        irori_set_acf_meta($welcome_id, 'welcome_message', 'In a city of noise and spectacle, we built a place for the opposite. No stage, no performance — just warm light, good music, and the people across the table from you.', 'field_irori_welcome_message');
-        irori_set_acf_meta($welcome_id, 'welcome_slider', array_values(array_filter([$att_welcome_banner, $att_level1, $att_level2])), 'field_irori_welcome_slider');
-        irori_set_acf_meta($welcome_id, 'find_us_here_message', "Locate us easily on Google Maps by searching 'House of IRORI' cocktail bar, right in the heart of Saigon.", 'field_irori_find_us_msg');
-        irori_set_acf_meta($welcome_id, 'find_us_here_image', $att_map, 'field_irori_find_us_img');
+        irori_set_acf_meta($welcome_id, 'welcome_banner_banner', $att_hero_bg, 'field_irori_wb_banner');
+        irori_set_acf_meta($welcome_id, 'welcome_banner_headline', "A QUIET CORNER OF JAPAN,\nTUCKED INTO\nTHE HEART OF SAIGON", 'field_irori_wb_headline');
+        irori_set_acf_meta($welcome_id, 'welcome_banner_sub_headline', 'DISCOVER THE STORY', 'field_irori_wb_sub');
+        irori_set_acf_meta($welcome_id, 'welcome_banner_showcase_image', $att_showcase, 'field_irori_wb_showcase');
+
+        // 1.2 Story Section (Hidden in Plain Sight)
+        irori_set_acf_meta($welcome_id, 'story_section', '', 'field_irori_story_section');
+        irori_set_acf_meta($welcome_id, 'story_section_bg_image', $att_story_bg, 'field_irori_st_bg');
+        irori_set_acf_meta($welcome_id, 'story_section_headline', 'HIDDEN IN PLAIN SIGHT', 'field_irori_st_head');
+        irori_set_acf_meta(
+            $welcome_id,
+            'story_section_content',
+            "<p>House of IRORI isn't a cocktail bar. It's a moment - a small corner where time moves differently. Step down a narrow alley.</p>\n<p>Warm tungsten light spills across dark wood. A bartender works with quiet precision. Ice hits glass. Smoke rises slowly. This is omotenashi. Japanese hospitality in its purest form. Every detail whispered, never shouted.</p>",
+            'field_irori_welcome_message'
+        );
+
+        // 1.3 Philosophy Collage (The Space Between)
+        irori_set_acf_meta($welcome_id, 'philosophy_section', '', 'field_irori_philosophy_section');
+        irori_set_acf_meta($welcome_id, 'philosophy_section_headline', "THE SPACE BETWEEN,\nSTILLNESS AND BEAUTY", 'field_irori_ph_head');
+        irori_set_acf_meta($welcome_id, 'philosophy_section_sub_headline', 'TWO FLOORS. ONE PHILOSOPHY.', 'field_irori_ph_sub');
+        irori_set_acf_meta($welcome_id, 'philosophy_section_interior_image', $att_interior, 'field_irori_ph_int');
+        irori_set_acf_meta($welcome_id, 'philosophy_section_kimono_image', $att_kimono, 'field_irori_ph_kim');
+
+        // 1.4 Level One: The Alley
+        irori_set_acf_meta($welcome_id, 'level_one', '', 'field_irori_level_one');
+        irori_set_acf_meta($welcome_id, 'level_one_eyebrow', 'LEVEL ONE:', 'field_irori_l1_eye');
+        irori_set_acf_meta($welcome_id, 'level_one_headline', 'THE ALLEY', 'field_irori_l1_head');
+        irori_set_acf_meta(
+            $welcome_id,
+            'level_one_description',
+            "A cinematic passage. Narrow. Intimate. Like stepping into a 70s Tokyo film. Dark wood weathered by time. Warm lighting that doesn't reveal everything. Walls that feel like they have stories. This is where you arrive.",
+            'field_irori_l1_desc'
+        );
+        irori_set_acf_meta($welcome_id, 'level_one_slider', array_values(array_filter([$att_level1, $att_interior, $att_floating])), 'field_irori_l1_slider');
+
+        // 1.5 Level Two: The Bar
+        irori_set_acf_meta($welcome_id, 'level_two', '', 'field_irori_level_two');
+        irori_set_acf_meta($welcome_id, 'level_two_eyebrow', 'LEVEL TWO:', 'field_irori_l2_eye');
+        irori_set_acf_meta($welcome_id, 'level_two_headline', 'THE BAR', 'field_irori_l2_head');
+        irori_set_acf_meta(
+            $welcome_id,
+            'level_two_description',
+            'The heart of the experience. A small counter where the bartender becomes the story. Watch spirit and ice transform into something sacred. Every pour is a conversation.',
+            'field_irori_l2_desc'
+        );
+        irori_set_acf_meta($welcome_id, 'level_two_sub_text', 'This is where you stay.', 'field_irori_l2_sub');
+        irori_set_acf_meta($welcome_id, 'level_two_slider', array_values(array_filter([$att_level2, $att_glimpse, $att_interior])), 'field_irori_l2_slider');
+
+        // 1.6 Bottom Section (Reviews Score, Saigon Map, Atmosphere Strip & Latest News)
+        irori_set_acf_meta($welcome_id, 'bottom_section', '', 'field_irori_bottom_section');
+        irori_set_acf_meta($welcome_id, 'bottom_section_rating_score', '5.0 / 5.0', 'field_irori_bt_score');
+        irori_set_acf_meta($welcome_id, 'bottom_section_map_image', $att_map, 'field_irori_find_us_img');
+        irori_set_acf_meta($welcome_id, 'bottom_section_atmosphere_image', $att_floating, 'field_irori_bt_atmo');
+        irori_set_acf_meta($welcome_id, 'bottom_section_latest_news_heading', 'LATEST NEWS', 'field_irori_bt_news');
     }
 
     // 2. Seed Menu Page (Menu Banner + Occasional Menus + Main Menus PDF Repeater)
@@ -656,11 +777,19 @@ function irori_maybe_seed_defaults(): void {
         }
     }
 
-    // 3. Seed Events Page (Event Banner + Occasional Events + Other events Up Coming slider)
+    // 3. Seed Events Page (Event Banner + Up Coming Slider + Occasional Events)
     if ($events_id) {
         irori_set_acf_meta($events_id, 'event_banner', '', 'field_irori_event_banner');
         irori_set_acf_meta($events_id, 'event_banner_banner', $att_event_banner, 'field_irori_eb_banner');
         irori_set_acf_meta($events_id, 'event_banner_headline', 'Events', 'field_irori_eb_headline');
+        irori_set_acf_meta($events_id, 'event_banner_upcoming_bg', $att_up_banner, 'field_irori_eb_up_bg');
+        irori_set_acf_meta($events_id, 'event_banner_upcoming_heading', 'up coming', 'field_irori_eb_up_head');
+
+        $other_events = [$att_upcoming, $att_wild_turkey, $att_level2];
+        irori_set_acf_meta($events_id, 'other_events', count($other_events), 'field_irori_other_events');
+        foreach ($other_events as $i => $th) {
+            irori_set_acf_meta($events_id, "other_events_{$i}_thumbnail", $th, 'field_irori_ote_thumb');
+        }
 
         $occ_events = [
             ['thumb' => $att_wild_turkey, 'head' => 'Guestshift - Wild Turkey 8ys Takeover', 'date' => '16th May 2025', 'desc' => 'Beat the sweltering heat with Lunazul tequila. House of IRORI created La Familia Es Todo – refreshing, balanced, and invigorating. A harmonious blend of 100% agave tequila, sweet and sour fruit flavors, and cool mint, offering a moment of complete relaxation. 📍Enjoy this special cocktail at House of IRORI this April.'],
@@ -677,12 +806,6 @@ function irori_maybe_seed_defaults(): void {
             irori_set_acf_meta($events_id, "occasional_events_{$i}_date", $ev['date'], 'field_irori_oe_date');
             irori_set_acf_meta($events_id, "occasional_events_{$i}_description", $ev['desc'], 'field_irori_oe_desc');
         }
-
-        $other_events = [$att_upcoming, $att_wild_turkey, $att_level2];
-        irori_set_acf_meta($events_id, 'other_events', count($other_events), 'field_irori_other_events');
-        foreach ($other_events as $i => $th) {
-            irori_set_acf_meta($events_id, "other_events_{$i}_thumbnail", $th, 'field_irori_ote_thumb');
-        }
     }
 
     // 4. Seed Blogs & Contact Page Banners
@@ -690,25 +813,29 @@ function irori_maybe_seed_defaults(): void {
         irori_set_acf_meta($blogs_id, 'blogs_banner', '', 'field_irori_blogs_banner');
         irori_set_acf_meta($blogs_id, 'blogs_banner_banner', $att_blogs_banner, 'field_irori_bb_banner');
         irori_set_acf_meta($blogs_id, 'blogs_banner_headline', 'BLOGS', 'field_irori_bb_headline');
+        irori_set_acf_meta($blogs_id, 'blogs_banner_section_heading', 'Latest News', 'field_irori_bb_sec_head');
     }
     if ($contact_id) {
         irori_set_acf_meta($contact_id, 'contact_banner', '', 'field_irori_contact_banner');
         irori_set_acf_meta($contact_id, 'contact_banner_banner', $att_glimpse, 'field_irori_cb_banner');
-        irori_set_acf_meta($contact_id, 'contact_banner_headline', 'Contact', 'field_irori_cb_headline');
+        irori_set_acf_meta($contact_id, 'contact_banner_headline', 'A GLIMPSE INSIDE', 'field_irori_cb_headline');
+        irori_set_acf_meta($contact_id, 'contact_banner_subtitle', "Warm light on dark wood. Handcrafted details.\nThe kind of room that feels good to be in.", 'field_irori_cb_sub');
     }
 
-    // 5. Seed Irori Settings (ACF Options Page matching Merlin Config)
+    // 5. Seed Irori Settings (ACF Options Page matching Header & Footer across all 5 pages)
     $d_set = irori_default_settings();
     update_option('irori_site_settings', $d_set);
     irori_set_acf_option('open_time_text', "<h2>A GLIMPSE INSIDE</h2>\n<p>Warm light on dark wood. Handcrafted details.<br>The kind of room that feels good to be in.</p>", 'field_irori_cfg_open_text');
     irori_set_acf_option('open_time_image', $att_glimpse, 'field_irori_cfg_open_img');
+    irori_set_acf_option('brand_tagline', 'A cinematic cocktail experience where brass, steam, and spirits converge.', 'field_irori_cfg_tagline');
     irori_set_acf_option('address', "Level 3, 17/3 Nguyen Thi Minh Khai,\nSai Gon Ward, HCMC, Vietnam", 'field_irori_cfg_address');
     irori_set_acf_option('phone', $d_set['phone_display'], 'field_irori_cfg_phone');
     irori_set_acf_option('email', $d_set['email'], 'field_irori_cfg_email');
     irori_set_acf_option('reservations_url', $d_set['reservations_url'], 'field_irori_cfg_res_url');
     irori_set_acf_option('google_map_link', $d_set['google_maps_url'], 'field_irori_cfg_gmap_link');
-    irori_set_acf_option('google_map_embed_link', '', 'field_irori_cfg_gmap_embed');
+    irori_set_acf_option('google_map_embed_link', '10.78492,106.7006,16', 'field_irori_cfg_gmap_embed');
     irori_set_acf_option('after_phone_message', $d_set['disclaimer'], 'field_irori_cfg_note');
+    irori_set_acf_option('copyright_text', '© 2026 House of IRORI', 'field_irori_cfg_copy');
     $socials = [
         ['name' => 'Facebook', 'link' => $d_set['facebook_url']],
         ['name' => 'Instagram', 'link' => $d_set['instagram_url']],
@@ -721,7 +848,7 @@ function irori_maybe_seed_defaults(): void {
         irori_set_acf_option("social_links_{$i}_link", $sc['link'], 'field_irori_soc_link');
     }
 
-    // 6. Seed Blog Categories & Blog Posts (if not already seeded)
+    // 6. Seed Blog Categories & 9 Blog Posts matching blogs.html, index.html & blog-detail.html 1:1
     foreach (['interior' => 'interior', 'concept' => 'Concept', 'club' => 'Club'] as $slug => $name) {
         if (!term_exists($slug, 'category')) {
             wp_insert_term($name, 'category', ['slug' => $slug]);
@@ -735,21 +862,25 @@ function irori_maybe_seed_defaults(): void {
         }
     }
 
-    $elle_prose = '<p>Được khởi xướng vào 3 năm trước với mong muốn đem đến cho công chúng yêu nghệ thuật và thiết kế một trải nghiệm thưởng lãm mới mẻ, ELLE Decoration Pop-Up Office dần tạo được dấu ấn trong tâm trí cộng đồng sáng tạo. Sự trở lại của Pop-Up Office với chủ đề “The Making of Joy” - Khởi Tạo Niềm Vui đánh dấu chuỗi hoạt động trong vòng 3 tuần từ 20/12/2024 đến 10/01/2025, tại TĐX Ice Factory quận 1, TP.HCM.</p>'
+    $elle_block = '<p>Được khởi xướng vào 3 năm trước với mong muốn đem đến cho công chúng yêu nghệ thuật và thiết kế một trải nghiệm thưởng lãm mới mẻ, ELLE Decoration Pop-Up Office dần tạo được dấu ấn trong tâm trí cộng đồng sáng tạo. Sự trở lại của Pop-Up Office với chủ đề “The Making of Joy” - Khởi Tạo Niềm Vui đánh dấu chuỗi hoạt động trong vòng 3 tuần từ 20/12/2024 đến 10/01/2025, tại TĐX Ice Factory quận 1, TP.HCM.</p>'
         . '<p>Về chuỗi hoạt động “Văn phòng Sáng Tạo” Pop-Up Office</p>'
         . '<p>Pop-Up là một hình mẫu chương trình do ELLE Decoration khởi xướng từ năm 2022, với mong muốn tạo ra một không gian kết nối cộng đồng yêu nghệ thuật, thiết kế, văn hoá và phong cách sống.</p>'
         . '<p>Cốt lõi của chuỗi hoạt động chính là không gian văn phòng của đội ngũ tòa soạn, nơi làm việc, hội họp, phỏng vấn, sản xuất hình ảnh, tiếp đãi đối tác và trò chuyện cùng các nhân vật của ấn phẩm. Với Pop-Up Office, đội ngũ ELLE Decoration được toàn quyền cải tạo và biến đổi một không gian có sẵn thành văn phòng của mình, với sự góp sức của các đối tác về sản phẩm nội thất, vật liệu, chiếu sáng, công nghệ, vv.. nhằm tạo ra một trải nghiệm tổng hòa giữa nội thất, kiến trúc, nghệ thuật và văn hoá.</p>';
+    $elle_prose = $elle_block
+        . '<figure class="blog-article__figure"><img src="assets/images/blog-thumb-1.jpg" alt="Craftsmanship and cocktail preparation at House of IRORI" loading="lazy" width="900" height="630"></figure>'
+        . '<h2 class="blog-article__subheading">Why We Work with Spirit, Not Against It</h2>'
+        . '<div class="blog-article__prose">' . $elle_block . '</div>';
 
     $articles_seed = [
-        ['title' => 'Why We Work with Spirit, Not Against It', 'slug' => 'why-we-work-with-spirit-not-against-it', 'cat' => 'interior', 'date' => '2026-04-14 18:00:00', 'img' => 'assets/images/blog-thumb-1.jpg', 'att' => $att_blog_thumb, 'sub' => 'Why We Work with Spirit, Not Against It', 'excerpt' => 'A conversation about respect, slow curation, and why every ingredient has a story to tell…'],
-        ['title' => 'ELLE Decoration PopUp Office - Dự Án Văn Phòng Sáng Tạo Dành Cho Cộng Đồng', 'slug' => 'elle-decoration-popup-office', 'cat' => 'concept', 'date' => '2026-04-12 18:00:00', 'img' => 'assets/images/blog-thumb-1.jpg', 'att' => $att_blog_thumb, 'sub' => 'Why We Work with Spirit, Not Against It', 'excerpt' => 'A conversation about respect, slow curation, and why every ingredient has a story to tell…'],
-        ['title' => 'Inside Level Two: Listening Culture & Hand-Carved Ice', 'slug' => 'inside-level-two-listening-culture', 'cat' => 'club', 'date' => '2026-04-10 18:00:00', 'img' => 'assets/images/blog-thumb-1.jpg', 'att' => $att_blog_thumb, 'sub' => 'Craftsmanship Behind the Upstairs Counter', 'excerpt' => 'A conversation about respect, slow curation, and why every ingredient has a story to tell…'],
-        ['title' => 'Showa Timber & Warm Brass: Designing the Alleyway', 'slug' => 'showa-timber-and-warm-brass', 'cat' => 'interior', 'date' => '2026-04-08 18:00:00', 'img' => 'assets/images/blog-thumb-1.jpg', 'att' => $att_blog_thumb, 'sub' => 'Two Floors, One Cohesive Philosophy', 'excerpt' => 'A conversation about respect, slow curation, and why every ingredient has a story to tell…'],
-        ['title' => 'Binchotan & Fermented Dough: Hearth Notes from Level One', 'slug' => 'binchotan-and-fermented-dough', 'cat' => 'concept', 'date' => '2026-04-05 18:00:00', 'img' => 'assets/images/blog-thumb-1.jpg', 'att' => $att_blog_thumb, 'sub' => 'Where Artisanal Sourdough Meets Izakaya Warmth', 'excerpt' => 'A conversation about respect, slow curation, and why every ingredient has a story to tell…'],
-        ['title' => 'Late-Night Vinyl Pressings from 1970s Tokyo', 'slug' => 'late-night-vinyl-pressings-tokyo', 'cat' => 'club', 'date' => '2026-04-02 18:00:00', 'img' => 'assets/images/blog-thumb-1.jpg', 'att' => $att_blog_thumb, 'sub' => 'Analog Soundscapes After Midnight', 'excerpt' => 'A conversation about respect, slow curation, and why every ingredient has a story to tell…'],
-        ['title' => 'Quiet Omotenashi in the Heart of Saigon', 'slug' => 'quiet-omotenashi-in-saigon', 'cat' => 'interior', 'date' => '2026-03-28 18:00:00', 'img' => 'assets/images/level1-alley.jpg', 'att' => $att_level1, 'sub' => 'Hospitality Without Performance', 'excerpt' => 'How spatial restraint and warm cedar lighting shape an unhurried evening on Nguyen Thi Minh Khai…'],
-        ['title' => 'Seasonal Botanicals & House-Aged Infusions', 'slug' => 'seasonal-botanicals-house-infusions', 'cat' => 'concept', 'date' => '2026-03-22 18:00:00', 'img' => 'assets/images/level2-bar.jpg', 'att' => $att_level2, 'sub' => 'Slow Extraction & Citrus Balance', 'excerpt' => 'Exploring yuzu kosho, roasted barley, and Japanese single-malt pairings across changing Saigon seasons…'],
-        ['title' => 'Guestshift Chronicles: Regional Bartenders at IRORI', 'slug' => 'guestshift-chronicles-at-irori', 'cat' => 'club', 'date' => '2026-03-15 18:00:00', 'img' => 'assets/images/event-wild-turkey.jpg', 'att' => $att_wild_turkey, 'sub' => 'One-Night Counter Collaborations', 'excerpt' => 'Highlights from intimate takeover nights bringing regional craft bartenders behind our upstairs counter…'],
+        ['title' => 'Why We Work with Spirit, Not Against It', 'slug' => 'why-we-work-with-spirit-not-against-it', 'cat' => 'interior', 'date' => '2026-04-14 18:09:00', 'img' => 'assets/images/blog-thumb-1.jpg', 'att' => $att_blog_thumb, 'sub' => 'Why We Work with Spirit, Not Against It', 'excerpt' => 'A conversation about respect, slow curation, and why every ingredient has a story to tell…'],
+        ['title' => 'ELLE Decoration PopUp Office - DỰ ÁN VĂN PHÒNG SÁNG TẠO DÀNH CHO CỘNG ĐỒNG', 'slug' => 'elle-decoration-popup-office', 'cat' => 'concept', 'date' => '2026-04-14 18:08:00', 'img' => 'assets/images/blog-thumb-1.jpg', 'att' => $att_blog_thumb, 'sub' => 'Why We Work with Spirit, Not Against It', 'excerpt' => 'A conversation about respect, slow curation, and why every ingredient has a story to tell…'],
+        ['title' => 'Why We Work with Spirit, Not Against It', 'slug' => 'why-we-work-with-spirit-club', 'cat' => 'club', 'date' => '2026-04-14 18:07:00', 'img' => 'assets/images/blog-thumb-1.jpg', 'att' => $att_blog_thumb, 'sub' => 'Why We Work with Spirit, Not Against It', 'excerpt' => 'A conversation about respect, slow curation, and why every ingredient has a story to tell…'],
+        ['title' => 'Why We Work with Spirit, Not Against It', 'slug' => 'why-we-work-with-spirit-interior-2', 'cat' => 'interior', 'date' => '2026-04-14 18:06:00', 'img' => 'assets/images/blog-thumb-1.jpg', 'att' => $att_blog_thumb, 'sub' => 'Why We Work with Spirit, Not Against It', 'excerpt' => 'A conversation about respect, slow curation, and why every ingredient has a story to tell…'],
+        ['title' => 'Why We Work with Spirit, Not Against It', 'slug' => 'why-we-work-with-spirit-concept-2', 'cat' => 'concept', 'date' => '2026-04-14 18:05:00', 'img' => 'assets/images/blog-thumb-1.jpg', 'att' => $att_blog_thumb, 'sub' => 'Why We Work with Spirit, Not Against It', 'excerpt' => 'A conversation about respect, slow curation, and why every ingredient has a story to tell…'],
+        ['title' => 'Why We Work with Spirit, Not Against It', 'slug' => 'why-we-work-with-spirit-club-2', 'cat' => 'club', 'date' => '2026-04-14 18:04:00', 'img' => 'assets/images/blog-thumb-1.jpg', 'att' => $att_blog_thumb, 'sub' => 'Why We Work with Spirit, Not Against It', 'excerpt' => 'A conversation about respect, slow curation, and why every ingredient has a story to tell…'],
+        ['title' => 'Architecture of Shadow: Designing Level One & Level Two', 'slug' => 'architecture-of-shadow-designing-level-one-and-level-two', 'cat' => 'interior', 'date' => '2026-03-28 18:00:00', 'img' => 'assets/images/collage-interior.jpg', 'att' => $att_interior, 'sub' => 'Two Floors, One Cohesive Philosophy', 'excerpt' => 'How aged cedar, warm tungsten glow, and Showa-era cinema inspired two distinct floors…'],
+        ['title' => 'The Ritual of Hand-Carved Ice at the Counter', 'slug' => 'the-ritual-of-hand-carved-ice-at-the-counter', 'cat' => 'concept', 'date' => '2026-03-10 18:00:00', 'img' => 'assets/images/level2-bar.jpg', 'att' => $att_level2, 'sub' => 'Craftsmanship Behind the Upstairs Counter', 'excerpt' => 'Why crystal-clear block ice, dilution speed, and temperature shape every pour at IRORI…'],
+        ['title' => 'Late-Night Listening: Vinyl & Spirits in Saigon', 'slug' => 'late-night-listening-vinyl-and-spirits-in-saigon', 'cat' => 'club', 'date' => '2026-02-22 18:00:00', 'img' => 'assets/images/level1-alley.jpg', 'att' => $att_level1, 'sub' => 'Analog Soundscapes After Midnight', 'excerpt' => 'Inside our analog sound curation that turns an unhurried evening into a lasting memory…'],
     ];
 
     foreach ($articles_seed as $a) {
@@ -841,7 +972,7 @@ function irori_maybe_seed_defaults(): void {
     if (function_exists('irori_register_acf_field_groups')) {
         irori_register_acf_field_groups();
     }
-    update_option('irori_seeded_v2', 1);
+    update_option('irori_seeded_v3', 1);
     delete_transient(IRORI_CMS_CACHE_KEY);
 }
 
@@ -876,7 +1007,7 @@ function irori_format_article_summary(\WP_Post $p): array {
     return [
         'id' => (int) $p->ID,
         'slug' => $p->post_name,
-        'title' => html_entity_decode(get_the_title($p), ENT_QUOTES, 'UTF-8'),
+        'title' => html_entity_decode($p->post_title, ENT_QUOTES, 'UTF-8'),
         'dateIso' => gmdate('Y-m-d', $ts),
         'dateLabel' => strtoupper(gmdate('F j, Y', $ts)),
         'category' => $cat_slug,
@@ -911,6 +1042,24 @@ function irori_format_article_detail(\WP_Post $p): array {
     return $base;
 }
 
+function irori_resolve_gallery($val, array $fallbacks): array {
+    $out = [];
+    if (is_array($val)) {
+        foreach ($val as $idx => $att) {
+            $u = irori_resolve_media_value($att, $fallbacks[$idx] ?? ($fallbacks[0] ?? ''));
+            if ($u !== '') {
+                $out[] = ['image' => $u, 'alt' => 'House of IRORI Gallery Slide ' . ($idx + 1)];
+            }
+        }
+    }
+    if (empty($out)) {
+        foreach ($fallbacks as $idx => $fb) {
+            $out[] = ['image' => $fb, 'alt' => 'House of IRORI Gallery Slide ' . ($idx + 1)];
+        }
+    }
+    return $out;
+}
+
 function irori_build_bootstrap_payload(): array {
     $cached = get_transient(IRORI_CMS_CACHE_KEY);
     if (is_array($cached)) {
@@ -936,6 +1085,14 @@ function irori_build_bootstrap_payload(): array {
     if (is_string($opt_gmap) && trim($opt_gmap) !== '') {
         $settings['google_maps_url'] = trim($opt_gmap);
     }
+    $opt_coords = trim((string) get_option('options_google_map_embed_link', ''));
+    if ($opt_coords !== '' && preg_match('/^\s*(-?\d+(?:\.\d+)?)\s*,\s*(-?\d+(?:\.\d+)?)(?:\s*,\s*(\d+))?\s*$/', $opt_coords, $cm)) {
+        $settings['map_lat'] = $cm[1];
+        $settings['map_lng'] = $cm[2];
+        if (!empty($cm[3])) {
+            $settings['map_zoom'] = $cm[3];
+        }
+    }
     $opt_addr = get_option('options_address', '');
     if (is_string($opt_addr) && trim($opt_addr) !== '') {
         $lines = array_values(array_filter(array_map('trim', preg_split('/\r\n|\r|\n|<br\s*\/?>/i', wp_strip_all_tags($opt_addr)))));
@@ -946,8 +1103,39 @@ function irori_build_bootstrap_payload(): array {
     }
     $opt_note = get_option('options_after_phone_message', '');
     if (is_string($opt_note) && trim($opt_note) !== '') {
-        $settings['disclaimer'] = trim( preg_replace('/\s+/', ' ', wp_strip_all_tags($opt_note)) );
+        $settings['disclaimer'] = trim(preg_replace('/\s+/', ' ', wp_strip_all_tags($opt_note)));
     }
+    $settings['brand_tagline'] = trim((string) get_option('options_brand_tagline', '')) ?: 'A cinematic cocktail experience where brass, steam, and spirits converge.';
+    $settings['copyright'] = trim((string) get_option('options_copyright_text', '')) ?: '© 2026 House of IRORI';
+    $settings['glimpse_image'] = irori_resolve_media_value(get_option('options_open_time_image', ''), 'assets/images/footer-glimpse-bg.jpg');
+    $opt_open_txt = trim((string) get_option('options_open_time_text', ''));
+    if ($opt_open_txt !== '') {
+        if (preg_match('/<h[1-6][^>]*>(.*?)<\/h[1-6]>/is', $opt_open_txt, $hm)) {
+            $settings['glimpse_title'] = trim(wp_strip_all_tags($hm[1]));
+        }
+        if (preg_match('/<p[^>]*>(.*?)<\/p>/is', $opt_open_txt, $pm)) {
+            $sub_lines = array_values(array_filter(array_map('trim', preg_split('/\r\n|\r|\n|<br\s*\/?>/i', wp_strip_all_tags($pm[1])))));
+            if (!empty($sub_lines)) {
+                $settings['glimpse_subtitle'] = implode("\n", $sub_lines);
+            }
+        }
+    }
+
+    $contact_page = get_page_by_path('contact', OBJECT, 'page');
+    $contact_id = $contact_page ? (int) $contact_page->ID : 0;
+    $cb_img = $contact_id ? irori_resolve_media_value(get_post_meta($contact_id, 'contact_banner_banner', true), '') : '';
+    if ($cb_img !== '' && $settings['glimpse_image'] === 'assets/images/footer-glimpse-bg.jpg') {
+        $settings['glimpse_image'] = $cb_img;
+    }
+    $cb_head = $contact_id ? trim((string) get_post_meta($contact_id, 'contact_banner_headline', true)) : '';
+    if ($cb_head !== '' && $cb_head !== 'A GLIMPSE INSIDE') {
+        $settings['glimpse_title'] = $cb_head;
+    }
+    $cb_sub = $contact_id ? trim((string) get_post_meta($contact_id, 'contact_banner_subtitle', true)) : '';
+    if ($cb_sub !== '' && strpos($cb_sub, 'Warm light on dark wood.') !== 0) {
+        $settings['glimpse_subtitle'] = $cb_sub;
+    }
+
     $soc_count = (int) get_option('options_social_links', 0);
     for ($i = 0; $i < $soc_count; $i++) {
         $sname = strtolower(trim((string) get_option("options_social_links_{$i}_name", '')));
@@ -956,6 +1144,79 @@ function irori_build_bootstrap_payload(): array {
             $settings[$sname . '_url'] = $slink;
         }
     }
+
+    // 1B. Welcome Page (index.html sections)
+    $welcome_page = get_page_by_path('welcome', OBJECT, 'page');
+    $welcome_id = $welcome_page ? (int) $welcome_page->ID : 0;
+    $w_score = $welcome_id ? trim((string) get_post_meta($welcome_id, 'bottom_section_rating_score', true)) : '';
+    if ($w_score !== '') {
+        $settings['rating_score'] = $w_score;
+    }
+    $settings['txt'] = [
+        ['.footer-glimpse__title', $settings['glimpse_title']],
+        ['.footer-col__tagline', $settings['brand_tagline']],
+        ['.footer-bottom__disclaimer', $settings['disclaimer']],
+        ['.footer-bottom__copyright', $settings['copyright']],
+        ['.reviews-header__score', $settings['rating_score']],
+    ];
+    $settings['soc'] = [
+        'Facebook' => $settings['facebook_url'],
+        'Instagram' => $settings['instagram_url'],
+        'TikTok' => $settings['tiktok_url'],
+        'Threads' => $settings['threads_url'],
+    ];
+
+    $welcome = [
+        'banner' => irori_resolve_media_value($welcome_id ? get_post_meta($welcome_id, 'welcome_banner_banner', true) : '', 'assets/images/hero-bg.jpg'),
+        'headline' => ($welcome_id ? trim((string) get_post_meta($welcome_id, 'welcome_banner_headline', true)) : '') ?: "A QUIET CORNER OF JAPAN,\nTUCKED INTO\nTHE HEART OF SAIGON",
+        'sub_headline' => ($welcome_id ? trim((string) get_post_meta($welcome_id, 'welcome_banner_sub_headline', true)) : '') ?: 'DISCOVER THE STORY',
+        'showcase_image' => irori_resolve_media_value($welcome_id ? get_post_meta($welcome_id, 'welcome_banner_showcase_image', true) : '', 'assets/images/hero-bartender-framed.jpg'),
+        'story_bg' => irori_resolve_media_value($welcome_id ? get_post_meta($welcome_id, 'story_section_bg_image', true) : '', 'assets/images/story-bg.jpg'),
+        'story_headline' => ($welcome_id ? trim((string) get_post_meta($welcome_id, 'story_section_headline', true)) : '') ?: 'HIDDEN IN PLAIN SIGHT',
+        'story_content' => wp_kses_post(wpautop(($welcome_id ? trim((string) get_post_meta($welcome_id, 'story_section_content', true)) : '') ?: "<p>House of IRORI isn't a cocktail bar. It's a moment - a small corner where time moves differently. Step down a narrow alley.</p><p>Warm tungsten light spills across dark wood. A bartender works with quiet precision. Ice hits glass. Smoke rises slowly. This is omotenashi. Japanese hospitality in its purest form. Every detail whispered, never shouted.</p>")),
+        'philosophy_headline' => ($welcome_id ? trim((string) get_post_meta($welcome_id, 'philosophy_section_headline', true)) : '') ?: "THE SPACE BETWEEN,\nSTILLNESS AND BEAUTY",
+        'philosophy_sub' => ($welcome_id ? trim((string) get_post_meta($welcome_id, 'philosophy_section_sub_headline', true)) : '') ?: 'TWO FLOORS. ONE PHILOSOPHY.',
+        'philosophy_interior' => irori_resolve_media_value($welcome_id ? get_post_meta($welcome_id, 'philosophy_section_interior_image', true) : '', 'assets/images/collage-interior.jpg'),
+        'philosophy_kimono' => irori_resolve_media_value($welcome_id ? get_post_meta($welcome_id, 'philosophy_section_kimono_image', true) : '', 'assets/images/collage-kimono-framed.jpg'),
+        'level1_eyebrow' => ($welcome_id ? trim((string) get_post_meta($welcome_id, 'level_one_eyebrow', true)) : '') ?: 'LEVEL ONE:',
+        'level1_headline' => ($welcome_id ? trim((string) get_post_meta($welcome_id, 'level_one_headline', true)) : '') ?: 'THE ALLEY',
+        'level1_desc' => ($welcome_id ? trim((string) get_post_meta($welcome_id, 'level_one_description', true)) : '') ?: "A cinematic passage. Narrow. Intimate. Like stepping into a 70s Tokyo film. Dark wood weathered by time. Warm lighting that doesn't reveal everything. Walls that feel like they have stories. This is where you arrive.",
+        'level1_slider' => irori_resolve_gallery($welcome_id ? get_post_meta($welcome_id, 'level_one_slider', true) : [], ['assets/images/level1-alley.jpg', 'assets/images/collage-interior.jpg', 'assets/images/floating-banner.jpg']),
+        'level2_eyebrow' => ($welcome_id ? trim((string) get_post_meta($welcome_id, 'level_two_eyebrow', true)) : '') ?: 'LEVEL TWO:',
+        'level2_headline' => ($welcome_id ? trim((string) get_post_meta($welcome_id, 'level_two_headline', true)) : '') ?: 'THE BAR',
+        'level2_desc' => ($welcome_id ? trim((string) get_post_meta($welcome_id, 'level_two_description', true)) : '') ?: 'The heart of the experience. A small counter where the bartender becomes the story. Watch spirit and ice transform into something sacred. Every pour is a conversation.',
+        'level2_sub' => ($welcome_id ? trim((string) get_post_meta($welcome_id, 'level_two_sub_text', true)) : '') ?: 'This is where you stay.',
+        'level2_slider' => irori_resolve_gallery($welcome_id ? get_post_meta($welcome_id, 'level_two_slider', true) : [], ['assets/images/level2-bar.jpg', 'assets/images/footer-glimpse-bg.jpg', 'assets/images/collage-interior.jpg']),
+        'map_image' => irori_resolve_media_value($welcome_id ? get_post_meta($welcome_id, 'bottom_section_map_image', true) : '', 'assets/images/saigon-map.jpg'),
+        'atmosphere_image' => irori_resolve_media_value($welcome_id ? get_post_meta($welcome_id, 'bottom_section_atmosphere_image', true) : '', 'assets/images/floating-banner.jpg'),
+        'latest_news_heading' => ($welcome_id ? trim((string) get_post_meta($welcome_id, 'bottom_section_latest_news_heading', true)) : '') ?: 'LATEST NEWS',
+    ];
+    $welcome['nl'] = [
+        ['.hero__title', $welcome['headline']],
+        ['.philosophy__card-title', $welcome['philosophy_headline']],
+    ];
+    $welcome['img'] = [
+        ['.hero__bg-img', $welcome['banner']],
+        ['.hero-showcase__frame img', $welcome['showcase_image']],
+        ['.story__bg img', $welcome['story_bg']],
+        ['.philosophy__interior img', $welcome['philosophy_interior']],
+        ['.philosophy__kimono img', $welcome['philosophy_kimono']],
+        ['.reviews-map__fallback', $welcome['map_image']],
+        ['#atmosphere-strip img', $welcome['atmosphere_image']],
+    ];
+    $welcome['txt'] = [
+        ['.hero__discover span', $welcome['sub_headline']],
+        ['.story__title', $welcome['story_headline']],
+        ['.philosophy__card-ribbon span', $welcome['philosophy_sub']],
+        ['#level-one .split-level__eyebrow', $welcome['level1_eyebrow']],
+        ['#level-one .split-level__heading', $welcome['level1_headline']],
+        ['#level-one .split-level__desc', $welcome['level1_desc']],
+        ['#level-two .split-level__eyebrow', $welcome['level2_eyebrow']],
+        ['#level-two .split-level__heading', $welcome['level2_headline']],
+        ['#level-two .split-level__desc p', $welcome['level2_desc']],
+        ['#level-two .split-level__sub', $welcome['level2_sub']],
+        ['#latest-news .latest-news__title', $welcome['latest_news_heading']],
+    ];
 
     // 2. Menu Page: Main Menus (PDF repeater) & Occasional Menus (repeater)
     $menu_page = get_page_by_path('menu', OBJECT, 'page');
@@ -1073,6 +1334,40 @@ function irori_build_bootstrap_payload(): array {
     }
 
     // 5. Blog Articles (CPT: post)
+    $blogs_page = get_page_by_path('blogs', OBJECT, 'page');
+    $blogs_id = $blogs_page ? (int) $blogs_page->ID : 0;
+
+    $banners = [
+        'menu' => [
+            'banner' => irori_resolve_media_value($menu_id ? get_post_meta($menu_id, 'menu_banner_banner', true) : '', 'assets/images/hero-menu.jpg'),
+            'headline' => ($menu_id ? trim((string) get_post_meta($menu_id, 'menu_banner_headline', true)) : '') ?: 'Cocktail & Eatery Menu',
+        ],
+        'events' => [
+            'banner' => irori_resolve_media_value($events_id ? get_post_meta($events_id, 'event_banner_banner', true) : '', 'assets/images/hero-events.jpg'),
+            'headline' => ($events_id ? trim((string) get_post_meta($events_id, 'event_banner_headline', true)) : '') ?: 'Events',
+            'upcoming_bg' => irori_resolve_media_value($events_id ? get_post_meta($events_id, 'event_banner_upcoming_bg', true) : '', 'assets/images/events-upcoming-banner.jpg'),
+            'upcoming_heading' => ($events_id ? trim((string) get_post_meta($events_id, 'event_banner_upcoming_heading', true)) : '') ?: 'up coming',
+        ],
+        'blogs' => [
+            'banner' => irori_resolve_media_value($blogs_id ? get_post_meta($blogs_id, 'blogs_banner_banner', true) : '', 'assets/images/hero-blogs.jpg'),
+            'headline' => ($blogs_id ? trim((string) get_post_meta($blogs_id, 'blogs_banner_headline', true)) : '') ?: 'BLOGS',
+            'section_heading' => ($blogs_id ? trim((string) get_post_meta($blogs_id, 'blogs_banner_section_heading', true)) : '') ?: 'Latest News',
+        ],
+    ];
+    $banners['img'] = [
+        ['#menu-hero .page-hero__bg-img', $banners['menu']['banner']],
+        ['#events-hero .page-hero__bg-img', $banners['events']['banner']],
+        ['.upcoming-banner__bg img', $banners['events']['upcoming_bg']],
+        ['#blogs-hero .page-hero__bg-img', $banners['blogs']['banner']],
+    ];
+    $banners['txt'] = [
+        ['#menu-hero .page-hero__title', $banners['menu']['headline']],
+        ['#events-hero .page-hero__title', $banners['events']['headline']],
+        ['.upcoming-banner__title', $banners['events']['upcoming_heading']],
+        ['#blogs-hero .page-hero__title', $banners['blogs']['headline']],
+        ['#blogs-listing .section-gold-heading', $banners['blogs']['section_heading']],
+    ];
+
     $blog_posts = get_posts([
         'post_type' => 'post',
         'post_status' => 'publish',
@@ -1084,9 +1379,11 @@ function irori_build_bootstrap_payload(): array {
     $articles = array_map('irori_format_article_summary', $blog_posts);
 
     $payload = [
-        'version' => 2,
+        'version' => 3,
         'generatedAt' => gmdate('c'),
         'settings' => $settings,
+        'welcome' => $welcome,
+        'banners' => $banners,
         'mainMenus' => $main_menus,
         'occasionalMenus' => $occasional_menus,
         'upcomingSlides' => $upcoming_slides,

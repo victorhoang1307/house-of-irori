@@ -323,3 +323,36 @@
 **Dependencies:** Task 26
 **Files likely touched:** `tasks/plan.md`, `tasks/todo.md`, `graphify-out/graph.json`
 **Estimated scope:** Medium
+
+## Task 28: TDD Red — 100% 1:1 CMS & Website Content Parity Assertions (`?v=11.2`)
+**Description:** Update `tests/verify-home.mjs` to assert `wordpress/mu-plugins/irori-headless-cms.php` seeds all 6 `Welcome Page` sections (`A QUIET CORNER OF JAPAN,`, `DISCOVER THE STORY`, `HIDDEN IN PLAIN SIGHT`, `THE SPACE BETWEEN,`, `TWO FLOORS. ONE PHILOSOPHY.`, `THE ALLEY`, `THE BAR`, `This is where you stay.`), all 9 matching Blog titles (`Architecture of Shadow: Designing Level One & Level Two`, `The Ritual of Hand-Carved Ice at the Counter`, `Late-Night Listening: Vinyl & Spirits in Saigon`), zero `houseofmerlin` leftover copy (`!includes('WHERE CONVERSATION COMES FIRST')`, `!includes('In a city of noise and spectacle')`), and `d.welcome`/`d.banners` hydration in `js/cms.js`.
+**Acceptance criteria:**
+- [x] `tests/verify-home.mjs` covers all Phase 14 (`v11.2`) CMS-to-website parity requirements.
+**Verification:**
+- [x] `node tests/verify-home.mjs`
+**Dependencies:** Task 27
+**Files likely touched:** `tests/verify-home.mjs`
+**Estimated scope:** Small
+
+## Task 29: 1:1 CMS Field Groups, Seeder `v3` & Frontend Hydration (`?v=11.2` TDD Green)
+**Description:** Expand `wordpress/mu-plugins/irori-headless-cms.php` (`group_irori_welcome_page` 6 groups, `group_irori_event_page`, `group_irori_blogs_page`, `group_irori_contact_page`, `group_irori_config`, `irori_seeded_v3`, `irori_build_bootstrap_payload` `version: 3`), update `js/cms.js` (`<= 10 KB`) and `js/main.js` (`<= 15 KB`) to hydrate `d.welcome`, `d.banners`, and all 3 carousels (`alley`, `bar`, `upcoming`), and bump `?v=11.2` across all 5 HTML pages.
+**Acceptance criteria:**
+- [x] `js/cms.js <= 10,240 B`, `js/main.js <= 15,360 B`, combined JS `<= 25,600 B`, `css/style.css <= 51,200 B`.
+- [x] `node --check js/main.js && node --check js/cms.js && php -l wordpress/mu-plugins/irori-headless-cms.php && node tests/verify-home.mjs` passes 100%.
+**Verification:**
+- [x] `node tests/verify-home.mjs`
+**Dependencies:** Task 28
+**Files likely touched:** `wordpress/mu-plugins/irori-headless-cms.php`, `js/cms.js`, `js/main.js`, `index.html`, `menu.html`, `events.html`, `blogs.html`, `blog-detail.html`
+**Estimated scope:** Medium
+
+## Task 30: cPanel Deployment (`v11.2`), `wp-admin` + Frontend Verification & Final QA Gate
+**Description:** Upload `v11.2` files to `sites-test.houseofirori.com.vn`, trigger `irori_seeded_v3`, fix `wp-config.php` salt quotes, verify all CMS pages (`Welcome`, `Menu`, `Events`, `Blogs`, `Contact`, `Irori Settings`, `Blogs`, `Google Reviews`) and all 5 frontend pages in Chrome DevTools MCP (`0` console errors), run Final QA Gate (`code-reviewer`, `security-auditor`, `web-performance-auditor`), update `graphify`, and push to `origin/master` & `gh-pages`.
+**Acceptance criteria:**
+- [x] All 30 ACF fields in `Welcome Page` (`post=44`), `Menu Page` (`post=45`), `Events Page` (`post=46`), `Blogs Page` (`post=47`), `Contact Page` (`post=48`), `Irori Settings`, 9 `Blogs` posts, and 5 `Google Reviews` match the website 100%.
+- [x] All 5 frontend pages hydrate from `/cms/wp-json/irori/v1/bootstrap` (`version: 3`) with `0` console errors/warnings.
+- [x] All 3 QA subagents approve with `0` Critical/High/Medium findings.
+**Verification:**
+- [x] Chrome DevTools MCP + cPanel REST API check + QA subagents + `node tests/verify-home.mjs`
+**Dependencies:** Task 29
+**Files likely touched:** `tasks/plan.md`, `tasks/todo.md`, `graphify-out/graph.json`
+**Estimated scope:** Medium

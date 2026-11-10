@@ -510,10 +510,12 @@ assert.ok(
     cmsSource.includes("priority: 'low'") &&
     cmsSource.includes('mainMenus') &&
     cmsSource.includes('dFlipLocation') &&
+    cmsSource.includes('d.welcome') &&
+    cmsSource.includes('d.banners') &&
     cmsSource.includes('/irori/v1/bootstrap') &&
     cmsSource.includes('/irori/v1/article/') &&
     cmsSource.includes("'irori:cms'"),
-  'js/cms.js must avoid innerHTML, guard Element.prototype.setHTML with try/catch + div/span allowlist DOMParser fallback, hydrate mainMenus PDF tabs with dFlipLocation, deprioritize background fetch, query /irori/v1/*, and dispatch irori:cms'
+  'js/cms.js must avoid innerHTML, guard Element.prototype.setHTML with try/catch + div/span allowlist DOMParser fallback, hydrate d.welcome, d.banners, and mainMenus PDF tabs with dFlipLocation, deprioritize background fetch, query /irori/v1/*, and dispatch irori:cms'
 );
 assert.ok(
   jsSource.includes("'irori:cms'") && jsSource.includes('mapEl._pin'),
@@ -542,12 +544,25 @@ assert.ok(
     wpPluginSrc.includes("'occasional_menus'") &&
     wpPluginSrc.includes("'occasional_events'") &&
     wpPluginSrc.includes("'other_events'") &&
+    wpPluginSrc.includes('A QUIET CORNER OF JAPAN,') &&
+    wpPluginSrc.includes('DISCOVER THE STORY') &&
+    wpPluginSrc.includes('HIDDEN IN PLAIN SIGHT') &&
+    wpPluginSrc.includes('THE SPACE BETWEEN,') &&
+    wpPluginSrc.includes('TWO FLOORS. ONE PHILOSOPHY.') &&
+    wpPluginSrc.includes('THE ALLEY') &&
+    wpPluginSrc.includes('THE BAR') &&
+    wpPluginSrc.includes('This is where you stay.') &&
+    wpPluginSrc.includes('Architecture of Shadow: Designing Level One & Level Two') &&
+    wpPluginSrc.includes('The Ritual of Hand-Carved Ice at the Counter') &&
+    wpPluginSrc.includes('Late-Night Listening: Vinyl & Spirits in Saigon') &&
+    !wpPluginSrc.includes('WHERE CONVERSATION COMES FIRST') &&
+    !wpPluginSrc.includes('In a city of noise and spectacle') &&
     wpPluginSrc.includes("'has_password' => false") &&
     wpPluginSrc.includes('clean_post_cache') &&
     wpPluginSrc.includes('wp_kses_post') &&
     wpPluginSrc.includes('wp_verify_nonce') &&
     wpPluginSrc.includes('xmlrpc_methods'),
-  'irori-headless-cms.php must mirror houseofmerlin CMS structure (google_reviews CPT, irori_config-page options, ACF main_menus PDF repeater, occasional_menus, occasional_events, other_events), register /irori/v1/* routes, exclude password-protected posts, bust cache on clean_post_cache, and disable XML-RPC'
+  'irori-headless-cms.php must mirror houseofmerlin CMS structure and seed 100% House of IRORI website content (zero Merlin leftover copy)'
 );
 for (const m of wpPluginSrc.matchAll(/irori_import_local_asset\('([^']+)'/g)) {
   checkFileExists(m[1], 100);

@@ -72,6 +72,11 @@ Build the complete, responsive Static HTML5/CSS3/JS implementation of `Home v3B`
 - [x] Task 26: Generate multi-page PDF menus (`assets/menus/irori-cocktail-menu.pdf` & `assets/menus/irori-food-menu.pdf`), update `menu.html`, `css/style.css`, `js/main.js`, `js/cms.js`, and `wordpress/mu-plugins/irori-headless-cms.php` (TDD Green), keeping `css/style.css <= 50 KB`, `js/main.js <= 15 KB`, `js/cms.js <= 10 KB`, and combined JS `<= 25 KB`.
 - [x] Task 27: Provision `acf`, `3d-flipbook-dflip-lite`, and `admin-menu-editor` in `/home/zhorktpv/sites-test.houseofirori.com.vn/cms/wp-content/plugins/`, seed ACF Pages (`Welcome`, `Menu`, `Events`, `Blogs`, `Contact`), `Irori Settings` (`irori_config-page`), `google_reviews`, and Media attachments on cPanel, verify live PDF flipbook tabs & CMS admin structure in Chrome DevTools MCP, run QA gate (`code-reviewer`, `security-auditor`, `web-performance-auditor`), and push to `origin/master`.
 
+### Phase 14: 100% 1:1 Content & Field Parity Between CMS and Website (`?v=11.2`)
+- [x] Task 28: Update `tests/verify-home.mjs` (TDD Red) to assert that `wordpress/mu-plugins/irori-headless-cms.php` seeds the exact `index.html`, `menu.html`, `events.html`, `blogs.html`, and `blog-detail.html` copy/assets (zero `houseofmerlin` leftover copy like `WHERE CONVERSATION COMES FIRST`, full `Welcome` sections: `HIDDEN IN PLAIN SIGHT`, `THE SPACE BETWEEN`, `THE ALLEY`, `THE BAR`, and all 9 matching Blog titles/dates/images) and that `js/cms.js` hydrates `d.welcome` and `d.banners`.
+- [x] Task 29: Update `wordpress/mu-plugins/irori-headless-cms.php`, `js/cms.js`, `js/main.js`, and the 5 HTML pages (`?v=11.2`) (TDD Green) so every section on `Welcome`, `Menu`, `Events`, `Blogs`, `Contact`, `Google Reviews`, and `Irori Settings` matches the website 100% and hydrates dynamically within the `10 KB` `cms.js` / `15 KB` `main.js` budgets.
+- [x] Task 30: Deploy to cPanel (`sites-test.houseofirori.com.vn`), re-seed all Pages/Blogs/Settings, verify every CMS page in `wp-admin` and every frontend page in Chrome DevTools MCP (`1920x1080` & `390x844`), run Final QA Gate (`code-reviewer`, `security-auditor`, `web-performance-auditor`), and push to `origin/master` & `gh-pages`.
+
 ## Risks and Mitigations
 | Risk | Impact | Mitigation |
 |------|--------|------------|

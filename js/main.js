@@ -97,7 +97,7 @@ document.addEventListener('DOMContentLoaded', () => {
     on(qs('[data-carousel-prev]', el), 'click', () => (go(cur - 1), auto.restart()));
     on(qs('[data-carousel-next]', el), 'click', () => (go(cur + 1), auto.restart()));
     bindScroll(el, (dir) => go(cur + dir), auto);
-    if (el.dataset.carousel === 'upcoming') onCms(() => go(0));
+    onCms(() => go(0));
   });
 
   // 4. Menu Tabs (PDF FlipBook)
