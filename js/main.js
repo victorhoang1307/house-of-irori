@@ -100,15 +100,14 @@ document.addEventListener('DOMContentLoaded', () => {
     if (el.dataset.carousel === 'upcoming') onCms(() => go(0));
   });
 
-  // 4. Menu Page Category Tabs (Cocktail vs Food)
-  const menuTabs = $$('[data-menu-tab]'), menuPanels = $$('[data-menu-panel]');
-  if (menuTabs.length && menuPanels.length) {
-    menuTabs.forEach((tab) => on(tab, 'click', () => {
-      const key = tab.dataset.menuTab;
-      menuTabs.forEach((t) => setPressed(t, t === tab));
-      menuPanels.forEach((p) => { const ok = p.dataset.menuPanel === key; cls(p, 'is-active', ok); p.hidden = !ok; });
-    }));
-  }
+  // 4. Menu Tabs (PDF FlipBook)
+  on(qs('.menu-tabs'), 'click', (e) => {
+    const tab = e.target.closest('[data-menu-tab]'), key = tab?.dataset.menuTab;
+    if (!key) return;
+    $$('[data-menu-tab]').forEach((t) => setPressed(t, t === tab));
+    $$('[data-menu-panel]').forEach((p) => { const ok = p.dataset.menuPanel === key; cls(p, 'is-active', ok); p.hidden = !ok; });
+    requestAnimationFrame(() => { window.DFLIP?.parseBooks?.(); dispatchEvent(new Event('resize')); });
+  });
 
   // 5. Load More Pagination (Occasionals & Events)
   $$('[data-load-more]').forEach((btn) => btn.dataset.loadMore !== 'blogs' && on(btn, 'click', () => {

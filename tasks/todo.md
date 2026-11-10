@@ -290,3 +290,36 @@
 **Dependencies:** Task 23
 **Files likely touched:** `.htaccess`, `tasks/plan.md`, `tasks/todo.md`, `graphify-out/graph.json`
 **Estimated scope:** Medium
+
+## Task 25: TDD Red — `houseofmerlin` CMS Parity & PDF Menu FlipBook Assertions
+**Description:** Update `tests/verify-home.mjs` to assert `assets/menus/irori-cocktail-menu.pdf` & `assets/menus/irori-food-menu.pdf`, `_df_book df-lite menu-pdf-book` in `menu.html`, `mainMenus` + `dFlipLocation` in `js/cms.js`, and `google_reviews` CPT, `irori_config-page`, `main_menus`, `occasional_menus`, `occasional_events`, `other_events`, and `irori_import_local_asset` file existence in `wordpress/mu-plugins/irori-headless-cms.php`.
+**Acceptance criteria:**
+- [x] `tests/verify-home.mjs` covers all Phase 13 PDF FlipBook and `houseofmerlin` CMS structure requirements.
+**Verification:**
+- [x] `node tests/verify-home.mjs`
+**Dependencies:** Task 24
+**Files likely touched:** `tests/verify-home.mjs`
+**Estimated scope:** Small
+
+## Task 26: PDF Menu Assets, DFlip Viewer & `houseofmerlin`-Aligned CMS Implementation (TDD Green)
+**Description:** Generate 4-page PDF menus (`irori-cocktail-menu.pdf`, `irori-food-menu.pdf`), update `menu.html`, `css/style.css`, `js/main.js`, `js/cms.js`, and `wordpress/mu-plugins/irori-headless-cms.php` (`?v=11.1`), keeping all CSS/JS within strict byte budgets.
+**Acceptance criteria:**
+- [x] `css/style.css <= 51,200 B`, `js/main.js <= 15,360 B`, `js/cms.js <= 10,240 B`, combined JS `<= 25,600 B`.
+- [x] `node --check js/main.js && node --check js/cms.js && node tests/verify-home.mjs` passes 100%.
+**Verification:**
+- [x] `node tests/verify-home.mjs`
+**Dependencies:** Task 25
+**Files likely touched:** `assets/menus/*.pdf`, `menu.html`, `index.html`, `events.html`, `blogs.html`, `blog-detail.html`, `css/style.css`, `js/main.js`, `js/cms.js`, `wordpress/mu-plugins/irori-headless-cms.php`
+**Estimated scope:** Medium
+
+## Task 27: cPanel Deployment (`acf`, `3d-flipbook-dflip-lite`, `admin-menu-editor`), Browser Verification & QA Gate
+**Description:** Provision `acf`, `3d-flipbook-dflip-lite`, and `admin-menu-editor` in `/cms/wp-content/plugins/`, seed `Welcome`/`Menu`/`Events`/`Blogs`/`Contact` Pages, `Irori Settings`, `google_reviews`, and PDF menu attachments, synchronize `ws_menu_editor` page submenu links, verify DFlip PDF rendering & WP Admin in Chrome DevTools MCP (`1920x1080` & `390x844`), remediate all QA subagent findings, and push to `origin/master` & `gh-pages`.
+**Acceptance criteria:**
+- [x] `menu.html` renders interactive 3D FlipBook (`_df_book df-lite`) PDF menus for `Our top cocktail` and `Food (Pizza & Side dishes)` with `0` console errors.
+- [x] `/cms/wp-admin/` matches `houseofmerlin.com.vn` (`Pages` -> `Welcome`/`Menu`/`Events`/`Blogs`/`Contact`, `Blogs`, `Google Reviews`, `Irori Settings`, `Media`).
+- [x] All 3 QA subagents approve with `0` unresolved findings.
+**Verification:**
+- [x] Chrome DevTools MCP + cPanel REST API check + QA subagents + `node tests/verify-home.mjs`
+**Dependencies:** Task 26
+**Files likely touched:** `tasks/plan.md`, `tasks/todo.md`, `graphify-out/graph.json`
+**Estimated scope:** Medium

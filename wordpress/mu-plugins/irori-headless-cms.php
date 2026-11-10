@@ -60,65 +60,301 @@ add_action('rest_api_init', function (): void {
 }, 15);
 
 /**
- * 2. Register Custom Post Types (Occasional Menus, Events, Google Reviews)
+ * 2. Classic Editor & Custom Post Type (google_reviews — 1:1 parity with houseofmerlin)
  */
+add_filter('use_block_editor_for_post', '__return_false');
+
 add_action('init', function (): void {
     add_theme_support('post-thumbnails');
 
-    register_post_type('irori_occasional', [
+    register_post_type('google_reviews', [
         'labels' => [
-            'name' => 'Occasional Menus',
-            'singular_name' => 'Occasional Menu',
-            'add_new_item' => 'Add New Occasional Menu',
-            'edit_item' => 'Edit Occasional Menu',
+            'name' => __('Google Reviews'),
+            'singular_name' => __('Google Review'),
+            'add_new_item' => __('Add New Google Review'),
+            'edit_item' => __('Edit Google Review'),
         ],
-        'public' => false,
-        'show_ui' => true,
-        'show_in_menu' => true,
-        'menu_icon' => 'dashicons-food',
-        'menu_position' => 21,
-        'supports' => ['title', 'editor', 'thumbnail', 'page-attributes'],
-    ]);
-
-    register_post_type('irori_event', [
-        'labels' => [
-            'name' => 'Events',
-            'singular_name' => 'Event',
-            'add_new_item' => 'Add New Event',
-            'edit_item' => 'Edit Event',
-        ],
-        'public' => false,
-        'show_ui' => true,
-        'show_in_menu' => true,
-        'menu_icon' => 'dashicons-calendar-alt',
-        'menu_position' => 22,
-        'supports' => ['title', 'editor', 'thumbnail', 'page-attributes'],
-    ]);
-
-    register_post_type('irori_review', [
-        'labels' => [
-            'name' => 'Google Reviews',
-            'singular_name' => 'Google Review',
-            'add_new_item' => 'Add New Review',
-            'edit_item' => 'Edit Review',
-        ],
-        'public' => false,
+        'public' => true,
         'show_ui' => true,
         'show_in_menu' => true,
         'menu_icon' => 'dashicons-star-filled',
-        'menu_position' => 23,
-        'supports' => ['title', 'editor', 'page-attributes'],
+        'menu_position' => 22,
+        'supports' => ['title', 'editor', 'thumbnail', 'page-attributes'],
+        'rewrite' => ['slug' => 'google-reviews'],
     ]);
+
+    if (function_exists('acf_add_options_page')) {
+        acf_add_options_page([
+            'page_title' => 'Irori Config',
+            'menu_title' => 'Irori Settings',
+            'menu_slug' => 'irori_config-page',
+            'capability' => 'edit_pages',
+            'position' => 25,
+            'icon_url' => 'dashicons-admin-generic',
+            'redirect' => false,
+        ]);
+    }
 });
 
 /**
- * 3. Custom Meta Boxes for Posts, Occasional Menus, Events, and Reviews
+ * 3. Admin Menu Order & ACF Field Groups (1:1 parity with houseofmerlin.com.vn)
+ */
+add_action('admin_menu', function (): void {
+    global $menu;
+    remove_menu_page('index.php');
+    remove_menu_page('edit-comments.php');
+    remove_menu_page('edit.php?post_type=dflip');
+    if (is_array($menu)) {
+        foreach ($menu as $k => $item) {
+            if (($item[2] ?? '') === 'edit.php') {
+                $menu[$k][0] = 'Blogs';
+            }
+        }
+    }
+}, 999);
+
+add_filter('custom_menu_order', '__return_true');
+add_filter('menu_order', function (array $menu_ord): array {
+    return [
+        'edit.php?post_type=page',
+        'edit.php',
+        'edit.php?post_type=google_reviews',
+        'upload.php',
+        'irori_config-page',
+        'separator1',
+        'users.php',
+        'plugins.php',
+        'themes.php',
+        'tools.php',
+        'options-general.php',
+        'separator2',
+        'edit.php?post_type=acf-field-group',
+    ];
+});
+
+add_action('acf/init', 'irori_register_acf_field_groups');
+
+function irori_register_acf_field_groups(): void {
+    if (!function_exists('acf_add_local_field_group')) {
+        return;
+    }
+
+    $page_id = static function (string $slug): int {
+        $p = get_page_by_path($slug, OBJECT, 'page');
+        return $p ? (int) $p->ID : 0;
+    };
+
+    $welcome_id = $page_id('welcome');
+    $menu_id = $page_id('menu');
+    $events_id = $page_id('events');
+    $blogs_id = $page_id('blogs');
+    $contact_id = $page_id('contact');
+
+    // 1. Welcome Page (matches Merlin Welcome Page group)
+    if ($welcome_id) {
+        acf_add_local_field_group([
+            'key' => 'group_irori_welcome_page',
+            'title' => 'Welcome Page',
+            'fields' => [
+                [
+                    'key' => 'field_irori_welcome_banner',
+                    'label' => 'Welcome Banner',
+                    'name' => 'welcome_banner',
+                    'type' => 'group',
+                    'sub_fields' => [
+                        ['key' => 'field_irori_wb_banner', 'label' => 'Banner', 'name' => 'banner', 'type' => 'image', 'return_format' => 'id'],
+                        ['key' => 'field_irori_wb_headline', 'label' => 'Headline', 'name' => 'headline', 'type' => 'text'],
+                        ['key' => 'field_irori_wb_sub', 'label' => 'Sub Headline', 'name' => 'sub_headline', 'type' => 'text'],
+                    ],
+                ],
+                ['key' => 'field_irori_welcome_message', 'label' => 'Welcome Message', 'name' => 'welcome_message', 'type' => 'wysiwyg'],
+                ['key' => 'field_irori_welcome_slider', 'label' => 'Welcome Slider', 'name' => 'welcome_slider', 'type' => 'gallery', 'return_format' => 'id'],
+                ['key' => 'field_irori_find_us_msg', 'label' => 'Find us here message', 'name' => 'find_us_here_message', 'type' => 'wysiwyg'],
+                ['key' => 'field_irori_find_us_img', 'label' => 'Find us here image', 'name' => 'find_us_here_image', 'type' => 'image', 'return_format' => 'id'],
+            ],
+            'location' => [[['param' => 'page', 'operator' => '==', 'value' => (string) $welcome_id]]],
+            'hide_on_screen' => ['the_content'],
+        ]);
+    }
+
+    // 2. Menu Page (matches Merlin Menu Page group: Menu Banner + Occasional Menus + Main Menus PDF upload)
+    if ($menu_id) {
+        acf_add_local_field_group([
+            'key' => 'group_irori_menu_page',
+            'title' => 'Menu Page',
+            'fields' => [
+                [
+                    'key' => 'field_irori_menu_banner',
+                    'label' => 'Menu Banner',
+                    'name' => 'menu_banner',
+                    'type' => 'group',
+                    'sub_fields' => [
+                        ['key' => 'field_irori_mb_banner', 'label' => 'Banner', 'name' => 'banner', 'type' => 'image', 'return_format' => 'id'],
+                        ['key' => 'field_irori_mb_headline', 'label' => 'Headline', 'name' => 'headline', 'type' => 'text'],
+                    ],
+                ],
+                [
+                    'key' => 'field_irori_occasional_menus',
+                    'label' => 'Occasional Menus',
+                    'name' => 'occasional_menus',
+                    'type' => 'repeater',
+                    'layout' => 'table',
+                    'button_label' => 'Add Row',
+                    'sub_fields' => [
+                        ['key' => 'field_irori_om_thumb', 'label' => 'Thumbnail', 'name' => 'thumbnail', 'type' => 'image', 'return_format' => 'id'],
+                        ['key' => 'field_irori_om_head', 'label' => 'Headline', 'name' => 'headline', 'type' => 'text'],
+                        ['key' => 'field_irori_om_date', 'label' => 'Date Label', 'name' => 'date', 'type' => 'text'],
+                        ['key' => 'field_irori_om_desc', 'label' => 'Description', 'name' => 'description', 'type' => 'textarea'],
+                    ],
+                ],
+                [
+                    'key' => 'field_irori_main_menus',
+                    'label' => 'Main Menus',
+                    'name' => 'main_menus',
+                    'type' => 'repeater',
+                    'layout' => 'table',
+                    'button_label' => 'Add Row',
+                    'sub_fields' => [
+                        ['key' => 'field_irori_mm_pdf', 'label' => 'Menu file', 'name' => 'pdf', 'type' => 'file', 'return_format' => 'url', 'mime_types' => 'pdf'],
+                        ['key' => 'field_irori_mm_name', 'label' => 'Menu name', 'name' => 'menu_name', 'type' => 'text'],
+                    ],
+                ],
+            ],
+            'location' => [[['param' => 'page', 'operator' => '==', 'value' => (string) $menu_id]]],
+            'hide_on_screen' => ['the_content'],
+        ]);
+    }
+
+    // 3. Event Page (matches Merlin Event Page group: Event Banner + Occasional Events + Other events)
+    if ($events_id) {
+        acf_add_local_field_group([
+            'key' => 'group_irori_event_page',
+            'title' => 'Event Page',
+            'fields' => [
+                [
+                    'key' => 'field_irori_event_banner',
+                    'label' => 'Event Banner',
+                    'name' => 'event_banner',
+                    'type' => 'group',
+                    'sub_fields' => [
+                        ['key' => 'field_irori_eb_banner', 'label' => 'Banner', 'name' => 'banner', 'type' => 'image', 'return_format' => 'id'],
+                        ['key' => 'field_irori_eb_headline', 'label' => 'Headline', 'name' => 'headline', 'type' => 'text'],
+                    ],
+                ],
+                [
+                    'key' => 'field_irori_occasional_events',
+                    'label' => 'Occasional Events',
+                    'name' => 'occasional_events',
+                    'type' => 'repeater',
+                    'layout' => 'table',
+                    'button_label' => 'Add Row',
+                    'sub_fields' => [
+                        ['key' => 'field_irori_oe_thumb', 'label' => 'Thumbnail', 'name' => 'thumbnail', 'type' => 'image', 'return_format' => 'id'],
+                        ['key' => 'field_irori_oe_head', 'label' => 'Headline', 'name' => 'headline', 'type' => 'text'],
+                        ['key' => 'field_irori_oe_date', 'label' => 'Date Label', 'name' => 'date', 'type' => 'text'],
+                        ['key' => 'field_irori_oe_desc', 'label' => 'Description', 'name' => 'description', 'type' => 'textarea'],
+                    ],
+                ],
+                [
+                    'key' => 'field_irori_other_events',
+                    'label' => 'Other events (Up Coming Slider)',
+                    'name' => 'other_events',
+                    'type' => 'repeater',
+                    'layout' => 'table',
+                    'button_label' => 'Add Row',
+                    'sub_fields' => [
+                        ['key' => 'field_irori_ote_thumb', 'label' => 'Thumbnail', 'name' => 'thumbnail', 'type' => 'image', 'return_format' => 'id'],
+                    ],
+                ],
+            ],
+            'location' => [[['param' => 'page', 'operator' => '==', 'value' => (string) $events_id]]],
+            'hide_on_screen' => ['the_content'],
+        ]);
+    }
+
+    // 4. Blogs Page
+    if ($blogs_id) {
+        acf_add_local_field_group([
+            'key' => 'group_irori_blogs_page',
+            'title' => 'Blogs Page',
+            'fields' => [
+                [
+                    'key' => 'field_irori_blogs_banner',
+                    'label' => 'Blogs Banner',
+                    'name' => 'blogs_banner',
+                    'type' => 'group',
+                    'sub_fields' => [
+                        ['key' => 'field_irori_bb_banner', 'label' => 'Banner', 'name' => 'banner', 'type' => 'image', 'return_format' => 'id'],
+                        ['key' => 'field_irori_bb_headline', 'label' => 'Headline', 'name' => 'headline', 'type' => 'text'],
+                    ],
+                ],
+            ],
+            'location' => [[['param' => 'page', 'operator' => '==', 'value' => (string) $blogs_id]]],
+            'hide_on_screen' => ['the_content'],
+        ]);
+    }
+
+    // 5. Contact Page (matches Merlin Contact Page group)
+    if ($contact_id) {
+        acf_add_local_field_group([
+            'key' => 'group_irori_contact_page',
+            'title' => 'Contact Page',
+            'fields' => [
+                [
+                    'key' => 'field_irori_contact_banner',
+                    'label' => 'Contact Banner',
+                    'name' => 'contact_banner',
+                    'type' => 'group',
+                    'sub_fields' => [
+                        ['key' => 'field_irori_cb_banner', 'label' => 'Banner', 'name' => 'banner', 'type' => 'image', 'return_format' => 'id'],
+                        ['key' => 'field_irori_cb_headline', 'label' => 'Headline', 'name' => 'headline', 'type' => 'text'],
+                    ],
+                ],
+            ],
+            'location' => [[['param' => 'page', 'operator' => '==', 'value' => (string) $contact_id]]],
+            'hide_on_screen' => ['the_content'],
+        ]);
+    }
+
+    // 6. Irori Config Options Page (matches Merlin Config group)
+    acf_add_local_field_group([
+        'key' => 'group_irori_config_options',
+        'title' => 'Irori Config',
+        'fields' => [
+            ['key' => 'field_irori_cfg_open_text', 'label' => 'Open Time Text', 'name' => 'open_time_text', 'type' => 'wysiwyg'],
+            ['key' => 'field_irori_cfg_open_img', 'label' => 'Open Time Image', 'name' => 'open_time_image', 'type' => 'image', 'return_format' => 'id'],
+            ['key' => 'field_irori_cfg_address', 'label' => 'Address', 'name' => 'address', 'type' => 'wysiwyg'],
+            ['key' => 'field_irori_cfg_phone', 'label' => 'Phone', 'name' => 'phone', 'type' => 'text'],
+            ['key' => 'field_irori_cfg_email', 'label' => 'Email', 'name' => 'email', 'type' => 'text'],
+            ['key' => 'field_irori_cfg_res_url', 'label' => 'Reservations Link', 'name' => 'reservations_url', 'type' => 'text'],
+            ['key' => 'field_irori_cfg_gmap_link', 'label' => 'Google Map Link', 'name' => 'google_map_link', 'type' => 'text'],
+            ['key' => 'field_irori_cfg_gmap_embed', 'label' => 'Google Map Embed Link', 'name' => 'google_map_embed_link', 'type' => 'text'],
+            ['key' => 'field_irori_cfg_note', 'label' => 'Note', 'name' => 'after_phone_message', 'type' => 'wysiwyg'],
+            [
+                'key' => 'field_irori_cfg_socials',
+                'label' => 'Social links',
+                'name' => 'social_links',
+                'type' => 'repeater',
+                'layout' => 'table',
+                'button_label' => 'Add Row',
+                'sub_fields' => [
+                    ['key' => 'field_irori_soc_name', 'label' => 'Name', 'name' => 'name', 'type' => 'text'],
+                    ['key' => 'field_irori_soc_link', 'label' => 'Link', 'name' => 'link', 'type' => 'url'],
+                ],
+            ],
+            ['key' => 'field_irori_cfg_head_code', 'label' => 'Custom Header Code (before end of header tag)', 'name' => 'custom_header_code', 'type' => 'textarea'],
+            ['key' => 'field_irori_cfg_body_code', 'label' => 'Custom Body Code (after body tag)', 'name' => 'custom_body_code', 'type' => 'textarea'],
+        ],
+        'location' => [[['param' => 'options_page', 'operator' => '==', 'value' => 'irori_config-page']]],
+    ]);
+}
+
+/**
+ * 4. Custom Meta Boxes for Blog Posts and Google Reviews
  */
 add_action('add_meta_boxes', function (): void {
     add_meta_box('irori_post_meta', 'Article Display Options', 'irori_render_post_meta_box', 'post', 'normal', 'high');
-    add_meta_box('irori_occasional_meta', 'Occasional Menu Details', 'irori_render_item_meta_box', 'irori_occasional', 'normal', 'high');
-    add_meta_box('irori_event_meta', 'Event Schedule & Placement', 'irori_render_event_meta_box', 'irori_event', 'normal', 'high');
-    add_meta_box('irori_review_meta', 'Review Metadata', 'irori_render_review_meta_box', 'irori_review', 'normal', 'high');
+    add_meta_box('irori_review_meta', 'Google Review Details', 'irori_render_review_meta_box', 'google_reviews', 'normal', 'high');
 });
 
 function irori_render_post_meta_box(\WP_Post $post): void {
@@ -133,42 +369,6 @@ function irori_render_post_meta_box(\WP_Post $post): void {
     <p>
         <label for="irori_fallback_img"><strong>Fallback Image Path / URL (used if Featured Image is empty):</strong></label><br>
         <input type="text" id="irori_fallback_img" name="irori_fallback_img" value="<?php echo esc_attr($fb); ?>" class="large-text" placeholder="assets/images/blog-thumb-1.jpg">
-    </p>
-    <?php
-}
-
-function irori_render_item_meta_box(\WP_Post $post): void {
-    wp_nonce_field('irori_save_meta', 'irori_meta_nonce');
-    $iso = get_post_meta($post->ID, '_irori_date_iso', true);
-    $label = get_post_meta($post->ID, '_irori_date_label', true);
-    $fb = get_post_meta($post->ID, '_irori_fallback_img', true);
-    ?>
-    <p>
-        <label for="irori_date_iso"><strong>Event/Menu Date (YYYY-MM-DD):</strong></label><br>
-        <input type="date" id="irori_date_iso" name="irori_date_iso" value="<?php echo esc_attr($iso); ?>">
-    </p>
-    <p>
-        <label for="irori_date_label"><strong>Display Date Label:</strong></label><br>
-        <input type="text" id="irori_date_label" name="irori_date_label" value="<?php echo esc_attr($label); ?>" class="regular-text" placeholder="16th May 2025">
-    </p>
-    <p>
-        <label for="irori_fallback_img"><strong>Fallback Image Path / URL (used if Featured Image is empty):</strong></label><br>
-        <input type="text" id="irori_fallback_img" name="irori_fallback_img" value="<?php echo esc_attr($fb); ?>" class="large-text" placeholder="assets/images/event-wild-turkey.jpg">
-    </p>
-    <?php
-}
-
-function irori_render_event_meta_box(\WP_Post $post): void {
-    irori_render_item_meta_box($post);
-    $placement = get_post_meta($post->ID, '_irori_placement', true) ?: 'occasional';
-    ?>
-    <p>
-        <label for="irori_placement"><strong>Display Section on Events Page:</strong></label><br>
-        <select id="irori_placement" name="irori_placement">
-            <option value="occasional" <?php selected($placement, 'occasional'); ?>>OCCASIONAL Grid (Bottom 2x2 Grid)</option>
-            <option value="upcoming" <?php selected($placement, 'upcoming'); ?>>UP COMING Carousel (Top Featured Banner)</option>
-            <option value="both" <?php selected($placement, 'both'); ?>>Both UP COMING &amp; OCCASIONAL</option>
-        </select>
     </p>
     <?php
 }
@@ -212,21 +412,14 @@ add_action('save_post', function (int $post_id): void {
 
     $text_fields = [
         'irori_subheading' => '_irori_subheading',
-        'irori_date_iso' => '_irori_date_iso',
-        'irori_date_label' => '_irori_date_label',
         'irori_fallback_img' => '_irori_fallback_img',
+        'irori_date_iso' => '_irori_date_iso',
         'irori_time_label' => '_irori_time_label',
         'irori_initial' => '_irori_initial',
     ];
     foreach ($text_fields as $input => $meta_key) {
         if (isset($_POST[$input])) {
             update_post_meta($post_id, $meta_key, sanitize_text_field(wp_unslash($_POST[$input])));
-        }
-    }
-    if (isset($_POST['irori_placement'])) {
-        $pl = sanitize_key(wp_unslash($_POST['irori_placement']));
-        if (in_array($pl, ['occasional', 'upcoming', 'both'], true)) {
-            update_post_meta($post_id, '_irori_placement', $pl);
         }
     }
     if (isset($_POST['irori_rating'])) {
@@ -241,6 +434,10 @@ function irori_bust_cms_cache(): void {
     update_option('irori_cache_rev', ((int) get_option('irori_cache_rev', 1)) + 1, false);
 }
 
+add_action('acf/save_post', function (): void {
+    irori_bust_cms_cache();
+}, 20);
+
 add_action('clean_post_cache', function (int $post_id): void {
     if (!wp_is_post_revision($post_id) && !wp_is_post_autosave($post_id)) {
         irori_bust_cms_cache();
@@ -252,7 +449,7 @@ foreach (['deleted_post', 'trashed_post', 'untrashed_post', 'edited_term', 'crea
 }
 
 /**
- * 4. Default Data Definitions (Matches Approved Figma Design 1:1)
+ * 5. Default Settings & Media Attachment Helper
  */
 function irori_default_settings(): array {
     return [
@@ -262,6 +459,7 @@ function irori_default_settings(): array {
         'reservations_url' => '#footer',
         'address_line1' => 'Level 3, 17/3 Nguyen Thi Minh Khai,',
         'address_line2' => 'Sai Gon Ward, HCMC, Vietnam',
+        'disclaimer' => 'Drink Responsibility. We Do Not Offer Online Sale. We Offer Products Less Than 5.5% Alcohol.',
         'rating_score' => '5.0 / 5.0',
         'map_lat' => '10.78492',
         'map_lng' => '106.7006',
@@ -274,321 +472,261 @@ function irori_default_settings(): array {
     ];
 }
 
-function irori_default_menu_book(): array {
-    return [
-        'cocktail_image' => 'assets/images/menu-showcase-1.jpg',
-        'cocktail_alt' => 'House of IRORI Signature Cocktail Menu',
-        'left_eyebrow' => 'HOUSE OF IRORI • HEARTH KITCHEN',
-        'left_heading' => 'Wood-Fired Pizza',
-        'left_sub' => '72-hour fermented sourdough crust blistered over binchotan & oak',
-        'left_items' => [
-            ['name' => 'Miso Burrata & Smoked Scallion', 'price' => '295', 'desc' => 'San Marzano tomato, creamy burrata, white miso glaze, charred negi, cold-pressed olive oil.'],
-            ['name' => 'Kurobuta Chorizo & Yuzu Honey', 'price' => '320', 'desc' => 'Fior di latte, spiced Berkshire pork sausage, pickled jalapeño, wild yuzu blossom honey.'],
-            ['name' => 'Wild Mushroom & Truffle Dashi', 'price' => '310', 'desc' => 'Roasted maitake & shiitake, aged Parmigiano, black truffle kombu cream, crispy sage.'],
-            ['name' => 'Charred Hokkaido Corn & Nori', 'price' => '280', 'desc' => 'Smoked mozzarella, sweet Hokkaido corn, brown butter shoyu, toasted Ariake nori.'],
-        ],
-        'right_eyebrow' => 'LATE NIGHT • COUNTER PLATES',
-        'right_heading' => 'Side Dishes & Bites',
-        'right_sub' => 'Crafted to accompany whisky highballs & signature cocktails',
-        'right_note' => 'All prices in thousands VND • Subject to 5% service charge & applicable VAT',
-        'right_items' => [
-            ['name' => 'Binchotan Chicken Karaage', 'price' => '185', 'desc' => 'Free-range thigh marinated in ginger & sake lees, black garlic kewpie, grilled sudachi.'],
-            ['name' => 'Wagyu Tataki Brioche Toast', 'price' => '360', 'desc' => 'Seared Miyazaki striploin, smoked bone-marrow butter, pickled myoga shallot, shiso cress.'],
-            ['name' => 'Smoked Edamame & Sansho Salt', 'price' => '125', 'desc' => 'Wok-charred young soybeans tossed in sakura-wood smoke oil and green sansho pepper.'],
-            ['name' => 'Yuzu Kosho Hand-Cut Fries', 'price' => '145', 'desc' => 'Triple-cooked russet potatoes, fermented citrus chili salt, whipped dashi aioli.'],
-        ],
-    ];
+function irori_resolve_media_value($val, string $fallback = ''): string {
+    if (is_numeric($val) && (int) $val > 0) {
+        $url = wp_get_attachment_url((int) $val);
+        if ($url) {
+            $rel = ltrim(wp_make_link_relative($url), '/');
+            return $rel !== '' ? $rel : $url;
+        }
+    }
+    if (is_string($val) && trim($val) !== '') {
+        return trim($val);
+    }
+    return $fallback;
+}
+
+function irori_import_local_asset(string $rel_path, string $title): int {
+    $existing = get_posts([
+        'post_type' => 'attachment',
+        'post_status' => 'inherit',
+        'meta_key' => '_irori_source_asset',
+        'meta_value' => $rel_path,
+        'numberposts' => 1,
+        'fields' => 'ids',
+    ]);
+    if (!empty($existing)) {
+        return (int) $existing[0];
+    }
+    $webroot = dirname(ABSPATH);
+    $src = $webroot . '/' . ltrim($rel_path, '/');
+    if (!file_exists($src)) {
+        return 0;
+    }
+    $uploads = wp_upload_dir();
+    if (!empty($uploads['error'])) {
+        return 0;
+    }
+    $filename = wp_unique_filename($uploads['path'], basename($src));
+    $dest = trailingslashit($uploads['path']) . $filename;
+    if (!@copy($src, $dest)) {
+        return 0;
+    }
+    $filetype = wp_check_filetype($filename, null);
+    $att_id = wp_insert_attachment([
+        'guid' => trailingslashit($uploads['url']) . $filename,
+        'post_mime_type' => $filetype['type'] ?: 'application/octet-stream',
+        'post_title' => $title,
+        'post_content' => '',
+        'post_status' => 'inherit',
+    ], $dest);
+    if (!$att_id || is_wp_error($att_id)) {
+        return 0;
+    }
+    update_post_meta($att_id, '_irori_source_asset', $rel_path);
+    return (int) $att_id;
 }
 
 /**
- * 5. Admin Pages: House of IRORI -> Site Settings & Menu Book
- */
-add_action('admin_menu', function (): void {
-    add_menu_page(
-        'House of IRORI',
-        'House of IRORI',
-        'manage_options',
-        'irori-settings',
-        'irori_render_settings_page',
-        'dashicons-store',
-        20
-    );
-    add_submenu_page(
-        'irori-settings',
-        'Site & Contact Settings',
-        'Site Settings',
-        'manage_options',
-        'irori-settings',
-        'irori_render_settings_page'
-    );
-    add_submenu_page(
-        'irori-settings',
-        'Cocktail & Food Menu Book',
-        'Menu Book',
-        'manage_options',
-        'irori-menu-book',
-        'irori_render_menu_book_page'
-    );
-});
-
-add_action('admin_enqueue_scripts', function (string $hook): void {
-    if (strpos($hook, 'irori-') !== false) {
-        wp_enqueue_media();
-    }
-});
-
-function irori_render_settings_page(): void {
-    if (!current_user_can('manage_options')) {
-        return;
-    }
-    $saved = false;
-    if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['irori_settings_nonce']) && wp_verify_nonce(sanitize_text_field(wp_unslash($_POST['irori_settings_nonce'])), 'irori_save_settings')) {
-        $defaults = irori_default_settings();
-        $clean = [];
-        foreach ($defaults as $k => $v) {
-            $raw = isset($_POST[$k]) ? wp_unslash($_POST[$k]) : $v;
-            if ($k === 'email') {
-                $clean[$k] = sanitize_email($raw);
-            } elseif (strpos($k, '_url') !== false && strpos($raw, '#') !== 0) {
-                $clean[$k] = esc_url_raw($raw);
-            } else {
-                $clean[$k] = sanitize_text_field($raw);
-            }
-        }
-        update_option('irori_site_settings', $clean);
-        irori_bust_cms_cache();
-        $saved = true;
-    }
-    $s = wp_parse_args(get_option('irori_site_settings', []), irori_default_settings());
-    ?>
-    <div class="wrap">
-        <h1>House of IRORI — Site &amp; Contact Settings</h1>
-        <?php if ($saved): ?><div class="notice notice-success is-dismissible"><p>Settings saved and live cache cleared.</p></div><?php endif; ?>
-        <form method="post">
-            <?php wp_nonce_field('irori_save_settings', 'irori_settings_nonce'); ?>
-            <table class="form-table" role="presentation">
-                <?php
-                $labels = [
-                    'email' => 'Contact Email',
-                    'phone_display' => 'Phone (Display)',
-                    'phone_tel' => 'Phone (tel: link)',
-                    'reservations_url' => 'Reservations Button Link',
-                    'address_line1' => 'Address Line 1',
-                    'address_line2' => 'Address Line 2',
-                    'rating_score' => 'Google Rating Summary',
-                    'map_lat' => 'Map Latitude',
-                    'map_lng' => 'Map Longitude',
-                    'map_zoom' => 'Map Default Zoom (13–19)',
-                    'google_maps_url' => 'Google Maps External URL',
-                    'facebook_url' => 'Facebook URL',
-                    'instagram_url' => 'Instagram URL',
-                    'tiktok_url' => 'TikTok URL',
-                    'threads_url' => 'Threads URL',
-                ];
-                foreach ($labels as $key => $label): ?>
-                    <tr>
-                        <th scope="row"><label for="<?php echo esc_attr($key); ?>"><?php echo esc_html($label); ?></label></th>
-                        <td><input type="text" id="<?php echo esc_attr($key); ?>" name="<?php echo esc_attr($key); ?>" value="<?php echo esc_attr($s[$key]); ?>" class="regular-text"></td>
-                    </tr>
-                <?php endforeach; ?>
-            </table>
-            <?php submit_button('Save Site Settings'); ?>
-        </form>
-    </div>
-    <?php
-}
-
-function irori_sanitize_dish_rows($rows): array {
-    if (!is_array($rows)) {
-        return [];
-    }
-    $out = [];
-    foreach ($rows as $r) {
-        $name = sanitize_text_field($r['name'] ?? '');
-        $price = sanitize_text_field($r['price'] ?? '');
-        $desc = sanitize_textarea_field($r['desc'] ?? '');
-        if ($name !== '') {
-            $out[] = ['name' => $name, 'price' => $price, 'desc' => $desc];
-        }
-    }
-    return $out;
-}
-
-function irori_render_menu_book_page(): void {
-    if (!current_user_can('manage_options')) {
-        return;
-    }
-    $saved = false;
-    if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['irori_menu_nonce']) && wp_verify_nonce(sanitize_text_field(wp_unslash($_POST['irori_menu_nonce'])), 'irori_save_menu_book')) {
-        $d = irori_default_menu_book();
-        $clean = [
-            'cocktail_image' => sanitize_text_field(wp_unslash($_POST['cocktail_image'] ?? $d['cocktail_image'])),
-            'cocktail_alt' => sanitize_text_field(wp_unslash($_POST['cocktail_alt'] ?? $d['cocktail_alt'])),
-            'left_eyebrow' => sanitize_text_field(wp_unslash($_POST['left_eyebrow'] ?? $d['left_eyebrow'])),
-            'left_heading' => sanitize_text_field(wp_unslash($_POST['left_heading'] ?? $d['left_heading'])),
-            'left_sub' => sanitize_text_field(wp_unslash($_POST['left_sub'] ?? $d['left_sub'])),
-            'left_items' => irori_sanitize_dish_rows(wp_unslash($_POST['left_items'] ?? [])),
-            'right_eyebrow' => sanitize_text_field(wp_unslash($_POST['right_eyebrow'] ?? $d['right_eyebrow'])),
-            'right_heading' => sanitize_text_field(wp_unslash($_POST['right_heading'] ?? $d['right_heading'])),
-            'right_sub' => sanitize_text_field(wp_unslash($_POST['right_sub'] ?? $d['right_sub'])),
-            'right_note' => sanitize_text_field(wp_unslash($_POST['right_note'] ?? $d['right_note'])),
-            'right_items' => irori_sanitize_dish_rows(wp_unslash($_POST['right_items'] ?? [])),
-        ];
-        update_option('irori_menu_book', $clean);
-        irori_bust_cms_cache();
-        $saved = true;
-    }
-    $m = wp_parse_args(get_option('irori_menu_book', []), irori_default_menu_book());
-    ?>
-    <div class="wrap">
-        <h1>House of IRORI — Cocktail &amp; Food Menu Book</h1>
-        <?php if ($saved): ?><div class="notice notice-success is-dismissible"><p>Menu Book updated and live cache cleared.</p></div><?php endif; ?>
-        <form method="post">
-            <?php wp_nonce_field('irori_save_menu_book', 'irori_menu_nonce'); ?>
-            <h2>1. Cocktail Tab ("Our top cocktail")</h2>
-            <table class="form-table" role="presentation">
-                <tr>
-                    <th scope="row"><label for="cocktail_image">Cocktail Menu Image URL</label></th>
-                    <td>
-                        <input type="text" id="cocktail_image" name="cocktail_image" value="<?php echo esc_attr($m['cocktail_image']); ?>" class="large-text">
-                        <button type="button" class="button" id="irori-pick-cocktail-img">Select from Media Library</button>
-                    </td>
-                </tr>
-                <tr>
-                    <th scope="row"><label for="cocktail_alt">Image Alt Text</label></th>
-                    <td><input type="text" id="cocktail_alt" name="cocktail_alt" value="<?php echo esc_attr($m['cocktail_alt']); ?>" class="regular-text"></td>
-                </tr>
-            </table>
-
-            <h2>2. Food Tab — Left Page (Wood-Fired Pizza)</h2>
-            <p>
-                <input type="text" name="left_eyebrow" value="<?php echo esc_attr($m['left_eyebrow']); ?>" class="regular-text" placeholder="Eyebrow">
-                <input type="text" name="left_heading" value="<?php echo esc_attr($m['left_heading']); ?>" class="regular-text" placeholder="Heading">
-                <input type="text" name="left_sub" value="<?php echo esc_attr($m['left_sub']); ?>" class="large-text" placeholder="Subtitle" style="margin-top:6px;">
-            </p>
-            <table class="widefat striped" id="irori-left-table">
-                <thead><tr><th style="width:28%">Dish Name</th><th style="width:12%">Price</th><th>Description</th><th style="width:60px"></th></tr></thead>
-                <tbody>
-                <?php foreach ($m['left_items'] as $idx => $it): ?>
-                    <tr>
-                        <td><input type="text" name="left_items[<?php echo (int) $idx; ?>][name]" value="<?php echo esc_attr($it['name']); ?>" class="widefat"></td>
-                        <td><input type="text" name="left_items[<?php echo (int) $idx; ?>][price]" value="<?php echo esc_attr($it['price']); ?>" class="widefat"></td>
-                        <td><input type="text" name="left_items[<?php echo (int) $idx; ?>][desc]" value="<?php echo esc_attr($it['desc']); ?>" class="widefat"></td>
-                        <td><button type="button" class="button irori-del-row">&times;</button></td>
-                    </tr>
-                <?php endforeach; ?>
-                </tbody>
-            </table>
-            <p><button type="button" class="button" data-add-menu="left_items" data-target="#irori-left-table tbody">+ Add Left Page Dish</button></p>
-
-            <h2>3. Food Tab — Right Page (Side Dishes &amp; Bites)</h2>
-            <p>
-                <input type="text" name="right_eyebrow" value="<?php echo esc_attr($m['right_eyebrow']); ?>" class="regular-text" placeholder="Eyebrow">
-                <input type="text" name="right_heading" value="<?php echo esc_attr($m['right_heading']); ?>" class="regular-text" placeholder="Heading">
-                <input type="text" name="right_sub" value="<?php echo esc_attr($m['right_sub']); ?>" class="large-text" placeholder="Subtitle" style="margin-top:6px;">
-                <input type="text" name="right_note" value="<?php echo esc_attr($m['right_note']); ?>" class="large-text" placeholder="Footer Price/VAT Note" style="margin-top:6px;">
-            </p>
-            <table class="widefat striped" id="irori-right-table">
-                <thead><tr><th style="width:28%">Dish Name</th><th style="width:12%">Price</th><th>Description</th><th style="width:60px"></th></tr></thead>
-                <tbody>
-                <?php foreach ($m['right_items'] as $idx => $it): ?>
-                    <tr>
-                        <td><input type="text" name="right_items[<?php echo (int) $idx; ?>][name]" value="<?php echo esc_attr($it['name']); ?>" class="widefat"></td>
-                        <td><input type="text" name="right_items[<?php echo (int) $idx; ?>][price]" value="<?php echo esc_attr($it['price']); ?>" class="widefat"></td>
-                        <td><input type="text" name="right_items[<?php echo (int) $idx; ?>][desc]" value="<?php echo esc_attr($it['desc']); ?>" class="widefat"></td>
-                        <td><button type="button" class="button irori-del-row">&times;</button></td>
-                    </tr>
-                <?php endforeach; ?>
-                </tbody>
-            </table>
-            <p><button type="button" class="button" data-add-menu="right_items" data-target="#irori-right-table tbody">+ Add Right Page Dish</button></p>
-
-            <?php submit_button('Save Menu Book'); ?>
-        </form>
-    </div>
-    <script>
-    (function(){
-      var pickBtn = document.getElementById('irori-pick-cocktail-img');
-      if (pickBtn && window.wp && wp.media) {
-        pickBtn.addEventListener('click', function(e){
-          e.preventDefault();
-          var frame = wp.media({ title: 'Select Cocktail Menu Image', multiple: false });
-          frame.on('select', function(){
-            var att = frame.state().get('selection').first().toJSON();
-            document.getElementById('cocktail_image').value = att.url;
-          });
-          frame.open();
-        });
-      }
-      document.addEventListener('click', function(e){
-        if (e.target.classList.contains('irori-del-row')) {
-          e.target.closest('tr').remove();
-        }
-        var addBtn = e.target.closest('[data-add-menu]');
-        if (addBtn) {
-          var key = addBtn.getAttribute('data-add-menu');
-          var tbody = document.querySelector(addBtn.getAttribute('data-target'));
-          var idx = Date.now();
-          var tr = document.createElement('tr');
-          ['name','price','desc'].forEach(function(field){
-            var td = document.createElement('td');
-            var inp = document.createElement('input');
-            inp.type = 'text';
-            inp.name = key + '[' + idx + '][' + field + ']';
-            inp.className = 'widefat';
-            td.appendChild(inp);
-            tr.appendChild(td);
-          });
-          var tdDel = document.createElement('td');
-          var btn = document.createElement('button');
-          btn.type = 'button';
-          btn.className = 'button irori-del-row';
-          btn.textContent = '\u00d7';
-          tdDel.appendChild(btn);
-          tr.appendChild(tdDel);
-          tbody.appendChild(tr);
-        }
-      });
-    })();
-    </script>
-    <?php
-}
-
-/**
- * 6. First-Boot Idempotent Seeder (Populates All Figma Default Content)
+ * 6. First-Boot Idempotent Seeder (Populates Merlin-Aligned Pages, ACF Repeaters, PDFs & Reviews)
  */
 add_action('init', 'irori_maybe_seed_defaults', 30);
 
+function irori_set_acf_meta(int $post_id, string $name, $value, string $field_key): void {
+    update_post_meta($post_id, $name, $value);
+    update_post_meta($post_id, '_' . $name, $field_key);
+}
+
+function irori_set_acf_option(string $name, $value, string $field_key): void {
+    update_option('options_' . $name, $value);
+    update_option('_options_' . $name, $field_key);
+}
+
+function irori_Ensure_Page(string $title, string $slug, int $order): int {
+    $existing = get_page_by_path($slug, OBJECT, 'page');
+    if ($existing) {
+        wp_update_post(['ID' => $existing->ID, 'post_title' => $title, 'menu_order' => $order, 'post_status' => 'publish']);
+        return (int) $existing->ID;
+    }
+    $pid = wp_insert_post([
+        'post_type' => 'page',
+        'post_status' => 'publish',
+        'post_title' => $title,
+        'post_name' => $slug,
+        'post_content' => '',
+        'menu_order' => $order,
+    ]);
+    return ($pid && !is_wp_error($pid)) ? (int) $pid : 0;
+}
+
 function irori_maybe_seed_defaults(): void {
-    if (get_option('irori_seeded_v1')) {
+    if (get_option('irori_seeded_v2')) {
         return;
     }
-    $lock = (int) get_option('irori_seed_lock_v1', 0);
+    $lock = (int) get_option('irori_seed_lock_v2', 0);
     if ($lock > 0 && (time() - $lock) < 300) {
         return;
     }
     if ($lock > 0) {
-        delete_option('irori_seed_lock_v1');
+        delete_option('irori_seed_lock_v2');
     }
-    if (!add_option('irori_seed_lock_v1', time(), '', 'no')) {
+    if (!add_option('irori_seed_lock_v2', time(), '', 'no')) {
         return;
     }
 
-    // Remove WP boilerplate "Hello world!" if untouched
-    $hello = get_page_by_path('hello-world', OBJECT, 'post');
-    if ($hello) {
-        wp_delete_post($hello->ID, true);
+    // Clean up WP boilerplate & legacy v1 custom post types if present
+    foreach (['hello-world', 'sample-page', 'privacy-policy'] as $bp_slug) {
+        foreach (['post', 'page'] as $bp_type) {
+            $bp = get_page_by_path($bp_slug, OBJECT, $bp_type);
+            if ($bp) {
+                wp_delete_post($bp->ID, true);
+            }
+        }
+    }
+    foreach (['irori_occasional', 'irori_event', 'irori_review', 'google_reviews'] as $legacy_pt) {
+        $old_posts = get_posts(['post_type' => $legacy_pt, 'post_status' => 'any', 'numberposts' => -1, 'fields' => 'ids']);
+        foreach ($old_posts as $old_id) {
+            wp_delete_post((int) $old_id, true);
+        }
     }
 
-    update_option('irori_site_settings', irori_default_settings());
-    update_option('irori_menu_book', irori_default_menu_book());
+    // Import core images & PDF menu files into WordPress Media Library
+    $att_welcome_banner = irori_import_local_asset('assets/images/hero-bartender-framed.jpg', 'House of IRORI Welcome Banner');
+    $att_menu_banner = irori_import_local_asset('assets/images/hero-menu.jpg', 'Cocktail & Eatery Menu Banner');
+    $att_event_banner = irori_import_local_asset('assets/images/hero-events.jpg', 'Events Banner');
+    $att_blogs_banner = irori_import_local_asset('assets/images/hero-blogs.jpg', 'Blogs Banner');
+    $att_wild_turkey = irori_import_local_asset('assets/images/event-wild-turkey.jpg', 'Guestshift Wild Turkey Takeover');
+    $att_upcoming = irori_import_local_asset('assets/images/event-upcoming-featured.jpg', 'Featured Upcoming Event');
+    $att_level1 = irori_import_local_asset('assets/images/level1-alley.jpg', 'Level One The Alley');
+    $att_level2 = irori_import_local_asset('assets/images/level2-bar.jpg', 'Level Two The Bar');
+    $att_glimpse = irori_import_local_asset('assets/images/footer-glimpse-bg.jpg', 'A Glimpse Inside Footer Banner');
+    $att_map = irori_import_local_asset('assets/images/saigon-map.jpg', 'House of IRORI Saigon Map');
+    $att_blog_thumb = irori_import_local_asset('assets/images/blog-thumb-1.jpg', 'ELLE Decoration PopUp Office');
+    $att_pdf_cocktail = irori_import_local_asset('assets/menus/irori-cocktail-menu.pdf', 'House of IRORI — Our Top Cocktails PDF Menu');
+    $att_pdf_food = irori_import_local_asset('assets/menus/irori-food-menu.pdf', 'House of IRORI — Food (Pizza & Side Dishes) PDF Menu');
 
-    // Create Blog Categories matching Figma pills (#interior, #Concept, #Club)
-    $cats = [
-        'interior' => wp_insert_term('interior', 'category', ['slug' => 'interior']),
-        'concept' => wp_insert_term('Concept', 'category', ['slug' => 'concept']),
-        'club' => wp_insert_term('Club', 'category', ['slug' => 'club']),
+    // 1. Create the 5 Pages matching houseofmerlin.com.vn
+    $welcome_id = irori_Ensure_Page('Welcome', 'welcome', 1);
+    $menu_id = irori_Ensure_Page('Menu', 'menu', 2);
+    $events_id = irori_Ensure_Page('Events', 'events', 3);
+    $blogs_id = irori_Ensure_Page('Blogs', 'blogs', 4);
+    $contact_id = irori_Ensure_Page('Contact', 'contact', 5);
+
+    if ($welcome_id) {
+        update_option('show_on_front', 'page');
+        update_option('page_on_front', $welcome_id);
+        irori_set_acf_meta($welcome_id, 'welcome_banner', '', 'field_irori_welcome_banner');
+        irori_set_acf_meta($welcome_id, 'welcome_banner_banner', $att_welcome_banner, 'field_irori_wb_banner');
+        irori_set_acf_meta($welcome_id, 'welcome_banner_headline', 'WHERE CONVERSATION COMES FIRST', 'field_irori_wb_headline');
+        irori_set_acf_meta($welcome_id, 'welcome_banner_sub_headline', 'Cocktail Bar & Eatery', 'field_irori_wb_sub');
+        irori_set_acf_meta($welcome_id, 'welcome_message', 'In a city of noise and spectacle, we built a place for the opposite. No stage, no performance — just warm light, good music, and the people across the table from you.', 'field_irori_welcome_message');
+        irori_set_acf_meta($welcome_id, 'welcome_slider', array_values(array_filter([$att_welcome_banner, $att_level1, $att_level2])), 'field_irori_welcome_slider');
+        irori_set_acf_meta($welcome_id, 'find_us_here_message', "Locate us easily on Google Maps by searching 'House of IRORI' cocktail bar, right in the heart of Saigon.", 'field_irori_find_us_msg');
+        irori_set_acf_meta($welcome_id, 'find_us_here_image', $att_map, 'field_irori_find_us_img');
+    }
+
+    // 2. Seed Menu Page (Menu Banner + Occasional Menus + Main Menus PDF Repeater)
+    if ($menu_id) {
+        irori_set_acf_meta($menu_id, 'menu_banner', '', 'field_irori_menu_banner');
+        irori_set_acf_meta($menu_id, 'menu_banner_banner', $att_menu_banner, 'field_irori_mb_banner');
+        irori_set_acf_meta($menu_id, 'menu_banner_headline', 'Cocktail & Eatery Menu', 'field_irori_mb_headline');
+
+        $occ_menus = [
+            ['thumb' => $att_wild_turkey, 'head' => 'Guestshift - Wild Turkey 8ys Takeover', 'date' => '16th May 2025', 'desc' => 'Beat the sweltering heat with Lunazul tequila. House of IRORI created La Familia Es Todo – refreshing, balanced, and invigorating. A harmonious blend of 100% agave tequila, sweet and sour fruit flavors, and cool mint, offering a moment of complete relaxation. 📍Enjoy this special cocktail at House of IRORI this April.'],
+            ['thumb' => $att_wild_turkey, 'head' => 'Guestshift - Wild Turkey 8ys Takeover', 'date' => '16th May 2025', 'desc' => 'Beat the sweltering heat with Lunazul tequila. House of IRORI created La Familia Es Todo – refreshing, balanced, and invigorating. A harmonious blend of 100% agave tequila, sweet and sour fruit flavors, and cool mint, offering a moment of complete relaxation. 📍Enjoy this special cocktail at House of IRORI this April.'],
+            ['thumb' => $att_level2, 'head' => 'Seasonal Tasting - Nikka From The Barrel Flight', 'date' => '8th June 2025', 'desc' => 'An intimate counter-side tasting exploring smoked Japanese malt pairings, hand-carved crystal block ice, and seasonal citrus infusions curated by House of IRORI’s head bartender.'],
+            ['thumb' => $att_level1, 'head' => 'Okinawa Awamori & Charcoal Izakaya Pairing', 'date' => '27th June 2025', 'desc' => 'Discover aged island rice spirits paired with binchotan-kissed small plates and wood-fired artisanal flatbreads across Level One and Level Two at House of IRORI.'],
+        ];
+        irori_set_acf_meta($menu_id, 'occasional_menus', count($occ_menus), 'field_irori_occasional_menus');
+        foreach ($occ_menus as $i => $m) {
+            irori_set_acf_meta($menu_id, "occasional_menus_{$i}_thumbnail", $m['thumb'], 'field_irori_om_thumb');
+            irori_set_acf_meta($menu_id, "occasional_menus_{$i}_headline", $m['head'], 'field_irori_om_head');
+            irori_set_acf_meta($menu_id, "occasional_menus_{$i}_date", $m['date'], 'field_irori_om_date');
+            irori_set_acf_meta($menu_id, "occasional_menus_{$i}_description", $m['desc'], 'field_irori_om_desc');
+        }
+
+        $main_menus = [
+            ['name' => 'Our top cocktail', 'pdf' => $att_pdf_cocktail ?: 'assets/menus/irori-cocktail-menu.pdf'],
+            ['name' => 'Food (Pizza & Side dishes)', 'pdf' => $att_pdf_food ?: 'assets/menus/irori-food-menu.pdf'],
+        ];
+        irori_set_acf_meta($menu_id, 'main_menus', count($main_menus), 'field_irori_main_menus');
+        foreach ($main_menus as $i => $mm) {
+            irori_set_acf_meta($menu_id, "main_menus_{$i}_pdf", $mm['pdf'], 'field_irori_mm_pdf');
+            irori_set_acf_meta($menu_id, "main_menus_{$i}_menu_name", $mm['name'], 'field_irori_mm_name');
+        }
+    }
+
+    // 3. Seed Events Page (Event Banner + Occasional Events + Other events Up Coming slider)
+    if ($events_id) {
+        irori_set_acf_meta($events_id, 'event_banner', '', 'field_irori_event_banner');
+        irori_set_acf_meta($events_id, 'event_banner_banner', $att_event_banner, 'field_irori_eb_banner');
+        irori_set_acf_meta($events_id, 'event_banner_headline', 'Events', 'field_irori_eb_headline');
+
+        $occ_events = [
+            ['thumb' => $att_wild_turkey, 'head' => 'Guestshift - Wild Turkey 8ys Takeover', 'date' => '16th May 2025', 'desc' => 'Beat the sweltering heat with Lunazul tequila. House of IRORI created La Familia Es Todo – refreshing, balanced, and invigorating. A harmonious blend of 100% agave tequila, sweet and sour fruit flavors, and cool mint, offering a moment of complete relaxation. 📍Enjoy this special cocktail at House of IRORI this April.'],
+            ['thumb' => $att_wild_turkey, 'head' => 'Guestshift - Wild Turkey 8ys Takeover', 'date' => '16th May 2025', 'desc' => 'Beat the sweltering heat with Lunazul tequila. House of IRORI created La Familia Es Todo – refreshing, balanced, and invigorating. A harmonious blend of 100% agave tequila, sweet and sour fruit flavors, and cool mint, offering a moment of complete relaxation. 📍Enjoy this special cocktail at House of IRORI this April.'],
+            ['thumb' => $att_wild_turkey, 'head' => 'Guestshift - Wild Turkey 8ys Takeover', 'date' => '16th May 2025', 'desc' => 'Beat the sweltering heat with Lunazul tequila. House of IRORI created La Familia Es Todo – refreshing, balanced, and invigorating. A harmonious blend of 100% agave tequila, sweet and sour fruit flavors, and cool mint, offering a moment of complete relaxation. 📍Enjoy this special cocktail at House of IRORI this April.'],
+            ['thumb' => $att_wild_turkey, 'head' => 'Guestshift - Wild Turkey 8ys Takeover', 'date' => '16th May 2025', 'desc' => 'Beat the sweltering heat with Lunazul tequila. House of IRORI created La Familia Es Todo – refreshing, balanced, and invigorating. A harmonious blend of 100% agave tequila, sweet and sour fruit flavors, and cool mint, offering a moment of complete relaxation. 📍Enjoy this special cocktail at House of IRORI this April.'],
+            ['thumb' => $att_upcoming, 'head' => 'Midnight Vinyl & Rare Malt Listening Session', 'date' => '14th June 2025', 'desc' => 'An unhurried late-evening session on Level Two featuring 1970s Japanese jazz pressings spun on analog turntables alongside rare single-cask pours from our reserve shelf.'],
+            ['thumb' => $att_level2, 'head' => 'Tokyo Counter Takeover - Craft Highball Night', 'date' => '28th June 2025', 'desc' => 'Precision carbonation, hand-chiseled ice spears, and bespoke botanical cordials in a one-night guest bartender showcase celebrating modern Ginza highball culture at House of IRORI.'],
+        ];
+        irori_set_acf_meta($events_id, 'occasional_events', count($occ_events), 'field_irori_occasional_events');
+        foreach ($occ_events as $i => $ev) {
+            irori_set_acf_meta($events_id, "occasional_events_{$i}_thumbnail", $ev['thumb'], 'field_irori_oe_thumb');
+            irori_set_acf_meta($events_id, "occasional_events_{$i}_headline", $ev['head'], 'field_irori_oe_head');
+            irori_set_acf_meta($events_id, "occasional_events_{$i}_date", $ev['date'], 'field_irori_oe_date');
+            irori_set_acf_meta($events_id, "occasional_events_{$i}_description", $ev['desc'], 'field_irori_oe_desc');
+        }
+
+        $other_events = [$att_upcoming, $att_wild_turkey, $att_level2];
+        irori_set_acf_meta($events_id, 'other_events', count($other_events), 'field_irori_other_events');
+        foreach ($other_events as $i => $th) {
+            irori_set_acf_meta($events_id, "other_events_{$i}_thumbnail", $th, 'field_irori_ote_thumb');
+        }
+    }
+
+    // 4. Seed Blogs & Contact Page Banners
+    if ($blogs_id) {
+        irori_set_acf_meta($blogs_id, 'blogs_banner', '', 'field_irori_blogs_banner');
+        irori_set_acf_meta($blogs_id, 'blogs_banner_banner', $att_blogs_banner, 'field_irori_bb_banner');
+        irori_set_acf_meta($blogs_id, 'blogs_banner_headline', 'BLOGS', 'field_irori_bb_headline');
+    }
+    if ($contact_id) {
+        irori_set_acf_meta($contact_id, 'contact_banner', '', 'field_irori_contact_banner');
+        irori_set_acf_meta($contact_id, 'contact_banner_banner', $att_glimpse, 'field_irori_cb_banner');
+        irori_set_acf_meta($contact_id, 'contact_banner_headline', 'Contact', 'field_irori_cb_headline');
+    }
+
+    // 5. Seed Irori Settings (ACF Options Page matching Merlin Config)
+    $d_set = irori_default_settings();
+    update_option('irori_site_settings', $d_set);
+    irori_set_acf_option('open_time_text', "<h2>A GLIMPSE INSIDE</h2>\n<p>Warm light on dark wood. Handcrafted details.<br>The kind of room that feels good to be in.</p>", 'field_irori_cfg_open_text');
+    irori_set_acf_option('open_time_image', $att_glimpse, 'field_irori_cfg_open_img');
+    irori_set_acf_option('address', "Level 3, 17/3 Nguyen Thi Minh Khai,\nSai Gon Ward, HCMC, Vietnam", 'field_irori_cfg_address');
+    irori_set_acf_option('phone', $d_set['phone_display'], 'field_irori_cfg_phone');
+    irori_set_acf_option('email', $d_set['email'], 'field_irori_cfg_email');
+    irori_set_acf_option('reservations_url', $d_set['reservations_url'], 'field_irori_cfg_res_url');
+    irori_set_acf_option('google_map_link', $d_set['google_maps_url'], 'field_irori_cfg_gmap_link');
+    irori_set_acf_option('google_map_embed_link', '', 'field_irori_cfg_gmap_embed');
+    irori_set_acf_option('after_phone_message', $d_set['disclaimer'], 'field_irori_cfg_note');
+    $socials = [
+        ['name' => 'Facebook', 'link' => $d_set['facebook_url']],
+        ['name' => 'Instagram', 'link' => $d_set['instagram_url']],
+        ['name' => 'TikTok', 'link' => $d_set['tiktok_url']],
+        ['name' => 'Threads', 'link' => $d_set['threads_url']],
     ];
+    irori_set_acf_option('social_links', count($socials), 'field_irori_cfg_socials');
+    foreach ($socials as $i => $sc) {
+        irori_set_acf_option("social_links_{$i}_name", $sc['name'], 'field_irori_soc_name');
+        irori_set_acf_option("social_links_{$i}_link", $sc['link'], 'field_irori_soc_link');
+    }
+
+    // 6. Seed Blog Categories & Blog Posts (if not already seeded)
+    foreach (['interior' => 'interior', 'concept' => 'Concept', 'club' => 'Club'] as $slug => $name) {
+        if (!term_exists($slug, 'category')) {
+            wp_insert_term($name, 'category', ['slug' => $slug]);
+        }
+    }
     $cat_ids = [];
     foreach (['interior', 'concept', 'club'] as $slug) {
         $term = get_term_by('slug', $slug, 'category');
@@ -597,26 +735,26 @@ function irori_maybe_seed_defaults(): void {
         }
     }
 
-    // Seed Blog Articles (9 items matching blogs.html 6 visible + 3 Load More, with full editorial prose)
     $elle_prose = '<p>Được khởi xướng vào 3 năm trước với mong muốn đem đến cho công chúng yêu nghệ thuật và thiết kế một trải nghiệm thưởng lãm mới mẻ, ELLE Decoration Pop-Up Office dần tạo được dấu ấn trong tâm trí cộng đồng sáng tạo. Sự trở lại của Pop-Up Office với chủ đề “The Making of Joy” - Khởi Tạo Niềm Vui đánh dấu chuỗi hoạt động trong vòng 3 tuần từ 20/12/2024 đến 10/01/2025, tại TĐX Ice Factory quận 1, TP.HCM.</p>'
         . '<p>Về chuỗi hoạt động “Văn phòng Sáng Tạo” Pop-Up Office</p>'
         . '<p>Pop-Up là một hình mẫu chương trình do ELLE Decoration khởi xướng từ năm 2022, với mong muốn tạo ra một không gian kết nối cộng đồng yêu nghệ thuật, thiết kế, văn hoá và phong cách sống.</p>'
         . '<p>Cốt lõi của chuỗi hoạt động chính là không gian văn phòng của đội ngũ tòa soạn, nơi làm việc, hội họp, phỏng vấn, sản xuất hình ảnh, tiếp đãi đối tác và trò chuyện cùng các nhân vật của ấn phẩm. Với Pop-Up Office, đội ngũ ELLE Decoration được toàn quyền cải tạo và biến đổi một không gian có sẵn thành văn phòng của mình, với sự góp sức của các đối tác về sản phẩm nội thất, vật liệu, chiếu sáng, công nghệ, vv.. nhằm tạo ra một trải nghiệm tổng hòa giữa nội thất, kiến trúc, nghệ thuật và văn hoá.</p>';
 
     $articles_seed = [
-        ['title' => 'Why We Work with Spirit, Not Against It', 'slug' => 'why-we-work-with-spirit-not-against-it', 'cat' => 'interior', 'date' => '2026-04-14 18:00:00', 'img' => 'assets/images/blog-thumb-1.jpg', 'sub' => 'Why We Work with Spirit, Not Against It', 'excerpt' => 'A conversation about respect, slow curation, and why every ingredient has a story to tell…'],
-        ['title' => 'ELLE Decoration PopUp Office - Dự Án Văn Phòng Sáng Tạo Dành Cho Cộng Đồng', 'slug' => 'elle-decoration-popup-office', 'cat' => 'concept', 'date' => '2026-04-12 18:00:00', 'img' => 'assets/images/blog-thumb-1.jpg', 'sub' => 'Why We Work with Spirit, Not Against It', 'excerpt' => 'A conversation about respect, slow curation, and why every ingredient has a story to tell…'],
-        ['title' => 'Inside Level Two: Listening Culture & Hand-Carved Ice', 'slug' => 'inside-level-two-listening-culture', 'cat' => 'club', 'date' => '2026-04-10 18:00:00', 'img' => 'assets/images/blog-thumb-1.jpg', 'sub' => 'Craftsmanship Behind the Upstairs Counter', 'excerpt' => 'A conversation about respect, slow curation, and why every ingredient has a story to tell…'],
-        ['title' => 'Showa Timber & Warm Brass: Designing the Alleyway', 'slug' => 'showa-timber-and-warm-brass', 'cat' => 'interior', 'date' => '2026-04-08 18:00:00', 'img' => 'assets/images/blog-thumb-1.jpg', 'sub' => 'Two Floors, One Cohesive Philosophy', 'excerpt' => 'A conversation about respect, slow curation, and why every ingredient has a story to tell…'],
-        ['title' => 'Binchotan & Fermented Dough: Hearth Notes from Level One', 'slug' => 'binchotan-and-fermented-dough', 'cat' => 'concept', 'date' => '2026-04-05 18:00:00', 'img' => 'assets/images/blog-thumb-1.jpg', 'sub' => 'Where Artisanal Sourdough Meets Izakaya Warmth', 'excerpt' => 'A conversation about respect, slow curation, and why every ingredient has a story to tell…'],
-        ['title' => 'Late-Night Vinyl Pressings from 1970s Tokyo', 'slug' => 'late-night-vinyl-pressings-tokyo', 'cat' => 'club', 'date' => '2026-04-02 18:00:00', 'img' => 'assets/images/blog-thumb-1.jpg', 'sub' => 'Analog Soundscapes After Midnight', 'excerpt' => 'A conversation about respect, slow curation, and why every ingredient has a story to tell…'],
-        ['title' => 'Quiet Omotenashi in the Heart of Saigon', 'slug' => 'quiet-omotenashi-in-saigon', 'cat' => 'interior', 'date' => '2026-03-28 18:00:00', 'img' => 'assets/images/level1-alley.jpg', 'sub' => 'Hospitality Without Performance', 'excerpt' => 'How spatial restraint and warm cedar lighting shape an unhurried evening on Nguyen Thi Minh Khai…'],
-        ['title' => 'Seasonal Botanicals & House-Aged Infusions', 'slug' => 'seasonal-botanicals-house-infusions', 'cat' => 'concept', 'date' => '2026-03-22 18:00:00', 'img' => 'assets/images/level2-bar.jpg', 'sub' => 'Slow Extraction & Citrus Balance', 'excerpt' => 'Exploring yuzu kosho, roasted barley, and Japanese single-malt pairings across changing Saigon seasons…'],
-        ['title' => 'Guestshift Chronicles: Regional Bartenders at IRORI', 'slug' => 'guestshift-chronicles-at-irori', 'cat' => 'club', 'date' => '2026-03-15 18:00:00', 'img' => 'assets/images/event-wild-turkey.jpg', 'sub' => 'One-Night Counter Collaborations', 'excerpt' => 'Highlights from intimate takeover nights bringing regional craft bartenders behind our upstairs counter…'],
+        ['title' => 'Why We Work with Spirit, Not Against It', 'slug' => 'why-we-work-with-spirit-not-against-it', 'cat' => 'interior', 'date' => '2026-04-14 18:00:00', 'img' => 'assets/images/blog-thumb-1.jpg', 'att' => $att_blog_thumb, 'sub' => 'Why We Work with Spirit, Not Against It', 'excerpt' => 'A conversation about respect, slow curation, and why every ingredient has a story to tell…'],
+        ['title' => 'ELLE Decoration PopUp Office - Dự Án Văn Phòng Sáng Tạo Dành Cho Cộng Đồng', 'slug' => 'elle-decoration-popup-office', 'cat' => 'concept', 'date' => '2026-04-12 18:00:00', 'img' => 'assets/images/blog-thumb-1.jpg', 'att' => $att_blog_thumb, 'sub' => 'Why We Work with Spirit, Not Against It', 'excerpt' => 'A conversation about respect, slow curation, and why every ingredient has a story to tell…'],
+        ['title' => 'Inside Level Two: Listening Culture & Hand-Carved Ice', 'slug' => 'inside-level-two-listening-culture', 'cat' => 'club', 'date' => '2026-04-10 18:00:00', 'img' => 'assets/images/blog-thumb-1.jpg', 'att' => $att_blog_thumb, 'sub' => 'Craftsmanship Behind the Upstairs Counter', 'excerpt' => 'A conversation about respect, slow curation, and why every ingredient has a story to tell…'],
+        ['title' => 'Showa Timber & Warm Brass: Designing the Alleyway', 'slug' => 'showa-timber-and-warm-brass', 'cat' => 'interior', 'date' => '2026-04-08 18:00:00', 'img' => 'assets/images/blog-thumb-1.jpg', 'att' => $att_blog_thumb, 'sub' => 'Two Floors, One Cohesive Philosophy', 'excerpt' => 'A conversation about respect, slow curation, and why every ingredient has a story to tell…'],
+        ['title' => 'Binchotan & Fermented Dough: Hearth Notes from Level One', 'slug' => 'binchotan-and-fermented-dough', 'cat' => 'concept', 'date' => '2026-04-05 18:00:00', 'img' => 'assets/images/blog-thumb-1.jpg', 'att' => $att_blog_thumb, 'sub' => 'Where Artisanal Sourdough Meets Izakaya Warmth', 'excerpt' => 'A conversation about respect, slow curation, and why every ingredient has a story to tell…'],
+        ['title' => 'Late-Night Vinyl Pressings from 1970s Tokyo', 'slug' => 'late-night-vinyl-pressings-tokyo', 'cat' => 'club', 'date' => '2026-04-02 18:00:00', 'img' => 'assets/images/blog-thumb-1.jpg', 'att' => $att_blog_thumb, 'sub' => 'Analog Soundscapes After Midnight', 'excerpt' => 'A conversation about respect, slow curation, and why every ingredient has a story to tell…'],
+        ['title' => 'Quiet Omotenashi in the Heart of Saigon', 'slug' => 'quiet-omotenashi-in-saigon', 'cat' => 'interior', 'date' => '2026-03-28 18:00:00', 'img' => 'assets/images/level1-alley.jpg', 'att' => $att_level1, 'sub' => 'Hospitality Without Performance', 'excerpt' => 'How spatial restraint and warm cedar lighting shape an unhurried evening on Nguyen Thi Minh Khai…'],
+        ['title' => 'Seasonal Botanicals & House-Aged Infusions', 'slug' => 'seasonal-botanicals-house-infusions', 'cat' => 'concept', 'date' => '2026-03-22 18:00:00', 'img' => 'assets/images/level2-bar.jpg', 'att' => $att_level2, 'sub' => 'Slow Extraction & Citrus Balance', 'excerpt' => 'Exploring yuzu kosho, roasted barley, and Japanese single-malt pairings across changing Saigon seasons…'],
+        ['title' => 'Guestshift Chronicles: Regional Bartenders at IRORI', 'slug' => 'guestshift-chronicles-at-irori', 'cat' => 'club', 'date' => '2026-03-15 18:00:00', 'img' => 'assets/images/event-wild-turkey.jpg', 'att' => $att_wild_turkey, 'sub' => 'One-Night Counter Collaborations', 'excerpt' => 'Highlights from intimate takeover nights bringing regional craft bartenders behind our upstairs counter…'],
     ];
 
     foreach ($articles_seed as $a) {
-        $pid = wp_insert_post([
+        $existing_post = get_page_by_path($a['slug'], OBJECT, 'post');
+        $pid = $existing_post ? (int) $existing_post->ID : wp_insert_post([
             'post_type' => 'post',
             'post_status' => 'publish',
             'post_title' => $a['title'],
@@ -629,76 +767,13 @@ function irori_maybe_seed_defaults(): void {
         if ($pid && !is_wp_error($pid)) {
             update_post_meta($pid, '_irori_subheading', $a['sub']);
             update_post_meta($pid, '_irori_fallback_img', $a['img']);
+            if ($a['att']) {
+                set_post_thumbnail($pid, $a['att']);
+            }
         }
     }
 
-    // Seed Occasional Menus (4 items on menu.html: 2 initial + 2 Load More)
-    $occ_menus = [
-        ['title' => 'Guestshift - Wild Turkey 8ys Takeover', 'iso' => '2025-05-16', 'label' => '16th May 2025', 'img' => 'assets/images/event-wild-turkey.jpg', 'desc' => 'Beat the sweltering heat with Lunazul tequila. House of IRORI created La Familia Es Todo – refreshing, balanced, and invigorating. A harmonious blend of 100% agave tequila, sweet and sour fruit flavors, and cool mint, offering a moment of complete relaxation. 📍Enjoy this special cocktail at House of IRORI this April.'],
-        ['title' => 'Guestshift - Wild Turkey 8ys Takeover', 'iso' => '2025-05-16', 'label' => '16th May 2025', 'img' => 'assets/images/event-wild-turkey.jpg', 'desc' => 'Beat the sweltering heat with Lunazul tequila. House of IRORI created La Familia Es Todo – refreshing, balanced, and invigorating. A harmonious blend of 100% agave tequila, sweet and sour fruit flavors, and cool mint, offering a moment of complete relaxation. 📍Enjoy this special cocktail at House of IRORI this April.'],
-        ['title' => 'Seasonal Tasting - Nikka From The Barrel Flight', 'iso' => '2025-06-08', 'label' => '8th June 2025', 'img' => 'assets/images/level2-bar.jpg', 'desc' => 'An intimate counter-side tasting exploring smoked Japanese malt pairings, hand-carved crystal block ice, and seasonal citrus infusions curated by House of IRORI’s head bartender.'],
-        ['title' => 'Okinawa Awamori & Charcoal Izakaya Pairing', 'iso' => '2025-06-27', 'label' => '27th June 2025', 'img' => 'assets/images/level1-alley.jpg', 'desc' => 'Discover aged island rice spirits paired with binchotan-kissed small plates and wood-fired artisanal flatbreads across Level One and Level Two at House of IRORI.'],
-    ];
-    foreach ($occ_menus as $i => $m) {
-        $pid = wp_insert_post([
-            'post_type' => 'irori_occasional',
-            'post_status' => 'publish',
-            'post_title' => $m['title'],
-            'post_content' => $m['desc'],
-            'menu_order' => $i + 1,
-        ]);
-        if ($pid && !is_wp_error($pid)) {
-            update_post_meta($pid, '_irori_date_iso', $m['iso']);
-            update_post_meta($pid, '_irori_date_label', $m['label']);
-            update_post_meta($pid, '_irori_fallback_img', $m['img']);
-        }
-    }
-
-    // Seed Events: 3 Upcoming carousel slides + 6 Occasional grid items
-    $upcoming_seed = [
-        ['title' => 'Featured Upcoming Guestshift at House of IRORI', 'img' => 'assets/images/event-upcoming-featured.jpg'],
-        ['title' => 'Wild Turkey 8ys Takeover Night at House of IRORI', 'img' => 'assets/images/event-wild-turkey.jpg'],
-        ['title' => 'Intimate Japanese Spirits Tasting at Level Two Counter', 'img' => 'assets/images/level2-bar.jpg'],
-    ];
-    foreach ($upcoming_seed as $i => $u) {
-        $pid = wp_insert_post([
-            'post_type' => 'irori_event',
-            'post_status' => 'publish',
-            'post_title' => $u['title'],
-            'post_content' => '',
-            'menu_order' => $i + 1,
-        ]);
-        if ($pid && !is_wp_error($pid)) {
-            update_post_meta($pid, '_irori_placement', 'upcoming');
-            update_post_meta($pid, '_irori_fallback_img', $u['img']);
-        }
-    }
-
-    $events_seed = [
-        ['title' => 'Guestshift - Wild Turkey 8ys Takeover', 'iso' => '2025-05-16', 'label' => '16th May 2025', 'img' => 'assets/images/event-wild-turkey.jpg', 'desc' => 'Beat the sweltering heat with Lunazul tequila. House of IRORI created La Familia Es Todo – refreshing, balanced, and invigorating. A harmonious blend of 100% agave tequila, sweet and sour fruit flavors, and cool mint, offering a moment of complete relaxation. 📍Enjoy this special cocktail at House of IRORI this April.'],
-        ['title' => 'Guestshift - Wild Turkey 8ys Takeover', 'iso' => '2025-05-16', 'label' => '16th May 2025', 'img' => 'assets/images/event-wild-turkey.jpg', 'desc' => 'Beat the sweltering heat with Lunazul tequila. House of IRORI created La Familia Es Todo – refreshing, balanced, and invigorating. A harmonious blend of 100% agave tequila, sweet and sour fruit flavors, and cool mint, offering a moment of complete relaxation. 📍Enjoy this special cocktail at House of IRORI this April.'],
-        ['title' => 'Guestshift - Wild Turkey 8ys Takeover', 'iso' => '2025-05-16', 'label' => '16th May 2025', 'img' => 'assets/images/event-wild-turkey.jpg', 'desc' => 'Beat the sweltering heat with Lunazul tequila. House of IRORI created La Familia Es Todo – refreshing, balanced, and invigorating. A harmonious blend of 100% agave tequila, sweet and sour fruit flavors, and cool mint, offering a moment of complete relaxation. 📍Enjoy this special cocktail at House of IRORI this April.'],
-        ['title' => 'Guestshift - Wild Turkey 8ys Takeover', 'iso' => '2025-05-16', 'label' => '16th May 2025', 'img' => 'assets/images/event-wild-turkey.jpg', 'desc' => 'Beat the sweltering heat with Lunazul tequila. House of IRORI created La Familia Es Todo – refreshing, balanced, and invigorating. A harmonious blend of 100% agave tequila, sweet and sour fruit flavors, and cool mint, offering a moment of complete relaxation. 📍Enjoy this special cocktail at House of IRORI this April.'],
-        ['title' => 'Midnight Vinyl & Rare Malt Listening Session', 'iso' => '2025-06-14', 'label' => '14th June 2025', 'img' => 'assets/images/event-upcoming-featured.jpg', 'desc' => 'An unhurried late-evening session on Level Two featuring 1970s Japanese jazz pressings spun on analog turntables alongside rare single-cask pours from our reserve shelf.'],
-        ['title' => 'Tokyo Counter Takeover - Craft Highball Night', 'iso' => '2025-06-28', 'label' => '28th June 2025', 'img' => 'assets/images/level2-bar.jpg', 'desc' => 'Precision carbonation, hand-chiseled ice spears, and bespoke botanical cordials in a one-night guest bartender showcase celebrating modern Ginza highball culture at House of IRORI.'],
-    ];
-    foreach ($events_seed as $i => $ev) {
-        $pid = wp_insert_post([
-            'post_type' => 'irori_event',
-            'post_status' => 'publish',
-            'post_title' => $ev['title'],
-            'post_content' => $ev['desc'],
-            'menu_order' => 10 + $i,
-        ]);
-        if ($pid && !is_wp_error($pid)) {
-            update_post_meta($pid, '_irori_placement', 'occasional');
-            update_post_meta($pid, '_irori_date_iso', $ev['iso']);
-            update_post_meta($pid, '_irori_date_label', $ev['label']);
-            update_post_meta($pid, '_irori_fallback_img', $ev['img']);
-        }
-    }
-
-    // Seed Google Reviews (5 reviews on index.html)
+    // 7. Seed Google Reviews (CPT: google_reviews, matching houseofmerlin)
     $reviews_seed = [
         ['name' => 'Kenji Takahashi', 'initial' => 'K', 'iso' => '2026-09-01', 'time' => '1 month ago', 'text' => 'Stepping through the narrow 70s Tokyo alley into the upstairs counter feels like entering another world. The smoked Old Fashioned and quiet omotenashi hospitality are unmatched in Saigon.'],
         ['name' => 'Minh Anh Nguyen', 'initial' => 'M', 'iso' => '2026-08-15', 'time' => '2 months ago', 'text' => 'Warm tungsten light on dark timber, hand-carved ice, and bartenders who treat every pour like a conversation. Easily our favorite hidden sanctuary on Nguyen Thi Minh Khai.'],
@@ -708,7 +783,7 @@ function irori_maybe_seed_defaults(): void {
     ];
     foreach ($reviews_seed as $i => $rv) {
         $pid = wp_insert_post([
-            'post_type' => 'irori_review',
+            'post_type' => 'google_reviews',
             'post_status' => 'publish',
             'post_title' => $rv['name'],
             'post_content' => $rv['text'],
@@ -722,7 +797,51 @@ function irori_maybe_seed_defaults(): void {
         }
     }
 
-    update_option('irori_seeded_v1', 1);
+    // Synchronize Admin Menu Editor (ws_menu_editor) Pages submenu IDs if present
+    $wme = get_option('ws_menu_editor');
+    if (is_array($wme) && isset($wme['custom_menu']['tree']['edit.php?post_type=page']['items'])) {
+        $page_map = [
+            'Welcome Page' => $welcome_id,
+            'Menu Page' => $menu_id,
+            'Events Page' => $events_id,
+            'Blogs Page' => $blogs_id,
+            'Contact Page' => $contact_id,
+        ];
+        $new_items = [];
+        $tpl_item = null;
+        $has_blogs_item = false;
+        foreach ($wme['custom_menu']['tree']['edit.php?post_type=page']['items'] as $it) {
+            $t = !empty($it['menu_title']) ? $it['menu_title'] : ($it['defaults']['menu_title'] ?? '');
+            if ($t === 'Blogs Page') {
+                $has_blogs_item = true;
+            }
+            if (isset($page_map[$t]) && $page_map[$t] > 0) {
+                $it['file'] = 'post.php?post=' . $page_map[$t] . '&action=edit';
+                if (isset($it['defaults']) && is_array($it['defaults'])) {
+                    $it['defaults']['file'] = $it['file'];
+                }
+                $tpl_item = $it;
+            }
+            $new_items[] = $it;
+        }
+        if (!$has_blogs_item && $blogs_id > 0 && $tpl_item) {
+            $blog_it = $tpl_item;
+            $blog_it['menu_title'] = 'Blogs Page';
+            $blog_it['file'] = 'post.php?post=' . $blogs_id . '&action=edit';
+            if (isset($blog_it['defaults']) && is_array($blog_it['defaults'])) {
+                $blog_it['defaults']['menu_title'] = 'Blogs Page';
+                $blog_it['defaults']['file'] = $blog_it['file'];
+            }
+            array_splice($new_items, 4, 0, [$blog_it]);
+        }
+        $wme['custom_menu']['tree']['edit.php?post_type=page']['items'] = $new_items;
+        update_option('ws_menu_editor', $wme);
+    }
+
+    if (function_exists('irori_register_acf_field_groups')) {
+        irori_register_acf_field_groups();
+    }
+    update_option('irori_seeded_v2', 1);
     delete_transient(IRORI_CMS_CACHE_KEY);
 }
 
@@ -732,10 +851,11 @@ function irori_maybe_seed_defaults(): void {
 function irori_resolve_post_image(int $post_id, string $default = 'assets/images/blog-thumb-1.jpg'): array {
     $thumb_id = get_post_thumbnail_id($post_id);
     if ($thumb_id) {
-        $url = wp_get_attachment_image_url($thumb_id, 'large');
+        $url = wp_get_attachment_image_url($thumb_id, 'large') ?: wp_get_attachment_url($thumb_id);
         $alt = get_post_meta($thumb_id, '_wp_attachment_image_alt', true);
         if ($url) {
-            return ['url' => $url, 'alt' => $alt ?: get_the_title($post_id)];
+            $rel = ltrim(wp_make_link_relative($url), '/');
+            return ['url' => $rel !== '' ? $rel : $url, 'alt' => $alt ?: get_the_title($post_id)];
         }
     }
     $fb = get_post_meta($post_id, '_irori_fallback_img', true);
@@ -797,69 +917,138 @@ function irori_build_bootstrap_payload(): array {
         return $cached;
     }
 
+    // 1. Settings from Irori Settings (ACF Options Page options_*) with defaults
     $settings = wp_parse_args(get_option('irori_site_settings', []), irori_default_settings());
-    $menu_book = wp_parse_args(get_option('irori_menu_book', []), irori_default_menu_book());
+    $opt_phone = get_option('options_phone', '');
+    if (is_string($opt_phone) && trim($opt_phone) !== '') {
+        $settings['phone_display'] = trim($opt_phone);
+        $settings['phone_tel'] = preg_replace('/[^0-9+]/', '', $opt_phone);
+    }
+    $opt_email = get_option('options_email', '');
+    if (is_string($opt_email) && trim($opt_email) !== '') {
+        $settings['email'] = sanitize_email($opt_email);
+    }
+    $opt_res = get_option('options_reservations_url', '');
+    if (is_string($opt_res) && trim($opt_res) !== '') {
+        $settings['reservations_url'] = trim($opt_res);
+    }
+    $opt_gmap = get_option('options_google_map_link', '');
+    if (is_string($opt_gmap) && trim($opt_gmap) !== '') {
+        $settings['google_maps_url'] = trim($opt_gmap);
+    }
+    $opt_addr = get_option('options_address', '');
+    if (is_string($opt_addr) && trim($opt_addr) !== '') {
+        $lines = array_values(array_filter(array_map('trim', preg_split('/\r\n|\r|\n|<br\s*\/?>/i', wp_strip_all_tags($opt_addr)))));
+        if (!empty($lines)) {
+            $settings['address_line1'] = $lines[0];
+            $settings['address_line2'] = $lines[1] ?? '';
+        }
+    }
+    $opt_note = get_option('options_after_phone_message', '');
+    if (is_string($opt_note) && trim($opt_note) !== '') {
+        $settings['disclaimer'] = trim( preg_replace('/\s+/', ' ', wp_strip_all_tags($opt_note)) );
+    }
+    $soc_count = (int) get_option('options_social_links', 0);
+    for ($i = 0; $i < $soc_count; $i++) {
+        $sname = strtolower(trim((string) get_option("options_social_links_{$i}_name", '')));
+        $slink = trim((string) get_option("options_social_links_{$i}_link", ''));
+        if ($slink !== '' && isset($settings[$sname . '_url'])) {
+            $settings[$sname . '_url'] = $slink;
+        }
+    }
 
-    // Occasional Menus
-    $occ_posts = get_posts([
-        'post_type' => 'irori_occasional',
-        'post_status' => 'publish',
-        'has_password' => false,
-        'numberposts' => 30,
-        'orderby' => ['menu_order' => 'ASC', 'date' => 'DESC'],
-    ]);
-    $occasional_menus = [];
-    foreach ($occ_posts as $p) {
-        $img = irori_resolve_post_image($p->ID, 'assets/images/event-wild-turkey.jpg');
-        $occasional_menus[] = [
-            'id' => (int) $p->ID,
-            'title' => html_entity_decode(get_the_title($p), ENT_QUOTES, 'UTF-8'),
-            'dateIso' => get_post_meta($p->ID, '_irori_date_iso', true) ?: gmdate('Y-m-d', strtotime($p->post_date)),
-            'dateLabel' => get_post_meta($p->ID, '_irori_date_label', true) ?: gmdate('jS F Y', strtotime($p->post_date)),
-            'desc' => html_entity_decode(wp_strip_all_tags($p->post_content), ENT_QUOTES, 'UTF-8'),
-            'image' => $img['url'],
-            'alt' => html_entity_decode($img['alt'], ENT_QUOTES, 'UTF-8'),
+    // 2. Menu Page: Main Menus (PDF repeater) & Occasional Menus (repeater)
+    $menu_page = get_page_by_path('menu', OBJECT, 'page');
+    $menu_id = $menu_page ? (int) $menu_page->ID : 0;
+
+    $main_menus = [];
+    $mm_count = $menu_id ? (int) get_post_meta($menu_id, 'main_menus', true) : 0;
+    for ($i = 0; $i < $mm_count; $i++) {
+        $m_name = trim((string) get_post_meta($menu_id, "main_menus_{$i}_menu_name", true));
+        $m_pdf_raw = get_post_meta($menu_id, "main_menus_{$i}_pdf", true);
+        $m_pdf = irori_resolve_media_value($m_pdf_raw, $i === 0 ? 'assets/menus/irori-cocktail-menu.pdf' : 'assets/menus/irori-food-menu.pdf');
+        if ($m_name !== '' || $m_pdf !== '') {
+            $key = $i === 0 ? 'cocktail' : ($i === 1 ? 'food' : 'tab-' . $i);
+            $main_menus[] = [
+                'key' => $key,
+                'title' => $m_name ?: ('Menu ' . ($i + 1)),
+                'pdf' => $m_pdf,
+            ];
+        }
+    }
+    if (empty($main_menus)) {
+        $main_menus = [
+            ['key' => 'cocktail', 'title' => 'Our top cocktail', 'pdf' => 'assets/menus/irori-cocktail-menu.pdf'],
+            ['key' => 'food', 'title' => 'Food (Pizza & Side dishes)', 'pdf' => 'assets/menus/irori-food-menu.pdf'],
         ];
     }
 
-    // Events (Upcoming carousel + Occasional grid)
-    $ev_posts = get_posts([
-        'post_type' => 'irori_event',
-        'post_status' => 'publish',
-        'has_password' => false,
-        'numberposts' => 50,
-        'orderby' => ['menu_order' => 'ASC', 'date' => 'DESC'],
-    ]);
-    $upcoming_slides = [];
-    $events = [];
-    foreach ($ev_posts as $p) {
-        $placement = get_post_meta($p->ID, '_irori_placement', true) ?: 'occasional';
-        $img = irori_resolve_post_image($p->ID, 'assets/images/event-wild-turkey.jpg');
-        $title = html_entity_decode(get_the_title($p), ENT_QUOTES, 'UTF-8');
-        if ($placement === 'upcoming' || $placement === 'both') {
-            $upcoming_slides[] = [
-                'id' => (int) $p->ID,
-                'title' => $title,
-                'image' => $img['url'],
-                'alt' => html_entity_decode($img['alt'], ENT_QUOTES, 'UTF-8'),
-            ];
-        }
-        if ($placement === 'occasional' || $placement === 'both') {
-            $events[] = [
-                'id' => (int) $p->ID,
-                'title' => $title,
-                'dateIso' => get_post_meta($p->ID, '_irori_date_iso', true) ?: gmdate('Y-m-d', strtotime($p->post_date)),
-                'dateLabel' => get_post_meta($p->ID, '_irori_date_label', true) ?: gmdate('jS F Y', strtotime($p->post_date)),
-                'desc' => html_entity_decode(wp_strip_all_tags($p->post_content), ENT_QUOTES, 'UTF-8'),
-                'image' => $img['url'],
-                'alt' => html_entity_decode($img['alt'], ENT_QUOTES, 'UTF-8'),
+    $occasional_menus = [];
+    $om_count = $menu_id ? (int) get_post_meta($menu_id, 'occasional_menus', true) : 0;
+    for ($i = 0; $i < $om_count; $i++) {
+        $head = trim((string) get_post_meta($menu_id, "occasional_menus_{$i}_headline", true));
+        $desc = trim((string) get_post_meta($menu_id, "occasional_menus_{$i}_description", true));
+        $date_lbl = trim((string) get_post_meta($menu_id, "occasional_menus_{$i}_date", true)) ?: '16th May 2025';
+        $thumb_raw = get_post_meta($menu_id, "occasional_menus_{$i}_thumbnail", true);
+        $img_url = irori_resolve_media_value($thumb_raw, 'assets/images/event-wild-turkey.jpg');
+        if ($head !== '') {
+            $ts = strtotime($date_lbl) ?: time();
+            $occasional_menus[] = [
+                'id' => $i + 1,
+                'title' => $head,
+                'dateIso' => gmdate('Y-m-d', $ts),
+                'dateLabel' => $date_lbl,
+                'desc' => $desc,
+                'image' => $img_url,
+                'alt' => $head,
             ];
         }
     }
 
-    // Reviews
+    // 3. Events Page: Occasional Events & Other events (Up Coming slider)
+    $events_page = get_page_by_path('events', OBJECT, 'page');
+    $events_id = $events_page ? (int) $events_page->ID : 0;
+
+    $events = [];
+    $oe_count = $events_id ? (int) get_post_meta($events_id, 'occasional_events', true) : 0;
+    for ($i = 0; $i < $oe_count; $i++) {
+        $head = trim((string) get_post_meta($events_id, "occasional_events_{$i}_headline", true));
+        $desc = trim((string) get_post_meta($events_id, "occasional_events_{$i}_description", true));
+        $date_lbl = trim((string) get_post_meta($events_id, "occasional_events_{$i}_date", true)) ?: '16th May 2025';
+        $thumb_raw = get_post_meta($events_id, "occasional_events_{$i}_thumbnail", true);
+        $img_url = irori_resolve_media_value($thumb_raw, 'assets/images/event-wild-turkey.jpg');
+        if ($head !== '') {
+            $ts = strtotime($date_lbl) ?: time();
+            $events[] = [
+                'id' => $i + 1,
+                'title' => $head,
+                'dateIso' => gmdate('Y-m-d', $ts),
+                'dateLabel' => $date_lbl,
+                'desc' => $desc,
+                'image' => $img_url,
+                'alt' => $head,
+            ];
+        }
+    }
+
+    $upcoming_slides = [];
+    $ote_count = $events_id ? (int) get_post_meta($events_id, 'other_events', true) : 0;
+    for ($i = 0; $i < $ote_count; $i++) {
+        $thumb_raw = get_post_meta($events_id, "other_events_{$i}_thumbnail", true);
+        $img_url = irori_resolve_media_value($thumb_raw, 'assets/images/event-upcoming-featured.jpg');
+        if ($img_url !== '') {
+            $upcoming_slides[] = [
+                'id' => $i + 1,
+                'title' => 'House of IRORI Upcoming Event ' . ($i + 1),
+                'image' => $img_url,
+                'alt' => 'House of IRORI Upcoming Event ' . ($i + 1),
+            ];
+        }
+    }
+
+    // 4. Google Reviews (CPT: google_reviews)
     $rv_posts = get_posts([
-        'post_type' => 'irori_review',
+        'post_type' => 'google_reviews',
         'post_status' => 'publish',
         'has_password' => false,
         'numberposts' => 30,
@@ -883,7 +1072,7 @@ function irori_build_bootstrap_payload(): array {
         ];
     }
 
-    // Blog Articles
+    // 5. Blog Articles (CPT: post)
     $blog_posts = get_posts([
         'post_type' => 'post',
         'post_status' => 'publish',
@@ -895,10 +1084,10 @@ function irori_build_bootstrap_payload(): array {
     $articles = array_map('irori_format_article_summary', $blog_posts);
 
     $payload = [
-        'version' => 1,
+        'version' => 2,
         'generatedAt' => gmdate('c'),
         'settings' => $settings,
-        'menuBook' => $menu_book,
+        'mainMenus' => $main_menus,
         'occasionalMenus' => $occasional_menus,
         'upcomingSlides' => $upcoming_slides,
         'events' => $events,

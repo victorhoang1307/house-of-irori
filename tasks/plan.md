@@ -67,6 +67,11 @@ Build the complete, responsive Static HTML5/CSS3/JS implementation of `Home v3B`
 - [x] Task 23: Extend `tests/verify-home.mjs` (TDD Red -> Green) and implement `js/cms.js` (`<= 10 KB`) + dynamic `irori:cms` refresh hooks in `js/main.js` (`<= 15 KB`) + script wiring across all 5 HTML pages (`?v=11.0`).
 - [x] Task 24: Provision `sites-test.houseofirori.com.vn` on cPanel (`zhorktpv`), create isolated DB `zhorktpv_irori`, install WordPress 6.x in `/cms/` with `irori-headless-cms.php`, deploy the 5-page frontend + `.htaccess` to webroot, and verify end-to-end (cPanel HTTP/REST API + Chrome DevTools MCP + QA subagents).
 
+### Phase 13: `houseofmerlin` CMS Structure Parity & PDF Menu FlipBook Viewer (`?v=11.1`)
+- [x] Task 25: Update `tests/verify-home.mjs` (TDD Red) to assert PDF menu files (`assets/menus/irori-cocktail-menu.pdf`, `assets/menus/irori-food-menu.pdf`), PDF viewer markup in `menu.html` (`_df_book` + `data-pdf-src`), `mainMenus` PDF tab hydration in `js/cms.js`, delegated tab switching + resize trigger in `js/main.js`, and `houseofmerlin`-aligned ACF field groups (`Welcome Page`, `Menu Page` with `main_menus` PDF repeater & `occasional_menus`, `Event Page` with `occasional_events` & `other_events`, `Blogs Page`, `Contact Page`, `Irori Config`) + `google_reviews` CPT in `wordpress/mu-plugins/irori-headless-cms.php`.
+- [x] Task 26: Generate multi-page PDF menus (`assets/menus/irori-cocktail-menu.pdf` & `assets/menus/irori-food-menu.pdf`), update `menu.html`, `css/style.css`, `js/main.js`, `js/cms.js`, and `wordpress/mu-plugins/irori-headless-cms.php` (TDD Green), keeping `css/style.css <= 50 KB`, `js/main.js <= 15 KB`, `js/cms.js <= 10 KB`, and combined JS `<= 25 KB`.
+- [x] Task 27: Provision `acf`, `3d-flipbook-dflip-lite`, and `admin-menu-editor` in `/home/zhorktpv/sites-test.houseofirori.com.vn/cms/wp-content/plugins/`, seed ACF Pages (`Welcome`, `Menu`, `Events`, `Blogs`, `Contact`), `Irori Settings` (`irori_config-page`), `google_reviews`, and Media attachments on cPanel, verify live PDF flipbook tabs & CMS admin structure in Chrome DevTools MCP, run QA gate (`code-reviewer`, `security-auditor`, `web-performance-auditor`), and push to `origin/master`.
+
 ## Risks and Mitigations
 | Risk | Impact | Mitigation |
 |------|--------|------------|

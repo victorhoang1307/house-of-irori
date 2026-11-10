@@ -234,8 +234,8 @@ assert.ok(
   '.category-pill must have larger sizing (min-block-size >= 34px, font-size >= 13.5px)'
 );
 assert.ok(
-  css.includes('.btn-load-more') && css.includes('.menu-book-spread'),
-  'css/style.css must style .btn-load-more and .menu-book-spread'
+  css.includes('.btn-load-more') && css.includes('.menu-pdf-book'),
+  'css/style.css must style .btn-load-more and .menu-pdf-book'
 );
 
 // Phase 9: Fullscreen Mobile Menu (The Grand Hanoi style & staggered motion)
@@ -349,7 +349,9 @@ const subpageSpecs = [
       'data-cms-item="occasional-menu"',
       'data-menu-tab="cocktail"',
       'data-menu-tab="food"',
-      'class="menu-book-spread"',
+      'class="_df_book df-lite menu-pdf-book"',
+      'data-pdf-src="assets/menus/irori-cocktail-menu.pdf"',
+      'data-pdf-src="assets/menus/irori-food-menu.pdf"',
       'data-load-more="occasional-menu"',
       'data-extra-item',
       'id="mobile-reservations-bar"',
@@ -452,12 +454,16 @@ for (const spec of subpageSpecs) {
   console.log(`✓ ${spec.file} passes all copy, Strapi attribute, and mobile fixed CTA checks.`);
 }
 
-// Verify menu.html food panel does not duplicate cocktail panel image
+// Verify menu.html PDF panels reference distinct Cocktail & Food PDF files
+checkFileExists('assets/menus/irori-cocktail-menu.pdf', 1000);
+checkFileExists('assets/menus/irori-food-menu.pdf', 1000);
 const menuHtml = fs.readFileSync(path.join(ROOT, 'menu.html'), 'utf8');
 const foodPanelMatch = menuHtml.match(/data-menu-panel="food"[^>]*>([\s\S]*?)<\/section>/);
 assert.ok(
-  foodPanelMatch && !foodPanelMatch[1].includes('menu-showcase-1.jpg'),
-  'menu.html data-menu-panel="food" must render distinct food content instead of duplicating menu-showcase-1.jpg'
+  foodPanelMatch &&
+    foodPanelMatch[1].includes('assets/menus/irori-food-menu.pdf') &&
+    !foodPanelMatch[1].includes('irori-cocktail-menu.pdf'),
+  'menu.html data-menu-panel="food" must bind its own PDF file (assets/menus/irori-food-menu.pdf)'
 );
 assert.ok(
   html.includes('blogs.html?category='),
@@ -502,10 +508,12 @@ assert.ok(
     cmsSource.includes('div,span') &&
     cmsSource.includes('DOMParser') &&
     cmsSource.includes("priority: 'low'") &&
+    cmsSource.includes('mainMenus') &&
+    cmsSource.includes('dFlipLocation') &&
     cmsSource.includes('/irori/v1/bootstrap') &&
     cmsSource.includes('/irori/v1/article/') &&
     cmsSource.includes("'irori:cms'"),
-  'js/cms.js must avoid innerHTML, guard Element.prototype.setHTML with try/catch + div/span allowlist DOMParser fallback, deprioritize background fetch, query /irori/v1/*, and dispatch irori:cms'
+  'js/cms.js must avoid innerHTML, guard Element.prototype.setHTML with try/catch + div/span allowlist DOMParser fallback, hydrate mainMenus PDF tabs with dFlipLocation, deprioritize background fetch, query /irori/v1/*, and dispatch irori:cms'
 );
 assert.ok(
   jsSource.includes("'irori:cms'") && jsSource.includes('mapEl._pin'),
@@ -527,13 +535,23 @@ const wpPluginSrc = fs.readFileSync(wpPluginPath, 'utf8');
 assert.ok(
   wpPluginSrc.includes("register_rest_route('irori/v1', '/bootstrap'") &&
     wpPluginSrc.includes("register_rest_route('irori/v1', '/article/") &&
+    wpPluginSrc.includes("register_post_type('google_reviews'") &&
+    wpPluginSrc.includes("'irori_config-page'") &&
+    wpPluginSrc.includes("'capability' => 'edit_pages'") &&
+    wpPluginSrc.includes("'main_menus'") &&
+    wpPluginSrc.includes("'occasional_menus'") &&
+    wpPluginSrc.includes("'occasional_events'") &&
+    wpPluginSrc.includes("'other_events'") &&
     wpPluginSrc.includes("'has_password' => false") &&
     wpPluginSrc.includes('clean_post_cache') &&
     wpPluginSrc.includes('wp_kses_post') &&
     wpPluginSrc.includes('wp_verify_nonce') &&
     wpPluginSrc.includes('xmlrpc_methods'),
-  'irori-headless-cms.php must register /irori/v1/bootstrap & /article routes, exclude password-protected posts, bust cache on clean_post_cache, use wp_kses_post & nonces, and disable XML-RPC'
+  'irori-headless-cms.php must mirror houseofmerlin CMS structure (google_reviews CPT, irori_config-page options, ACF main_menus PDF repeater, occasional_menus, occasional_events, other_events), register /irori/v1/* routes, exclude password-protected posts, bust cache on clean_post_cache, and disable XML-RPC'
 );
+for (const m of wpPluginSrc.matchAll(/irori_import_local_asset\('([^']+)'/g)) {
+  checkFileExists(m[1], 100);
+}
 
 for (const htmlFile of ['index.html', 'menu.html', 'events.html', 'blogs.html', 'blog-detail.html']) {
   const pageHtml = fs.readFileSync(path.join(ROOT, htmlFile), 'utf8');

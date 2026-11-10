@@ -1591,162 +1591,25 @@ body.is-menu-open {
   overflow: clip;
 }
 
-@media (min-width: 1025px) {
-  .menu-viewer:has(> [data-menu-panel="food"].is-active) {
-    aspect-ratio: auto;
-    min-height: 660px;
-  }
-}
-
-.menu-viewer__panel {
+.menu-viewer__panel,
+.menu-pdf-book,
+.menu-pdf-frame {
   width: 100%;
   height: 100%;
+  border: 0;
+  display: block;
+}
+
+.menu-pdf-book._df_book {
+  height: 100% !important;
+  min-height: 520px;
+  background-color: #6C6C6C;
 }
 
 .menu-viewer__panel img {
   width: 100%;
   height: 100%;
   object-fit: contain;
-}
-
-.menu-book-spread {
-  width: 100%;
-  height: 100%;
-  padding: 16px 26px 46px;
-  position: relative;
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-}
-
-.menu-book-spread__pages {
-  width: 100%;
-  height: 100%;
-  display: grid;
-  grid-template-columns: repeat(2, 1fr);
-  background-color: #FCF7DF;
-  box-shadow: 0 12px 32px rgba(0, 0, 0, 0.35);
-  position: relative;
-}
-
-.menu-book-spread__pages::after {
-  content: "";
-  position: absolute;
-  top: 0;
-  bottom: 0;
-  left: 50%;
-  width: 24px;
-  transform: translateX(-50%);
-  background: linear-gradient(90deg, rgba(74, 59, 50, 0) 0%, rgba(74, 59, 50, 0.16) 50%, rgba(74, 59, 50, 0) 100%);
-  pointer-events: none;
-}
-
-.menu-book-page {
-  padding: 18px;
-  display: flex;
-}
-
-.menu-book-page__inner {
-  width: 100%;
-  border: 3px double rgba(164, 134, 76, 0.72);
-  padding: 24px 26px 20px;
-  display: flex;
-  flex-direction: column;
-}
-
-.menu-book-page__eyebrow {
-  font-family: var(--font-sans);
-  font-size: 9.5px;
-  letter-spacing: 0.24em;
-  text-transform: uppercase;
-  color: rgba(74, 59, 50, 0.65);
-  text-align: center;
-  margin-bottom: 6px;
-}
-
-.menu-book-page__heading {
-  font-family: var(--font-display);
-  font-weight: 600;
-  font-size: 23px;
-  letter-spacing: 0.08em;
-  text-transform: uppercase;
-  color: var(--bg-burgundy);
-  text-align: center;
-  margin-bottom: 4px;
-}
-
-.menu-book-page__sub {
-  font-family: var(--font-serif);
-  font-style: italic;
-  font-size: 11.5px;
-  color: var(--color-espresso);
-  text-align: center;
-  padding-bottom: 14px;
-  margin-bottom: 14px;
-  border-bottom: 1px solid rgba(198, 161, 91, 0.45);
-}
-
-.menu-book-list {
-  display: flex;
-  flex-direction: column;
-  gap: 13px;
-}
-
-.menu-book-item__row {
-  display: flex;
-  align-items: baseline;
-  justify-content: space-between;
-  gap: 12px;
-  margin-bottom: 2px;
-}
-
-.menu-book-item__name {
-  font-family: var(--font-display);
-  font-weight: 600;
-  font-size: 14.5px;
-  color: var(--bg-dark);
-}
-
-.menu-book-item__price {
-  font-family: var(--font-display);
-  font-weight: 600;
-  font-size: 14px;
-  color: var(--bg-burgundy);
-  flex-shrink: 0;
-}
-
-.menu-book-item__desc {
-  font-family: var(--font-serif);
-  font-size: 11.5px;
-  line-height: 1.48;
-  color: rgba(10, 10, 10, 0.78);
-}
-
-.menu-book-page__note {
-  margin-top: auto;
-  padding-top: 12px;
-  font-family: var(--font-serif);
-  font-size: 10px;
-  letter-spacing: 0.04em;
-  color: rgba(74, 59, 50, 0.65);
-  text-align: center;
-}
-
-.menu-book-spread__bar {
-  position: absolute;
-  bottom: 8px;
-  left: 50%;
-  transform: translateX(-50%);
-  background-color: #FFFFFF;
-  color: #4A3B32;
-  padding: 5px 18px;
-  border-radius: 3px;
-  font-family: var(--font-sans);
-  font-size: 11px;
-  display: inline-flex;
-  align-items: center;
-  gap: 16px;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.22);
 }
 
 /* Events Page: UP COMING Section (Figma 622:1467) */
@@ -2054,19 +1917,14 @@ body.is-menu-open {
 
   .menu-viewer {
     aspect-ratio: auto;
+    height: 520px;
+    min-height: 520px;
   }
 
-  .menu-viewer__panel img {
-    height: auto;
-    aspect-ratio: 1170 / 660;
-  }
-
-  .menu-book-spread__pages {
-    grid-template-columns: 1fr;
-  }
-
-  .menu-book-spread__pages::after {
-    display: none;
+  .menu-viewer__panel img,
+  .menu-pdf-frame {
+    height: 100%;
+    min-height: 520px;
   }
 }
 
@@ -2443,26 +2301,12 @@ body.is-menu-open {
     font-size: 16px;
   }
 
-  .menu-book-spread {
-    padding: 12px 12px 48px;
-  }
-
-  .menu-book-page {
-    padding: 10px;
-  }
-
-  .menu-book-page__inner {
-    padding: 18px 14px;
-  }
-
-  .menu-book-page__heading {
-    font-size: 19px;
-  }
-
-  .menu-book-spread__bar {
-    white-space: nowrap;
-    font-size: 10px;
-    padding: 4px 12px;
+  .menu-viewer,
+  .menu-viewer__panel img,
+  .menu-pdf-book._df_book,
+  .menu-pdf-frame {
+    height: 440px;
+    min-height: 440px;
   }
 
   .upcoming-banner {
